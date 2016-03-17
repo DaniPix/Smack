@@ -16,6 +16,9 @@
  */
 package org.jivesoftware.smack.tcp;
 
+import net.processone.sm.packet.Rebind;
+import net.processone.sm.provider.ParseRebind;
+
 import org.jivesoftware.smack.AbstractConnectionListener;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -212,8 +215,9 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
 
     private static boolean useSmDefault = true;
 
-    private static boolean useSmResumptionDefault = true;
+    private static boolean useSmResumptionDefault = false;
 
+    private static boolean useRebindDefault = true;
     /**
      * The stream ID of the stream that is currently resumable, ie. the stream we hold the state
      * for in {@link #clientHandledStanzasCount}, {@link #serverHandledStanzasCount} and
@@ -242,6 +246,22 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
      */
     private boolean useSm = useSmDefault;
     private boolean useSmResumption = useSmResumptionDefault;
+
+    /**
+     * Support for Ejabberd BE 'rebind' mechanism
+     */
+    private String rebindStreamId = null;
+    private boolean useRebind = useRebindDefault;
+    /**
+     * Note: Because p1:rebind feature is announced before auth, {@link #hasFeature(String, String)}
+     * method would return null <b>after</b> successful authentication. In other words, that helper
+     * method won't be useful to check if p1:rebind is supported or not. Instead, we use a custom
+     * boolean flag for this purpose.
+     */
+    private boolean ebeRebindAvailable = false;
+    private final SynchronizationPoint<SmackException> ebeReboundSyncPoint =
+            new SynchronizationPoint<SmackException>(this, "EBE rebind element");
+
 
     /**
      * The counter that the server sends the client about it's current height. For example, if the server sends
@@ -310,6 +330,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
             public void connectionClosedOnError(Exception e) {
                 if (e instanceof XMPPException.StreamErrorException) {
                     dropSmState();
+                    dropEBERebindState();
                 }
             }
         });
@@ -345,7 +366,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
      */
     public XMPPTCPConnection(CharSequence username, String password, String serviceName) throws XmppStringprepException {
         this(XMPPTCPConnectionConfiguration.builder().setUsernameAndPassword(username, password).setXmppDomain(
-                                        JidCreate.domainBareFrom(serviceName)).build());
+                JidCreate.domainBareFrom(serviceName)).build());
     }
 
     @Override
@@ -374,12 +395,40 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
     protected void afterSuccessfulLogin(final boolean resumed) throws NotConnectedException, InterruptedException {
         // Reset the flag in case it was set
         disconnectedButResumeable = false;
+        if (resumed) {
+            streamId = rebindStreamId;
+        } else {
+            rebindStreamId = streamId;
+        }
         super.afterSuccessfulLogin(resumed);
     }
 
     @Override
     protected synchronized void loginInternal(String username, String password, Resourcepart resource) throws XMPPException,
                     SmackException, IOException, InterruptedException {
+        ebeRebindAvailable = hasFeature(Rebind.RebindFeature.ELEMENT, Rebind.NAMESPACE);
+        if (isEBERebindPossible()) {
+            StringBuffer jid = new StringBuffer();
+            jid.append(username).append('@').append(getXMPPServiceDomain()).append(resource);
+            try {
+                ebeReboundSyncPoint.sendAndWaitForResponse(new Rebind.RebindSession(jid.toString(),
+                        rebindStreamId));
+                if (ebeReboundSyncPoint.wasSuccessful()) {
+                    LOGGER.fine("EBE rebind success");
+                    // Stream rebound
+                    afterSuccessfulLogin(true);
+                    return;
+                }
+                LOGGER.fine("EBE rebind failed, continuing with normal stream establishment process");
+            } finally {
+                if (!ebeReboundSyncPoint.wasSuccessful()) {
+                    dropEBERebindState();
+                }
+            }
+        } else if (ebeRebindAvailable) {
+            LOGGER.fine("Can't rebind at this time");
+        }
+
         // Authenticate using SASL
         SSLSession sslSession = secureSocket != null ? secureSocket.getSession() : null;
         saslAuthentication.authenticate(username, password, config.getAuthzid(), sslSession);
@@ -513,13 +562,14 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         // If we are able to resume the stream, then don't set
         // connected/authenticated/usingTLS to false since we like behave like we are still
         // connected (e.g. sendStanza should not throw a NotConnectedException).
-        if (isSmResumptionPossible() && instant) {
+        if ((isSmResumptionPossible() || isEBERebindPossible() ) && instant) {
             disconnectedButResumeable = true;
         } else {
             disconnectedButResumeable = false;
             // Reset the stream management session id to null, since if the stream is cleanly closed, i.e. sending a closing
             // stream tag, there is no longer a stream to resume.
             smSessionId = null;
+            dropEBERebindState();
         }
         authenticated = false;
         connected = false;
@@ -1081,6 +1131,14 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                                 final SASLFailure failure = PacketParserUtils.parseSASLFailure(parser);
                                 getSASLAuthentication().authenticationFailed(failure);
                                 break;
+                            case Rebind.NAMESPACE:
+                                // Ejabberd EBE rebind mechanism
+                                final Rebind.Failure rebindFailure = ParseRebind.failure(parser);
+                                SmackException smackException = new SmackException(rebindFailure.getMessage());
+                                if (ebeReboundSyncPoint.requestSent()) {
+                                    ebeReboundSyncPoint.reportFailure(smackException);
+                                }
+                                break;
                             }
                             break;
                         case Challenge.ELEMENT:
@@ -1301,7 +1359,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         protected void throwNotConnectedExceptionIfDoneAndResumptionNotPossible() throws NotConnectedException {
             final boolean done = done();
             if (done) {
-                final boolean smResumptionPossbile = isSmResumptionPossible();
+                final boolean smResumptionPossbile = isSmResumptionPossible() || isEBERebindPossible();
                 // Don't throw a NotConnectedException is there is an resumable stream available
                 if (!smResumptionPossbile) {
                     throw new NotConnectedException(XMPPTCPConnection.this, "done=" + done
@@ -1752,6 +1810,15 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         return hasFeature(StreamManagementFeature.ELEMENT, StreamManagement.NAMESPACE);
     }
 
+    public boolean isEBERebindPossible() {
+        String sid = getLastRebindSID();
+        if (sid == null || !ebeRebindAvailable ||
+            !useRebind) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Returns true if Stream Management was successfully negotiated with the server.
      *
@@ -1777,6 +1844,10 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
      */
     public boolean isDisconnectedButSmResumptionPossible() {
         return disconnectedButResumeable && isSmResumptionPossible();
+    }
+
+    public boolean isDisconnectedButEBERebindPossible() {
+        return disconnectedButResumeable && isEBERebindPossible();
     }
 
     /**
@@ -1818,6 +1889,11 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         unacknowledgedStanzas = null;
     }
 
+    private void dropEBERebindState() {
+        rebindStreamId = null;
+        ebeRebindAvailable = false;
+    }
+
     /**
      * Get the maximum resumption time in seconds after which a managed stream can be resumed.
      * <p>
@@ -1832,6 +1908,10 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         int clientResumptionTime = smClientMaxResumptionTime > 0 ? smClientMaxResumptionTime : Integer.MAX_VALUE;
         int serverResumptionTime = smServerMaxResumptimTime > 0 ? smServerMaxResumptimTime : Integer.MAX_VALUE;
         return Math.min(clientResumptionTime, serverResumptionTime);
+    }
+
+    public String getLastRebindSID() {
+        return rebindStreamId;
     }
 
     private void processHandledCount(long handledCount) throws StreamManagementCounterError {
