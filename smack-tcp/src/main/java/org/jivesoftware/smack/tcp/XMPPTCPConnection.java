@@ -17,6 +17,7 @@
 package org.jivesoftware.smack.tcp;
 
 import net.processone.sm.packet.Rebind;
+import net.processone.sm.packet.Push;
 import net.processone.sm.provider.ParseRebind;
 
 import org.jivesoftware.smack.AbstractConnectionListener;
@@ -252,6 +253,9 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
      */
     private String rebindStreamId = null;
     private boolean useRebind = useRebindDefault;
+    protected boolean pushEnabled;
+    protected int keepAliveTime;
+
     /**
      * Note: Because p1:rebind feature is announced before auth, {@link #hasFeature(String, String)}
      * method would return null <b>after</b> successful authentication. In other words, that helper
@@ -262,6 +266,20 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
     private final SynchronizationPoint<SmackException> ebeReboundSyncPoint =
             new SynchronizationPoint<SmackException>(this, "EBE rebind element");
 
+    private final ScheduledExecutorService whitespacePingService = Executors.newSingleThreadScheduledExecutor(
+                    new SmackExecutorThreadFactory(this, "whitespace pings"));
+    private ScheduledFuture<?> nextWhitespacePing;
+    private final Runnable whitespacePingRunnable = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                writer.write("\n");
+                writer.flush();
+            } catch (IOException e) {
+            }
+            scheduleNextWhitespacePing();
+        }
+    };
 
     /**
      * The counter that the server sends the client about it's current height. For example, if the server sends
@@ -587,6 +605,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
     @Override
     public void sendNonza(Nonza element) throws NotConnectedException, InterruptedException {
         packetWriter.sendStreamElement(element);
+        scheduleNextWhitespacePing();
     }
 
     @Override
@@ -600,6 +619,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                 }
             }
         }
+        scheduleNextWhitespacePing();
     }
 
     private void connectUsingConfiguration() throws ConnectionException, IOException {
@@ -1913,6 +1933,33 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
     public String getLastRebindSID() {
         return rebindStreamId;
     }
+
+    public boolean enablePush(Push push) throws NotConnectedException, InterruptedException, XMPPException.XMPPErrorException, NoResponseException {
+        push.setType(IQ.Type.set);
+        IQ response = createStanzaCollectorAndSend(push).nextResultOrThrow();
+        this.pushEnabled = response.getType() == IQ.Type.result;
+        if (this.pushEnabled) {
+            this.keepAliveTime = push.keepalive;
+            scheduleNextWhitespacePing();
+        }
+        return this.pushEnabled;
+    }
+
+    public void disablePush() throws NotConnectedException, InterruptedException, XMPPException.XMPPErrorException, NoResponseException {
+        IQ push = new SimpleIQ("disable", "p1:push") { };
+        push.setType(IQ.Type.set);
+        IQ response = createStanzaCollectorAndSend(push).nextResultOrThrow();
+        pushEnabled = false;
+    }
+
+    private void scheduleNextWhitespacePing() {
+        if (nextWhitespacePing != null)
+            nextWhitespacePing.cancel(true);
+
+        if (this.pushEnabled)
+            nextWhitespacePing = whitespacePingService.schedule(whitespacePingRunnable,
+                    this.keepAliveTime-2, TimeUnit.SECONDS);
+     }
 
     private void processHandledCount(long handledCount) throws StreamManagementCounterError {
         long ackedStanzasCount = SMUtils.calculateDelta(handledCount, serverHandledStanzasCount);
