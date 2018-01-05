@@ -18,15 +18,17 @@
 package org.jivesoftware.smackx.jingleold.provider;
 
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
+import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.util.ParserUtils;
+
 import org.jivesoftware.smackx.jingleold.JingleActionEnum;
 import org.jivesoftware.smackx.jingleold.packet.Jingle;
 import org.jivesoftware.smackx.jingleold.packet.JingleContent;
 import org.jivesoftware.smackx.jingleold.packet.JingleContentInfo;
 import org.jivesoftware.smackx.jingleold.packet.JingleDescription;
 import org.jivesoftware.smackx.jingleold.packet.JingleTransport;
+
 import org.jxmpp.jid.Jid;
 import org.xmlpull.v1.XmlPullParser;
 
@@ -48,8 +50,7 @@ public class JingleProvider extends IQProvider<Jingle> {
         Jingle jingle = new Jingle();
         String sid = "";
         JingleActionEnum action;
-        Jid initiator = null;
-        Jid responder = null;
+        Jid initiator, responder;
         boolean done = false;
         JingleContent currentContent = null;
 

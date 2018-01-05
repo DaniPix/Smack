@@ -24,30 +24,33 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.SmackException.NoResponseException;
-import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.filter.AndFilter;
 import org.jivesoftware.smack.filter.StanzaFilter;
-import org.jivesoftware.smack.filter.jidtype.FromJidTypeFilter;
 import org.jivesoftware.smack.filter.jidtype.AbstractJidTypeFilter.JidType;
+import org.jivesoftware.smack.filter.jidtype.FromJidTypeFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
+
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.pubsub.EventElement;
 import org.jivesoftware.smackx.pubsub.Item;
 import org.jivesoftware.smackx.pubsub.LeafNode;
+import org.jivesoftware.smackx.pubsub.PubSubException.NotAPubSubNodeException;
 import org.jivesoftware.smackx.pubsub.PubSubFeature;
 import org.jivesoftware.smackx.pubsub.PubSubManager;
 import org.jivesoftware.smackx.pubsub.filter.EventExtensionFilter;
+
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 
 /**
  *
  * Manages Personal Event Publishing (XEP-163). A PEPManager provides a high level access to
- * pubsub personal events. It also provides an easy way
+ * PubSub personal events. It also provides an easy way
  * to hook up custom logic when events are received from another XMPP client through PEPListeners.
  * 
  * Use example:
@@ -95,9 +98,9 @@ public final class PEPManager extends Manager {
             public void processStanza(Stanza stanza) {
                 Message message = (Message) stanza;
                 EventElement event = EventElement.from(stanza);
-                assert(event != null);
+                assert (event != null);
                 EntityBareJid from = message.getFrom().asEntityBareJidIfPossible();
-                assert(from != null);
+                assert (from != null);
                 for (PEPListener listener : pepListeners) {
                     listener.eventReceived(from, event, message);
                 }
@@ -112,6 +115,7 @@ public final class PEPManager extends Manager {
      * are received from remote XMPP clients.
      *
      * @param pepListener a roster exchange listener.
+     * @return true if pepListener was added.
      */
     public boolean addPEPListener(PEPListener pepListener) {
         return pepListeners.add(pepListener);
@@ -121,6 +125,7 @@ public final class PEPManager extends Manager {
      * Removes a listener from PEP events.
      *
      * @param pepListener a roster exchange listener.
+     * @return true, if pepListener was removed.
      */
     public boolean removePEPListener(PEPListener pepListener) {
         return pepListeners.remove(pepListener);
@@ -135,9 +140,10 @@ public final class PEPManager extends Manager {
      * @throws InterruptedException
      * @throws XMPPErrorException
      * @throws NoResponseException
+     * @throws NotAPubSubNodeException 
      */
     public void publish(Item item, String node) throws NotConnectedException, InterruptedException,
-                    NoResponseException, XMPPErrorException {
+                    NoResponseException, XMPPErrorException, NotAPubSubNodeException {
         XMPPConnection connection = connection();
         PubSubManager pubSubManager = PubSubManager.getInstance(connection, connection.getUser().asEntityBareJid());
         LeafNode pubSubNode = pubSubManager.getNode(node);

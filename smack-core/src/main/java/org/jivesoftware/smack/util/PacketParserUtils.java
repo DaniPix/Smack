@@ -31,21 +31,22 @@ import java.util.logging.Logger;
 import org.jivesoftware.smack.compress.packet.Compress;
 import org.jivesoftware.smack.packet.EmptyResultIQ;
 import org.jivesoftware.smack.packet.ErrorIQ;
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Session;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.StartTls;
 import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.packet.UnparsedIQ;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.parsing.StandardExtensionElementProvider;
-import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
+import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.sasl.packet.SaslStreamElements.SASLFailure;
+
 import org.jxmpp.jid.Jid;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -214,7 +215,7 @@ public class PacketParserUtils {
     public static Message parseMessage(XmlPullParser parser)
                     throws Exception {
         ParserUtils.assertAtStartTag(parser);
-        assert(parser.getName().equals(Message.ELEMENT));
+        assert (parser.getName().equals(Message.ELEMENT));
 
         final int initialDepth = parser.getDepth();
         Message message = new Message();
@@ -228,7 +229,7 @@ public class PacketParserUtils {
         String language = getLanguageAttribute(parser);
 
         // determine message's default language
-        String defaultLanguage = null;
+        String defaultLanguage;
         if (language != null && !"".equals(language.trim())) {
             message.setLanguage(language);
             defaultLanguage = language;
@@ -247,7 +248,7 @@ public class PacketParserUtils {
             case XmlPullParser.START_TAG:
                 String elementName = parser.getName();
                 String namespace = parser.getNamespace();
-                switch(elementName) {
+                switch (elementName) {
                 case "subject":
                     String xmlLangSubject = getLanguageAttribute(parser);
                     if (xmlLangSubject == null) {
@@ -385,7 +386,7 @@ public class PacketParserUtils {
      */
     public static CharSequence parseContent(XmlPullParser parser)
                     throws XmlPullParserException, IOException {
-        assert(parser.getEventType() == XmlPullParser.START_TAG);
+        assert (parser.getEventType() == XmlPullParser.START_TAG);
         if (parser.isEmptyElementTag()) {
             return "";
         }
@@ -546,7 +547,7 @@ public class PacketParserUtils {
             case XmlPullParser.START_TAG:
                 String elementName = parser.getName();
                 String namespace = parser.getNamespace();
-                switch(elementName) {
+                switch (elementName) {
                 case "status":
                     presence.setStatus(parser.nextText());
                     break;
@@ -620,7 +621,7 @@ public class PacketParserUtils {
             case XmlPullParser.START_TAG:
                 String elementName = parser.getName();
                 String namespace = parser.getNamespace();
-                switch(elementName) {
+                switch (elementName) {
                 case "error":
                     error = PacketParserUtils.parseError(parser);
                     break;
@@ -708,6 +709,7 @@ public class PacketParserUtils {
      *
      * @param parser the XML parser, positioned at the start of the compression stanza.
      * @return The CompressionFeature stream element
+     * @throws IOException
      * @throws XmlPullParserException if an exception occurs while parsing the stanza.
      */
     public static Compress.Feature parseCompressionFeature(XmlPullParser parser)
@@ -715,7 +717,7 @@ public class PacketParserUtils {
         assert (parser.getEventType() == XmlPullParser.START_TAG);
         String name;
         final int initialDepth = parser.getDepth();
-        List<String> methods = new LinkedList<String>();
+        List<String> methods = new LinkedList<>();
         outerloop: while (true) {
             int eventType = parser.next();
             switch (eventType) {
@@ -745,9 +747,15 @@ public class PacketParserUtils {
     public static Map<String, String> parseDescriptiveTexts(XmlPullParser parser, Map<String, String> descriptiveTexts)
                     throws XmlPullParserException, IOException {
         if (descriptiveTexts == null) {
-            descriptiveTexts = new HashMap<String, String>();
+            descriptiveTexts = new HashMap<>();
         }
         String xmllang = getLanguageAttribute(parser);
+        if (xmllang == null) {
+            // XMPPError assumes the default locale, 'en', or the empty string.
+            // Establish the invariant that there is never null as a key.
+            xmllang = "";
+        }
+
         String text = parser.nextText();
         String previousValue = descriptiveTexts.put(xmllang, text);
         assert (previousValue == null);
@@ -775,7 +783,7 @@ public class PacketParserUtils {
                     descriptiveTexts = parseDescriptiveTexts(parser, descriptiveTexts);
                 }
                 else {
-                    assert(condition == null);
+                    assert (condition == null);
                     condition = parser.getName();
                 }
                 break;
@@ -798,7 +806,7 @@ public class PacketParserUtils {
      */
     public static StreamError parseStreamError(XmlPullParser parser) throws Exception {
         final int initialDepth = parser.getDepth();
-        List<ExtensionElement> extensions = new ArrayList<ExtensionElement>();
+        List<ExtensionElement> extensions = new ArrayList<>();
         Map<String, String> descriptiveTexts = null;
         StreamError.Condition condition = null;
         String conditionText = null;
@@ -850,7 +858,7 @@ public class PacketParserUtils {
                     throws Exception {
         final int initialDepth = parser.getDepth();
         Map<String, String> descriptiveTexts = null;
-        List<ExtensionElement> extensions = new ArrayList<ExtensionElement>();
+        List<ExtensionElement> extensions = new ArrayList<>();
         XMPPError.Builder builder = XMPPError.getBuilder();
 
         // Parse the error header
@@ -892,7 +900,14 @@ public class PacketParserUtils {
     }
 
     /**
-     * Parse an extension element.
+     * Parses an extension element.
+     *
+     * @param elementName the XML element name of the extension element.
+     * @param namespace the XML namespace of the stanza(/packet) extension.
+     * @param parser the XML parser, positioned at the starting element of the extension.
+     *
+     * @return an extension element.
+     * @throws Exception when an error occurs during parsing.
      * @deprecated use {@link #parseExtensionElement(String, String, XmlPullParser)} instead.
      */
     @Deprecated
@@ -907,7 +922,9 @@ public class PacketParserUtils {
      * @param elementName the XML element name of the extension element.
      * @param namespace the XML namespace of the stanza(/packet) extension.
      * @param parser the XML parser, positioned at the starting element of the extension.
+     *
      * @return an extension element.
+     * @throws Exception when an error occurs during parsing.
      */
     public static ExtensionElement parseExtensionElement(String elementName, String namespace,
                     XmlPullParser parser) throws Exception {
@@ -945,7 +962,7 @@ public class PacketParserUtils {
                 }
             }
         }
-        assert(parser.getEventType() == XmlPullParser.END_TAG);
+        assert (parser.getEventType() == XmlPullParser.END_TAG);
         return new StartTls(required);
     }
 
@@ -954,7 +971,7 @@ public class PacketParserUtils {
         final int initialDepth = parser.getDepth();
         boolean optional = false;
         if (!parser.isEmptyElementTag()) {
-        outerloop: while(true) {
+        outerloop: while (true) {
             int event = parser.next();
             switch (event) {
             case XmlPullParser.START_TAG:
@@ -975,6 +992,8 @@ public class PacketParserUtils {
         return new Session.Feature(optional);
 
     }
+
+    // TODO Remove this static method and use ParserUtils.getXmlLang(XmlPullParser) instead.
     private static String getLanguageAttribute(XmlPullParser parser) {
     // CHECKSTYLE:OFF
     	for (int i = 0; i < parser.getAttributeCount(); i++) {
@@ -1022,7 +1041,7 @@ public class PacketParserUtils {
     }
 
     public static void addExtensionElement(Stanza packet, XmlPullParser parser, String elementName,
-                    String namespace) throws Exception{
+                    String namespace) throws Exception {
         ExtensionElement packetExtension = parseExtensionElement(elementName, namespace, parser);
         packet.addExtension(packetExtension);
     }

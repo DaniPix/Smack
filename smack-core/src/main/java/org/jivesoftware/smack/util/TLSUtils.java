@@ -20,6 +20,8 @@ import java.security.KeyManagementException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -33,8 +35,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SmackException.SecurityNotPossibleException;
@@ -55,11 +55,14 @@ public class TLSUtils {
      * According to the <a
      * href="https://raw.githubusercontent.com/stpeter/manifesto/master/manifesto.txt">Encrypted
      * XMPP Manifesto</a>, TLSv1.2 shall be deployed, providing fallback support for SSLv3 and
-     * TLSv1.1. This method goes one step boyond and upgrades the handshake to use TLSv1 or better.
+     * TLSv1.1. This method goes one step beyond and upgrades the handshake to use TLSv1 or better.
      * This method requires the underlying OS to support all of TLSv1.2 , 1.1 and 1.0.
      * </p>
      * 
      * @param builder the configuration builder to apply this setting to
+     * @param <B> Type of the ConnectionConfiguration builder.
+     *
+     * @return the given builder
      */
     public static <B extends ConnectionConfiguration.Builder<B,?>> B setTLSOnly(B builder) {
         builder.setEnabledSSLProtocols(new String[] { PROTO_TLSV1_2,  PROTO_TLSV1_1, PROTO_TLSV1 });
@@ -77,6 +80,9 @@ public class TLSUtils {
      * </p>
      * 
      * @param builder the configuration builder to apply this setting to
+     * @param <B> Type of the ConnectionConfiguration builder.
+     *
+     * @return the given builder
      */
     public static <B extends ConnectionConfiguration.Builder<B,?>> B setSSLv3AndTLSOnly(B builder) {
         builder.setEnabledSSLProtocols(new String[] { PROTO_TLSV1_2,  PROTO_TLSV1_1, PROTO_TLSV1, PROTO_SSL3 });
@@ -92,6 +98,7 @@ public class TLSUtils {
      * </p>
      * 
      * @param builder a connection configuration builder.
+     * @param <B> Type of the ConnectionConfiguration builder.
      * @throws NoSuchAlgorithmException
      * @throws KeyManagementException
      * @return the given builder.
@@ -120,6 +127,7 @@ public class TLSUtils {
      * </p>
      * 
      * @param builder a connection configuration builder.
+     * @param <B> Type of the ConnectionConfiguration builder.
      * @return the given builder.
      */
     public static <B extends ConnectionConfiguration.Builder<B,?>> B disableHostnameVerificationForTlsCertificates(B builder) {

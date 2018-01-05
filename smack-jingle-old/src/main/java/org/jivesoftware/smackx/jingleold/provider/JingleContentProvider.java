@@ -17,11 +17,13 @@
 package org.jivesoftware.smackx.jingleold.provider;
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
+
 import org.jivesoftware.smackx.jingleold.packet.JingleContent;
+
 import org.xmlpull.v1.XmlPullParser;
 
 /**
- * Jingle <content> provider.
+ * Jingle &lt;content&gt; provider.
  * 
  * @author Jeff Williams
  */

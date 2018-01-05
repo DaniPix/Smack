@@ -25,9 +25,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
-import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.Nonza;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.TopLevelStreamElement;
+
 import org.jxmpp.jid.EntityFullJid;
 import org.jxmpp.jid.JidTestUtil;
 import org.jxmpp.jid.impl.JidCreate;
@@ -87,6 +88,7 @@ public class DummyConnection extends AbstractXMPPConnection {
         user = getUserJid();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void connectInternal() {
         connected = true;
@@ -94,6 +96,7 @@ public class DummyConnection extends AbstractXMPPConnection {
         tlsHandled.reportSuccess();
         streamId = "dummy-" + new Random(new Date().getTime()).nextInt();
 
+        // TODO: Remove in Smack 4.3, and likely the suppression of the deprecation warning.
         if (reconnect) {
             notifyReconnection();
         }

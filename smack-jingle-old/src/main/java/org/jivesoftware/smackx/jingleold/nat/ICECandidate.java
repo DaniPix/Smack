@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 /**
  * ICE Transport candidate.
- * <p/>
+ *
  * A candidate represents the possible transport for data interchange between
  * the two endpoints.
  *
@@ -216,13 +216,13 @@ public class ICECandidate extends TransportCandidate implements Comparable<ICECa
      * Check if a transport candidate is usable. The transport resolver should
      * check if the transport candidate the other endpoint has provided is
      * usable.
-     * <p/>
+     *
      * ICE Candidate can check connectivity using UDP echo Test.
      */
     @Override
     public void check(final List<TransportCandidate> localCandidates) {
-        //TODO candidate is being checked trigger
-        //candidatesChecking.add(cand);
+        // TODO candidate is being checked trigger
+        // candidatesChecking.add(cand);
 
         final ICECandidate checkingCandidate = this;
 
@@ -233,7 +233,7 @@ public class ICECandidate extends TransportCandidate implements Comparable<ICECa
                 final TestResult result = new TestResult();
 
                 // Media Proxy don't have Echo features.
-                // If its a relayed candidate we assumpt that is NOT Valid while other candidates still being checked.
+                // If its a relayed candidate we assumed that is NOT Valid while other candidates still being checked.
                 // The negotiator MUST add then in the correct situations
                 if (getType().equals(Type.relay)) {
                     triggerCandidateChecked(false);
@@ -245,7 +245,7 @@ public class ICECandidate extends TransportCandidate implements Comparable<ICECa
                     public void testFinished(TestResult testResult, TransportCandidate candidate) {
                         if (testResult.isReachable() && checkingCandidate.equals(candidate)) {
                             result.setResult(true);
-                            LOGGER.fine("Candidate reachable: " + candidate.getIp() + ":" + candidate.getPort() + " from " + getIp() +":" + getPort());
+                            LOGGER.fine("Candidate reachable: " + candidate.getIp() + ":" + candidate.getPort() + " from " + getIp() + ":" + getPort());
                         }
                     }
                 };
@@ -287,8 +287,8 @@ public class ICECandidate extends TransportCandidate implements Comparable<ICECa
 
                 triggerCandidateChecked(result.isReachable());
 
-                //TODO candidate is being checked trigger
-                //candidatesChecking.remove(cand);
+                // TODO candidate is being checked trigger
+                // candidatesChecking.remove(cand);
             }
         }, "Transport candidate check");
 

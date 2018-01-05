@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.jivesoftware.smack.packet.Stanza;
+
 import org.jivesoftware.smackx.jiveproperties.packet.JivePropertiesExtension;
 
 public class JivePropertiesManager {
@@ -33,9 +34,10 @@ public class JivePropertiesManager {
      * you are sure that you understand the potential security implications it can cause.
      * <p>
      * See also:
+     * </p>
      * <ul>
-     * <li> <a href="http://stackoverflow.com/questions/19054460/">"What is the security impact of deserializing untrusted data in Java?" on Stackoverflow<a>
-     * <ul>
+     * <li> <a href="http://stackoverflow.com/questions/19054460/">"What is the security impact of deserializing untrusted data in Java?" on Stackoverflow</a>
+     * </ul>
      * @param enabled true to enable Java object deserialization
      */
     public static void setJavaObjectEnabled(boolean enabled) {

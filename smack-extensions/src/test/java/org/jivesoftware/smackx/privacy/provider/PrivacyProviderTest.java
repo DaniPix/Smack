@@ -24,9 +24,11 @@ import java.util.List;
 
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.InitExtensions;
 import org.jivesoftware.smackx.privacy.packet.Privacy;
 import org.jivesoftware.smackx.privacy.packet.PrivacyItem;
+
 import org.junit.Test;
 
 public class PrivacyProviderTest extends InitExtensions {
@@ -47,7 +49,7 @@ public class PrivacyProviderTest extends InitExtensions {
           + "</query>"
           + "</iq>";
         // @formatter:on
-        IQ iqPrivacyList = (IQ) PacketParserUtils.parseStanza(xmlPrivacyList);
+        IQ iqPrivacyList = PacketParserUtils.parseStanza(xmlPrivacyList);
         assertTrue(iqPrivacyList instanceof Privacy);
 
         Privacy privacyList = (Privacy) iqPrivacyList;
@@ -83,7 +85,7 @@ public class PrivacyProviderTest extends InitExtensions {
           + "</query>"
           + "</iq>";
         // @formatter:on
-        IQ iqPrivacyList = (IQ) PacketParserUtils.parseStanza(xmlPrivacyList);
+        IQ iqPrivacyList = PacketParserUtils.parseStanza(xmlPrivacyList);
         assertTrue(iqPrivacyList instanceof Privacy);
 
         Privacy privacyList = (Privacy) iqPrivacyList;

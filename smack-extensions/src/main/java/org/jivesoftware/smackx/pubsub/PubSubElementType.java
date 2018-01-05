@@ -54,7 +54,7 @@ public enum PubSubElementType
     private final String eName;
     private final PubSubNamespace nSpace;
 
-    private PubSubElementType(String elemName, PubSubNamespace ns)
+    PubSubElementType(String elemName, PubSubNamespace ns)
     {
         eName = elemName;
         nSpace = ns;
@@ -73,7 +73,7 @@ public enum PubSubElementType
     public static PubSubElementType valueOfFromElemName(String elemName, String namespace)
     {
         int index = namespace.lastIndexOf('#');
-        String fragment = (index == -1 ? null : namespace.substring(index+1));
+        String fragment = (index == -1 ? null : namespace.substring(index + 1));
 
         if (fragment != null)
         {

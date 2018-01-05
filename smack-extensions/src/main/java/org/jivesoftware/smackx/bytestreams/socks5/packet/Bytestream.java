@@ -25,6 +25,7 @@ import org.jivesoftware.smack.packet.NamedElement;
 import org.jivesoftware.smack.util.Objects;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.util.XmlStringBuilder;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -45,7 +46,7 @@ public class Bytestream extends IQ {
 
     private Mode mode = Mode.tcp;
 
-    private final List<StreamHost> streamHosts = new ArrayList<StreamHost>();
+    private final List<StreamHost> streamHosts = new ArrayList<>();
 
     private StreamHostUsed usedHost;
 
@@ -224,7 +225,7 @@ public class Bytestream extends IQ {
 
     @Override
     protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder xml) {
-        switch(getType()) {
+        switch (getType()) {
         case set:
             xml.optAttribute("sid", getSessionID());
             xml.optAttribute("mode", getMode());
@@ -283,6 +284,7 @@ public class Bytestream extends IQ {
          * 
          * @param JID The JID of the stream host.
          * @param address The internet address of the stream host.
+         * @param port port of the stream host.
          */
         public StreamHost(final Jid JID, final String address, int port) {
             this.JID = Objects.requireNonNull(JID, "StreamHost JID must not be null");

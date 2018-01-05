@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jivesoftware.smackx.xdata.provider.DataFormProvider;
 import org.jivesoftware.smackx.xdatalayout.packet.DataLayout.Fieldref;
@@ -30,6 +31,7 @@ import org.jivesoftware.smackx.xdatalayout.packet.DataLayout.Reportedref;
 import org.jivesoftware.smackx.xdatalayout.packet.DataLayout.Section;
 import org.jivesoftware.smackx.xdatalayout.packet.DataLayout.Text;
 import org.jivesoftware.smackx.xdatalayout.provider.DataLayoutProvider;
+
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -124,7 +126,7 @@ public class DataLayoutTest {
         assertEquals("Label - & \u00E9 \u00E1 ", layout.getLabel());
         section = (Section) layout.getPageLayout().get(1);
         assertEquals("section Label - & \u00E9 \u00E1 ", section.getLabel());
-        Text text = (Text)layout.getPageLayout().get(2);
+        Text text = (Text) layout.getPageLayout().get(2);
         assertEquals("PageText - & \u00E9 \u00E1 ", text.getText());
         section = (Section) layout.getPageLayout().get(3);
         assertEquals("<html>Number of Persons by<br/> Nationality and Status</html>", section.getLabel());
@@ -155,7 +157,7 @@ public class DataLayoutTest {
         assertEquals("Label - & \u00E9 \u00E1 ", layout.getLabel());
         Section section = (Section) layout.getPageLayout().get(1);
         assertEquals("section Label - & \u00E9 \u00E1 ", section.getLabel());
-        Text text = (Text)layout.getPageLayout().get(2);
+        Text text = (Text) layout.getPageLayout().get(2);
         assertEquals("PageText - & \u00E9 \u00E1 ", text.getText());
         section = (Section) layout.getPageLayout().get(3);
         assertEquals("<html>Number of Persons by<br/> Nationality and Status</html>", section.getLabel());

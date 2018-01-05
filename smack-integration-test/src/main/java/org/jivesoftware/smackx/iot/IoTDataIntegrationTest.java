@@ -23,11 +23,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-import org.igniterealtime.smack.inttest.AbstractSmackIntegrationTest;
-import org.igniterealtime.smack.inttest.SmackIntegrationTest;
-import org.igniterealtime.smack.inttest.SmackIntegrationTestEnvironment;
 import org.jivesoftware.smack.roster.RosterIntegrationTest;
 import org.jivesoftware.smack.util.StringUtils;
+
 import org.jivesoftware.smackx.iot.data.IoTDataManager;
 import org.jivesoftware.smackx.iot.data.ThingMomentaryReadOutRequest;
 import org.jivesoftware.smackx.iot.data.ThingMomentaryReadOutResult;
@@ -36,6 +34,10 @@ import org.jivesoftware.smackx.iot.data.element.IoTDataField.IntField;
 import org.jivesoftware.smackx.iot.data.element.IoTFieldsExtension;
 import org.jivesoftware.smackx.iot.data.element.NodeElement;
 import org.jivesoftware.smackx.iot.data.element.TimestampElement;
+
+import org.igniterealtime.smack.inttest.AbstractSmackIntegrationTest;
+import org.igniterealtime.smack.inttest.SmackIntegrationTest;
+import org.igniterealtime.smack.inttest.SmackIntegrationTestEnvironment;
 
 public class IoTDataIntegrationTest extends AbstractSmackIntegrationTest {
 
@@ -56,7 +58,7 @@ public class IoTDataIntegrationTest extends AbstractSmackIntegrationTest {
      * @throws TimeoutException 
      */
     @SmackIntegrationTest
-    public void dataTest() throws TimeoutException, Exception {
+    public void dataTest() throws Exception {
         final String key = StringUtils.randomString(12);
         final String sn = StringUtils.randomString(12);
         final int value = INSECURE_RANDOM.nextInt();

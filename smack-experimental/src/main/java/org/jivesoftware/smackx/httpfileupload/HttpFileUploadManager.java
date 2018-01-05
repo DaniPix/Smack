@@ -16,24 +16,6 @@
  */
 package org.jivesoftware.smackx.httpfileupload;
 
-import org.jivesoftware.smack.AbstractConnectionListener;
-import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.Manager;
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPConnectionRegistry;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
-import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
-import org.jivesoftware.smackx.httpfileupload.UploadService.Version;
-import org.jivesoftware.smackx.httpfileupload.element.Slot;
-import org.jivesoftware.smackx.httpfileupload.element.SlotRequest;
-import org.jivesoftware.smackx.httpfileupload.element.SlotRequest_V0_2;
-import org.jivesoftware.smackx.xdata.FormField;
-import org.jivesoftware.smackx.xdata.packet.DataForm;
-import org.jxmpp.jid.DomainBareJid;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,6 +35,26 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
+import org.jivesoftware.smack.AbstractConnectionListener;
+import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionCreationListener;
+import org.jivesoftware.smack.Manager;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPConnectionRegistry;
+import org.jivesoftware.smack.XMPPException;
+
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
+import org.jivesoftware.smackx.httpfileupload.UploadService.Version;
+import org.jivesoftware.smackx.httpfileupload.element.Slot;
+import org.jivesoftware.smackx.httpfileupload.element.SlotRequest;
+import org.jivesoftware.smackx.httpfileupload.element.SlotRequest_V0_2;
+import org.jivesoftware.smackx.xdata.FormField;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
+
+import org.jxmpp.jid.DomainBareJid;
+
 /**
  * A manager for XEP-0363: HTTP File Upload.
  *
@@ -62,7 +64,18 @@ import javax.net.ssl.SSLSocketFactory;
  */
 public final class HttpFileUploadManager extends Manager {
 
+    /**
+     * Namespace of XEP-0363 v0.4 or higher. Constant value {@value #NAMESPACE}.
+     *
+     * @see <a href="https://xmpp.org/extensions/attic/xep-0363-0.4.0.html">XEP-0363 v0.4.0</a>
+     */
     public static final String NAMESPACE = "urn:xmpp:http:upload:0";
+
+    /**
+     * Namespace of XEP-0363 v0.2 or lower. Constant value {@value #NAMESPACE_0_2}.
+     *
+     * @see <a href="https://xmpp.org/extensions/attic/xep-0363-0.2.5.html">XEP-0363 v0.2.5</a>
+     */
     public static final String NAMESPACE_0_2 = "urn:xmpp:http:upload";
 
     private static final Logger LOGGER = Logger.getLogger(HttpFileUploadManager.class.getName());
@@ -121,7 +134,7 @@ public final class HttpFileUploadManager extends Manager {
     }
 
     private static UploadService uploadServiceFrom(DiscoverInfo discoverInfo) {
-        assert(containsHttpFileUploadNamespace(discoverInfo));
+        assert (containsHttpFileUploadNamespace(discoverInfo));
 
         UploadService.Version version;
         if (discoverInfo.containsFeature(NAMESPACE)) {
@@ -455,6 +468,22 @@ public final class HttpFileUploadManager extends Manager {
         finally {
             urlConnection.disconnect();
         }
+    }
+
+    public static UploadService.Version namespaceToVersion(String namespace) {
+        UploadService.Version version;
+        switch (namespace) {
+        case NAMESPACE:
+            version = Version.v0_3;
+            break;
+        case NAMESPACE_0_2:
+            version = Version.v0_2;
+            break;
+        default:
+            version = null;
+            break;
+        }
+        return version;
     }
 
     private static boolean containsHttpFileUploadNamespace(DiscoverInfo discoverInfo) {

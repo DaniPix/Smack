@@ -21,6 +21,7 @@ import org.jivesoftware.smack.packet.Nonza;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.packet.XMPPError;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -89,7 +90,8 @@ public abstract class XMPPException extends Exception {
 
         /**
          * Creates a new XMPPErrorException with the XMPPError that was the root case of the exception.
-         * 
+         *
+         * @param stanza stanza that contained the exception.
          * @param error the root cause of the exception.
          */
         public XMPPErrorException(Stanza stanza, XMPPError error) {

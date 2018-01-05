@@ -54,16 +54,18 @@ import org.jivesoftware.smackx.jingleold.media.JingleMediaSession;
  * It sends and receives jmf for and from desired IPs and ports.
  * Also has a rport Symetric behavior for better NAT Traversal.
  * It send data from a defined port and receive data in the same port, making NAT binds easier.
- * <p/>
+ * <p>
  * Send from portA to portB and receive from portB in portA.
- * <p/>
+ * </p>
+ * <p>
  * Sending
- * portA ---> portB
- * <p/>
+ * portA ---&gt; portB
+ * </p>
+ * <p>
  * Receiving
- * portB ---> portA
- * <p/>
- * <i>Transmit and Receive are interdependents. To receive you MUST trasmit. </i>
+ * portB ---&gt; portA
+ * </p>
+ * <i>Transmit and Receive are interdependence. To receive you MUST transmit. </i>
  *
  * @author Thiago Camargo
  */
@@ -83,7 +85,7 @@ public class AudioChannel {
     private DataSource dataOutput = null;
     private AudioReceiver audioReceiver;
 
-    private List<SendStream> sendStreams = new ArrayList<SendStream>();
+    private List<SendStream> sendStreams = new ArrayList<>();
 
     private JingleMediaSession jingleMediaSession;
 
@@ -213,15 +215,15 @@ public class AudioChannel {
 
         // Wait for it to configure
         boolean result = waitForState(processor, Processor.Configured);
-        if (!result){
+        if (!result) {
             return "Couldn't configure processor";
         }
 
         // Get the tracks from the processor
         TrackControl[] tracks = processor.getTrackControls();
 
-        // Do we have atleast one track?
-        if (tracks == null || tracks.length < 1){
+        // Do we have at least one track?
+        if (tracks == null || tracks.length < 1) {
             return "Couldn't find tracks in processor";
         }
 
@@ -404,7 +406,7 @@ public class AudioChannel {
     }
 
     /**
-     * Set transmit activity. If the active is true, the instance should trasmit.
+     * Set transmit activity. If the active is true, the instance should transmit.
      * If it is set to false, the instance should pause transmit.
      *
      * @param active active state

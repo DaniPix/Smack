@@ -17,15 +17,16 @@
 
 package org.jivesoftware.smack.chat;
 
-import org.jivesoftware.smack.StanzaCollector;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.StanzaCollector;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.util.StringUtils;
-import org.jxmpp.jid.EntityJid;
 
-import java.util.Set;
-import java.util.Collections;
-import java.util.concurrent.CopyOnWriteArraySet;
+import org.jxmpp.jid.EntityJid;
 
 /**
  * A chat is a series of messages sent between two users. Each chat has a unique
@@ -41,10 +42,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Deprecated
 public class Chat {
 
-    private ChatManager chatManager;
-    private String threadID;
-    private EntityJid participant;
-    private final Set<ChatMessageListener> listeners = new CopyOnWriteArraySet<ChatMessageListener>();
+    private final ChatManager chatManager;
+    private final String threadID;
+    private final EntityJid participant;
+    private final Set<ChatMessageListener> listeners = new CopyOnWriteArraySet<>();
 
     /**
      * Creates a new chat with the specified user and thread ID.
@@ -126,7 +127,7 @@ public class Chat {
      * @param listener a stanza(/packet) listener.
      */
     public void addMessageListener(ChatMessageListener listener) {
-        if(listener == null) {
+        if (listener == null) {
             return;
         }
         // TODO these references should be weak.
@@ -202,7 +203,7 @@ public class Chat {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Chat
-                && threadID.equals(((Chat)obj).getThreadID())
-                && participant.equals(((Chat)obj).getParticipant());
+                && threadID.equals(((Chat) obj).getThreadID())
+                && participant.equals(((Chat) obj).getParticipant());
     }
 }

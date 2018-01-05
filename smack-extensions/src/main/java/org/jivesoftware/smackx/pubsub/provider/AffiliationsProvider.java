@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.provider.EmbeddedExtensionProvider;
+
 import org.jivesoftware.smackx.pubsub.Affiliation;
 import org.jivesoftware.smackx.pubsub.AffiliationsExtension;
 
@@ -35,7 +36,7 @@ import org.jivesoftware.smackx.pubsub.AffiliationsExtension;
     @Override
     protected AffiliationsExtension createReturnExtension(String currentElement, String currentNamespace, Map<String, String> attributeMap, List<? extends ExtensionElement> content)
     {
-        return new AffiliationsExtension((List<Affiliation>)content);
+        return new AffiliationsExtension((List<Affiliation>) content);
     }
 
 }

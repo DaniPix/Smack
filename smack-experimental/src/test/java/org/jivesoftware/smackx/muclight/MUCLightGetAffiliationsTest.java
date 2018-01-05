@@ -20,8 +20,10 @@ import java.util.HashMap;
 
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.muclight.element.MUCLightAffiliationsIQ;
 import org.jivesoftware.smackx.muclight.element.MUCLightGetAffiliationsIQ;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.jxmpp.jid.Jid;
@@ -29,10 +31,10 @@ import org.jxmpp.jid.impl.JidCreate;
 
 public class MUCLightGetAffiliationsTest {
 
-    String getAffiliationsIQExample = "<iq to='coven@muclight.shakespeare.lit' id='getmembers' type='get'>"
+    private static final String getAffiliationsIQExample = "<iq to='coven@muclight.shakespeare.lit' id='getmembers' type='get'>"
             + "<query xmlns='urn:xmpp:muclight:0#affiliations'>" + "<version>abcdefg</version>" + "</query>" + "</iq>";
 
-    String getAffiliationsResponseExample = "<iq from='coven@muclight.shakespeare.lit' id='getmembers' to='crone1@shakespeare.lit/desktop' type='result'>"
+    private static final String getAffiliationsResponseExample = "<iq from='coven@muclight.shakespeare.lit' id='getmembers' to='crone1@shakespeare.lit/desktop' type='result'>"
             + "<query xmlns='urn:xmpp:muclight:0#affiliations'>" + "<version>123456</version>"
             + "<user affiliation='owner'>user1@shakespeare.lit</user>"
             + "<user affiliation='member'>user2@shakespeare.lit</user>"
@@ -48,7 +50,7 @@ public class MUCLightGetAffiliationsTest {
 
     @Test
     public void checkGetAffiliationsResponse() throws Exception {
-        IQ iqInfoResult = (IQ) PacketParserUtils.parseStanza(getAffiliationsResponseExample);
+        IQ iqInfoResult = PacketParserUtils.parseStanza(getAffiliationsResponseExample);
         MUCLightAffiliationsIQ mucLightAffiliationsIQ = (MUCLightAffiliationsIQ) iqInfoResult;
 
         Assert.assertEquals("123456", mucLightAffiliationsIQ.getVersion());

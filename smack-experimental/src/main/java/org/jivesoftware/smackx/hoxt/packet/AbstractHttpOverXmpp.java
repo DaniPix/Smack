@@ -20,6 +20,7 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.NamedElement;
 import org.jivesoftware.smack.util.Objects;
 import org.jivesoftware.smack.util.XmlStringBuilder;
+
 import org.jivesoftware.smackx.shim.packet.HeadersExtension;
 
 /**
@@ -55,6 +56,7 @@ public abstract class AbstractHttpOverXmpp extends IQ {
     /**
      * Returns start tag.
      *
+     * @param xml builder.
      * @return start tag
      */
     protected abstract IQChildElementXmlStringBuilder getIQHoxtChildElementBuilder(IQChildElementXmlStringBuilder xml);
@@ -89,7 +91,7 @@ public abstract class AbstractHttpOverXmpp extends IQ {
     /**
      * A builder for XMPP connection configurations.
      * <p>
-     * See ConnectionConfiguration Buidler for more details.
+     * See ConnectionConfiguration Builder for more details.
      * </p>
      *
      * @param <B> the builder type parameter.

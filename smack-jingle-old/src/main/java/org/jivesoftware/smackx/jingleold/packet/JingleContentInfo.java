@@ -17,12 +17,13 @@
 package org.jivesoftware.smackx.jingleold.packet;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
+
 import org.jivesoftware.smackx.jingleold.media.ContentInfo;
 
 /**
  * Jingle content info.
  *
- * @author Alvaro Saurin <alvaro.saurin@gmail.com>
+ * @author Alvaro Saurin
  */
 public class JingleContentInfo implements ExtensionElement {
 
@@ -75,7 +76,7 @@ public class JingleContentInfo implements ExtensionElement {
     }
 
     /**
-     * Get the publilc namespace.
+     * Get the public namespace.
      */
     @Override
     public String getNamespace() {

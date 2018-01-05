@@ -27,25 +27,22 @@ import java.util.logging.Logger;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.SmackException.ConnectionException;
-import org.jivesoftware.smack.XMPPException.StreamErrorException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.XMPPException.StreamErrorException;
 import org.jivesoftware.smack.packet.Element;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.Nonza;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.sasl.packet.SaslStreamElements.SASLFailure;
 import org.jivesoftware.smack.sasl.packet.SaslStreamElements.Success;
 import org.jivesoftware.smack.util.PacketParserUtils;
-import org.jxmpp.jid.DomainBareJid;
-import org.jxmpp.jid.parts.Resourcepart;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
+
 import org.igniterealtime.jbosh.AbstractBody;
 import org.igniterealtime.jbosh.BOSHClient;
 import org.igniterealtime.jbosh.BOSHClientConfig;
@@ -57,6 +54,11 @@ import org.igniterealtime.jbosh.BOSHException;
 import org.igniterealtime.jbosh.BOSHMessageEvent;
 import org.igniterealtime.jbosh.BodyQName;
 import org.igniterealtime.jbosh.ComposableBody;
+
+import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.parts.Resourcepart;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  * Creates a connection to an XMPP server via HTTP binding.
@@ -159,16 +161,8 @@ public class XMPPBOSHConnection extends AbstractXMPPConnection {
             client.addBOSHClientResponseListener(new BOSHPacketReader());
 
             // Initialize the debugger
-            if (config.isDebuggerEnabled()) {
+            if (debugger != null) {
                 initDebugger();
-                if (isFirstInitialization) {
-                    if (debugger.getReaderListener() != null) {
-                        addAsyncStanzaListener(debugger.getReaderListener(), null);
-                    }
-                    if (debugger.getWriterListener() != null) {
-                        addPacketSendingListener(debugger.getWriterListener(), null);
-                    }
-                }
             }
 
             // Send the session creation request
@@ -298,6 +292,7 @@ public class XMPPBOSHConnection extends AbstractXMPPConnection {
      * Send a HTTP request to the connection manager with the provided body element.
      * 
      * @param body the body which will be sent.
+     * @throws BOSHException
      */
     protected void send(ComposableBody body) throws BOSHException {
         if (!connected) {
@@ -325,7 +320,7 @@ public class XMPPBOSHConnection extends AbstractXMPPConnection {
         writer = new Writer() {
             @Override
             public void write(char[] cbuf, int off, int len) {
-                /* ignore */}
+                /* ignore */ }
 
             @Override
             public void close() {
@@ -438,7 +433,6 @@ public class XMPPBOSHConnection extends AbstractXMPPConnection {
                                     throw new RuntimeException(e);
                                 }
                             }
-                            notifyReconnection();
                     }
                 }
                 else {
@@ -530,7 +524,7 @@ public class XMPPBOSHConnection extends AbstractXMPPConnection {
                                 }
                                 break;
                             case "error":
-                                //Some bosh error isn't stream error.
+                                // Some BOSH error isn't stream error.
                                 if ("urn:ietf:params:xml:ns:xmpp-streams".equals(parser.getNamespace(null))) {
                                     throw new StreamErrorException(PacketParserUtils.parseStreamError(parser));
                                 } else {

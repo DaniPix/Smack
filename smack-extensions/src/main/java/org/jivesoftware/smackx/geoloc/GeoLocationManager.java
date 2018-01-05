@@ -25,12 +25,14 @@ import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.packet.Message;
+
 import org.jivesoftware.smackx.geoloc.packet.GeoLocation;
+
 import org.jxmpp.jid.Jid;
 
 public final class GeoLocationManager extends Manager {
 
-    private static final Map<XMPPConnection, GeoLocationManager> INSTANCES = new WeakHashMap<XMPPConnection, GeoLocationManager>();
+    private static final Map<XMPPConnection, GeoLocationManager> INSTANCES = new WeakHashMap<>();
 
     static {
         XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {

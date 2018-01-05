@@ -20,10 +20,11 @@ package org.jivesoftware.smackx.workgroup.packet;
 import org.jivesoftware.smack.packet.SimpleIQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.xmlpull.v1.XmlPullParser;
 
 /**
- * IQ stanza(/packet) for retrieving the transcript search form, submiting the completed search form
+ * IQ stanza(/packet) for retrieving the transcript search form, submitting the completed search form
  * or retrieving the answer of a transcript search.
  *
  * @author Gaston Dombiak

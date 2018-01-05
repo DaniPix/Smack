@@ -21,6 +21,7 @@ import java.io.IOException;
 import org.jivesoftware.smack.packet.SimpleIQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.util.StringUtils;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -48,11 +49,11 @@ public class SearchSettings extends SimpleIQ {
         this.kbLocation = kbLocation;
     }
 
-    public boolean hasKB(){
+    public boolean hasKB() {
         return StringUtils.isNotEmpty(getKbLocation());
     }
 
-    public boolean hasForums(){
+    public boolean hasForums() {
         return StringUtils.isNotEmpty(getForumsLocation());
     }
 

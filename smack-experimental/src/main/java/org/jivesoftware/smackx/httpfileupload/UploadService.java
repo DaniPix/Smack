@@ -17,14 +17,26 @@
 package org.jivesoftware.smackx.httpfileupload;
 
 import org.jivesoftware.smack.util.Objects;
+
 import org.jxmpp.jid.DomainBareJid;
 
 public class UploadService {
 
-    enum Version {
+    public enum Version {
+        /**
+         * Upload service as specified in XEP-0363 v0.2 or lower.
+         *
+         * @see <a href="https://xmpp.org/extensions/attic/xep-0363-0.2.5.html">XEP-0363 v0.2.5</a>
+         */
         v0_2,
+
+        /**
+         * Upload service as specified in XEP-0363 v0.3 or higher.
+         *
+         * @see <a href="https://xmpp.org/extensions/attic/xep-0363-0.4.0.html">XEP-0363 v0.4.0</a>
+         */
         v0_3,
-    };
+    }
 
     private final DomainBareJid address;
     private final Version version;

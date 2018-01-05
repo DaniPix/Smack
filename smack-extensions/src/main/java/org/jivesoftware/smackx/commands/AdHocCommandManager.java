@@ -41,6 +41,7 @@ import org.jivesoftware.smack.iqrequest.IQRequestHandler.Mode;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.util.StringUtils;
+
 import org.jivesoftware.smackx.commands.AdHocCommand.Action;
 import org.jivesoftware.smackx.commands.AdHocCommand.Status;
 import org.jivesoftware.smackx.commands.packet.AdHocCommandData;
@@ -49,6 +50,7 @@ import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jivesoftware.smackx.disco.packet.DiscoverItems;
 import org.jivesoftware.smackx.xdata.Form;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -75,7 +77,7 @@ public final class AdHocCommandManager extends Manager {
      * Map an XMPPConnection with it AdHocCommandManager. This map have a key-value
      * pair for every active connection.
      */
-    private static Map<XMPPConnection, AdHocCommandManager> instances = new WeakHashMap<>();
+    private static final Map<XMPPConnection, AdHocCommandManager> instances = new WeakHashMap<>();
 
     /**
      * Register the listener for all the connection creations. When a new
@@ -112,7 +114,7 @@ public final class AdHocCommandManager extends Manager {
      * Value=command. Command node matches the node attribute sent by command
      * requesters.
      */
-    private final Map<String, AdHocCommandInfo> commands = new ConcurrentHashMap<String, AdHocCommandInfo>();
+    private final Map<String, AdHocCommandInfo> commands = new ConcurrentHashMap<>();
 
     /**
      * Map a command session ID with the instance LocalCommand. The LocalCommand
@@ -120,7 +122,7 @@ public final class AdHocCommandManager extends Manager {
      * the command execution. Note: Key=session ID, Value=LocalCommand. Session
      * ID matches the sessionid attribute sent by command responders.
      */
-    private final Map<String, LocalCommand> executingCommands = new ConcurrentHashMap<String, LocalCommand>();
+    private final Map<String, LocalCommand> executingCommands = new ConcurrentHashMap<>();
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -153,7 +155,7 @@ public final class AdHocCommandManager extends Manager {
                             @Override
                             public List<DiscoverItems.Item> getNodeItems() {
 
-                                List<DiscoverItems.Item> answer = new ArrayList<DiscoverItems.Item>();
+                                List<DiscoverItems.Item> answer = new ArrayList<>();
                                 Collection<AdHocCommandInfo> commandsList = getRegisteredCommands();
 
                                 for (AdHocCommandInfo info : commandsList) {
@@ -179,7 +181,7 @@ public final class AdHocCommandManager extends Manager {
                     return processAdHocCommand(requestData);
                 }
                 catch (InterruptedException | NoResponseException | NotConnectedException e) {
-                    LOGGER.log(Level.INFO, "processAdHocCommand threw exceptino", e);
+                    LOGGER.log(Level.INFO, "processAdHocCommand threw exception", e);
                     return null;
                 }
             }
@@ -203,15 +205,8 @@ public final class AdHocCommandManager extends Manager {
     public void registerCommand(String node, String name, final Class<? extends LocalCommand> clazz) {
         registerCommand(node, name, new LocalCommandFactory() {
             @Override
-            public LocalCommand getInstance() throws InstantiationException, IllegalAccessException  {
-                try {
-                    return clazz.getConstructor().newInstance();
-                }
-                catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                                | SecurityException e) {
-                    // TODO: Throw those method in Smack 4.3.
-                    throw new IllegalStateException(e);
-                }
+            public LocalCommand getInstance() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException  {
+                return clazz.getConstructor().newInstance();
             }
         });
     }
@@ -220,7 +215,7 @@ public final class AdHocCommandManager extends Manager {
      * Registers a new command with this command manager, which is related to a
      * connection. The <tt>node</tt> is an unique identifier of that
      * command for the connection related to this command manager. The <tt>name</tt>
-     * is the human readeale name of the command. The <tt>factory</tt> generates
+     * is the human readable name of the command. The <tt>factory</tt> generates
      * new instances of the command.
      *
      * @param node the unique identifier of the command.
@@ -237,7 +232,7 @@ public final class AdHocCommandManager extends Manager {
                 new AbstractNodeInformationProvider() {
                     @Override
                     public List<String> getNodeFeatures() {
-                        List<String> answer = new ArrayList<String>();
+                        List<String> answer = new ArrayList<>();
                         answer.add(NAMESPACE);
                         // TODO: check if this service is provided by the
                         // TODO: current connection.
@@ -246,7 +241,7 @@ public final class AdHocCommandManager extends Manager {
                     }
                     @Override
                     public List<DiscoverInfo.Identity> getNodeIdentities() {
-                        List<DiscoverInfo.Identity> answer = new ArrayList<DiscoverInfo.Identity>();
+                        List<DiscoverInfo.Identity> answer = new ArrayList<>();
                         DiscoverInfo.Identity identity = new DiscoverInfo.Identity(
                                 "automation", name, "command-node");
                         answer.add(identity);
@@ -358,8 +353,16 @@ public final class AdHocCommandManager extends Manager {
 
             try {
                 // Create a new instance of the command with the
-                // corresponding sessioid
-                LocalCommand command = newInstanceOfCmd(commandNode, sessionId);
+                // corresponding sessionid
+                LocalCommand command;
+                try {
+                    command = newInstanceOfCmd(commandNode, sessionId);
+                }
+                catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                    XMPPError.Builder xmppError = XMPPError.getBuilder().setCondition(XMPPError.Condition.internal_server_error).setDescriptiveEnText(e.getMessage());
+                    return respondError(response, xmppError);
+                }
 
                 response.setType(IQ.Type.result);
                 command.setData(response);
@@ -422,7 +425,7 @@ public final class AdHocCommandManager extends Manager {
                                             // the requester know why his execution request is
                                             // not accepted. If the session is removed just
                                             // after the time out, then whe the user request to
-                                            // continue the execution he will recieved an
+                                            // continue the execution he will received an
                                             // invalid session error and not a time out error.
                                             if (System.currentTimeMillis() - creationStamp > SESSION_TIMEOUT * 1000 * 2) {
                                                 // Remove the expired session
@@ -625,26 +628,22 @@ public final class AdHocCommandManager extends Manager {
      * @param sessionID the session id of this execution.
      * @return the command instance to execute.
      * @throws XMPPErrorException if there is problem creating the new instance.
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
+     * @throws InstantiationException 
      */
-    @SuppressWarnings("deprecation")
-    private LocalCommand newInstanceOfCmd(String commandNode, String sessionID) throws XMPPErrorException
-    {
+    private LocalCommand newInstanceOfCmd(String commandNode, String sessionID)
+                    throws XMPPErrorException, InstantiationException, IllegalAccessException, IllegalArgumentException,
+                    InvocationTargetException, NoSuchMethodException, SecurityException {
         AdHocCommandInfo commandInfo = commands.get(commandNode);
-        LocalCommand command;
-        try {
-            command = commandInfo.getCommandInstance();
-            command.setSessionID(sessionID);
-            command.setName(commandInfo.getName());
-            command.setNode(commandInfo.getNode());
-        }
-        catch (InstantiationException e) {
-            throw new XMPPErrorException(XMPPError.getBuilder(
-                    XMPPError.Condition.internal_server_error));
-        }
-        catch (IllegalAccessException e) {
-            throw new XMPPErrorException(XMPPError.getBuilder(
-                    XMPPError.Condition.internal_server_error));
-        }
+        LocalCommand command = commandInfo.getCommandInstance();
+        command.setSessionID(sessionID);
+        command.setName(commandInfo.getName());
+        command.setNode(commandInfo.getNode());
+
         return command;
     }
 
@@ -678,7 +677,7 @@ public final class AdHocCommandManager extends Manager {
         }
 
         public LocalCommand getCommandInstance() throws InstantiationException,
-                IllegalAccessException
+                IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException
         {
             return factory.getInstance();
         }

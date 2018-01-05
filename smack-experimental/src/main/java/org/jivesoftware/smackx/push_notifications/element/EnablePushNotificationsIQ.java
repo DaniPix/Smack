@@ -21,9 +21,11 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.jivesoftware.smack.packet.IQ;
+
 import org.jivesoftware.smackx.pubsub.packet.PubSub;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -96,7 +98,7 @@ public class EnablePushNotificationsIQ extends IQ {
         xml.rightAngleBracket();
 
         if (publishOptions != null) {
-            DataForm dataForm = new DataForm(DataForm.Type.form);
+            DataForm dataForm = new DataForm(DataForm.Type.submit);
 
             FormField formTypeField = new FormField("FORM_TYPE");
             formTypeField.addValue(PubSub.NAMESPACE + "#publish-options");

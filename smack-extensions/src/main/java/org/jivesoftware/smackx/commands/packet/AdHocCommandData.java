@@ -17,17 +17,19 @@
 
 package org.jivesoftware.smackx.commands.packet;
 
-import org.jivesoftware.smack.packet.IQ;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.IQ;
+
 import org.jivesoftware.smackx.commands.AdHocCommand;
 import org.jivesoftware.smackx.commands.AdHocCommand.Action;
 import org.jivesoftware.smackx.commands.AdHocCommand.SpecificErrorCondition;
 import org.jivesoftware.smackx.commands.AdHocCommandNote;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
-import org.jxmpp.jid.Jid;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jxmpp.jid.Jid;
 
 /**
  * Represents the state and the request of the execution of an adhoc command.
@@ -51,7 +53,7 @@ public class AdHocCommandData extends IQ {
     /* Unique ID of the execution */
     private String sessionID;
 
-    private List<AdHocCommandNote> notes = new ArrayList<AdHocCommandNote>();
+    private final List<AdHocCommandNote> notes = new ArrayList<>();
 
     private DataForm form;
 
@@ -61,7 +63,7 @@ public class AdHocCommandData extends IQ {
     /* Current execution status */
     private AdHocCommand.Status status;
 
-    private ArrayList<AdHocCommand.Action> actions = new ArrayList<AdHocCommand.Action>();
+    private final ArrayList<AdHocCommand.Action> actions = new ArrayList<>();
 
     private AdHocCommand.Action executeAction;
 
@@ -162,7 +164,7 @@ public class AdHocCommandData extends IQ {
         this.notes.add(note);
     }
 
-    public void remveNote(AdHocCommandNote note) {
+    public void removeNote(AdHocCommandNote note) {
         this.notes.remove(note);
     }
 

@@ -23,17 +23,17 @@ import java.security.NoSuchAlgorithmException;
 import javax.net.ssl.SSLContext;
 
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
-import org.jivesoftware.smack.SmackException.SecurityRequiredByClientException;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.SmackException.SecurityRequiredByClientException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.StringUtils;
+
+import eu.geekplace.javapinning.java7.Java7Pinning;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
-
-import eu.geekplace.javapinning.java7.Java7Pinning;
 
 public class TlsTest {
 
@@ -79,7 +79,9 @@ public class TlsTest {
                .setPort(port)
                .setSecurityMode(SecurityMode.required);
         // @formatter:on
-        builder.setDebuggerEnabled(DEBUG);
+        if (DEBUG) {
+            builder.enableDefaultDebugger();
+        }
 
         if (StringUtils.isNotEmpty(tlsPin)) {
             SSLContext sslContext = Java7Pinning.forPin(tlsPin);
@@ -94,7 +96,7 @@ public class TlsTest {
         try {
             connection.connect().login();
             if (shouldThrow) {
-                // Test not success, should have throwed on login().
+                // Test not success, should have thrown on login().
                 return false;
             }
         }

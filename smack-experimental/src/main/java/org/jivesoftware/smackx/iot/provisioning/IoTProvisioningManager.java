@@ -46,6 +46,7 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.roster.AbstractPresenceEventListener;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.SubscribeListener;
+
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jivesoftware.smackx.iot.IoTManager;
@@ -57,6 +58,7 @@ import org.jivesoftware.smackx.iot.provisioning.element.Friend;
 import org.jivesoftware.smackx.iot.provisioning.element.IoTIsFriend;
 import org.jivesoftware.smackx.iot.provisioning.element.IoTIsFriendResponse;
 import org.jivesoftware.smackx.iot.provisioning.element.Unfriend;
+
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.Jid;
@@ -159,8 +161,8 @@ public final class IoTProvisioningManager extends Manager {
                     // Notify the recommended friend that we will now accept his
                     // friendship requests.
                     final XMPPConnection connection = connection();
-                    Friend friendNotifiacation = new Friend(connection.getUser().asBareJid());
-                    Message notificationMessage = new Message(friendJid, friendNotifiacation);
+                    Friend friendNotification = new Friend(connection.getUser().asBareJid());
+                    Message notificationMessage = new Message(friendJid, friendNotification);
                     connection.sendStanza(notificationMessage);
                 } else {
                     // Check is the message was send from a thing we previously
@@ -234,7 +236,7 @@ public final class IoTProvisioningManager extends Manager {
                 }
                 catch (NoResponseException | XMPPErrorException | NotConnectedException | InterruptedException e) {
                     LOGGER.log(Level.WARNING,
-                                    "Could not determine privisioning server. Ignoring friend request from " + from, e);
+                                    "Could not determine provisioning server. Ignoring friend request from " + from, e);
                 }
                 if (provisioningServer == null) {
                     return null;
@@ -418,7 +420,7 @@ public final class IoTProvisioningManager extends Manager {
         if (!provisioningServer.equals(stanza.getFrom())) {
             if (log) {
                 LOGGER.warning("Ignoring  request '" + stanza
-                                + "' because not from provising server '" + provisioningServer
+                                + "' because not from provisioning server '" + provisioningServer
                                 + "'.");
             }
             return false;

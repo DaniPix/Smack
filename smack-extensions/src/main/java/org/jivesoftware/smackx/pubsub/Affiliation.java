@@ -20,7 +20,9 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.util.XmlStringBuilder;
+
 import org.jivesoftware.smackx.pubsub.packet.PubSubNamespace;
+
 import org.jxmpp.jid.BareJid;
 
 /**
@@ -78,8 +80,8 @@ public class Affiliation implements ExtensionElement
         this.jid = jid;
         this.affiliation = affiliation;
         this.node = null;
-        // This is usually the pubsub#owner namesapce, but see xep60 example 208 where just 'pubsub' is used
-        // ("notification of affilliation change")
+        // This is usually the pubsub#owner namespace, but see xep60 example 208 where just 'pubsub' is used
+        // ("notification of affiliation change")
         this.namespace = namespace;
     }
 
@@ -139,7 +141,7 @@ public class Affiliation implements ExtensionElement
      */
     public boolean isAffiliationModification() {
         if (jid != null && affiliation != null) {
-            assert(node == null && namespace == PubSubNamespace.OWNER);
+            assert (node == null && namespace == PubSubNamespace.OWNER);
             return true;
         }
         return false;

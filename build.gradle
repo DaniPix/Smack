@@ -8,9 +8,9 @@ buildscript {
     }
     dependencies {
         classpath 'org.kordamp:markdown-gradle-plugin:1.0.0'
-		classpath 'org.kordamp.gradle:clirr-gradle-plugin:0.2.0'
+		classpath 'org.kordamp.gradle:clirr-gradle-plugin:0.2.2'
 		classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1"
-		classpath 'net.ltgt.gradle:gradle-errorprone-plugin:0.0.8'
+		classpath 'net.ltgt.gradle:gradle-errorprone-plugin:0.0.10'
     }
 }
 apply plugin: 'org.kordamp.gradle.markdown'
@@ -20,6 +20,7 @@ apply from: 'version.gradle'
 allprojects {
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
+	apply plugin: 'idea'
 	apply plugin: 'jacoco'
 	apply plugin: 'net.ltgt.errorprone'
 
@@ -39,7 +40,11 @@ allprojects {
 		// build, causing unnecessary rebuilds.
 		builtDate = (new java.text.SimpleDateFormat("yyyy-MM-dd")).format(new Date())
 		oneLineDesc = 'An Open Source XMPP (Jabber) client library'
-		javadocAllProjects = subprojects - project(':smack-integration-test')
+		integrationTestProjects = [
+			':smack-integration-test',
+			':smack-omemo-signal-integration-test',
+		].collect{ project(it) }
+		javadocAllProjects = subprojects - integrationTestProjects
 		// A dirty hack used for Gradle's jacoco plugin, since is not
 		// hable to handle the case when a (sub)project has no unit
 		// tests. :-(
@@ -55,6 +60,7 @@ allprojects {
 			':smack-resolver-dnsjava',
 			':smack-resolver-javax',
 			':smack-resolver-minidns',
+			':smack-omemo-signal-integration-test',
 		].collect{ project(it) }
 		projectsWithUnitTests = subprojects - projectsWithoutUnitTests
 		androidProjects = [
@@ -66,10 +72,24 @@ allprojects {
 			':smack-sasl-provided',
 			':smack-extensions',
 			':smack-experimental',
+			':smack-omemo',
+			':smack-omemo-signal',
 		].collect{ project(it) }
 		androidBootClasspathProjects = [
 			':smack-android',
 			':smack-android-extensions',
+		].collect{ project(it) }
+		androidOptionalProjects = [
+			':smack-tcp',
+			':smack-extensions',
+			':smack-experimental',
+			':smack-bosh',
+			':smack-omemo',
+			':smack-omemo-signal',
+		].collect{ project(it) }
+		gplLicensedProjects = [
+			':smack-omemo-signal',
+			':smack-omemo-signal-integration-test',
 		].collect{ project(it) }
 		androidBootClasspath = getAndroidRuntimeJar()
 		androidJavadocOffline = getAndroidJavadocOffline()
@@ -158,8 +178,7 @@ allprojects {
 			// since the one paramater addStringOption doesn't seem to
 			// work, we extra add '-quiet', which is added anyway by
 			// gradle.
-			// TODO enable all doclints, see SMACK-650
-			options.addStringOption('Xdoclint:all,-html,-syntax', '-quiet')
+			options.addStringOption('Xdoclint:all', '-quiet')
 		}
 	}
 	tasks.withType(Javadoc) {
@@ -171,15 +190,22 @@ allprojects {
 	// version 52.0" error messages caused by the errorprone javac.
 	// See https://github.com/tbroyer/gradle-errorprone-plugin/issues/18 for more information.
 	configurations.errorprone {
-		resolutionStrategy.force 'com.google.errorprone:error_prone_core:2.0.15'
+		resolutionStrategy.force 'com.google.errorprone:error_prone_core:2.0.18'
 	}
+
+	// Make all project's 'test' target depend on javadoc, so that
+	// javadoc is also linted.
+	test { dependsOn javadoc }
 }
 
 gradle.taskGraph.whenReady { taskGraph ->
 	if (signingRequired
 		&& taskGraph.allTasks.any { it instanceof Sign }) {
 		// Use Java 6's console to read from the console (no good for a CI environment)
-		Console console = System.console()
+		def console = System.console()
+		if (console == null) {
+			throw new Exception("Could not obtain system console (Console is 'null'). Did you build with gradle daemon? Try the same Gradle command with \"--no-daemon\".")
+		}
 		console.printf '\n\nWe have to sign some things in this build.\n\nPlease enter your signing details.\n\n'
 		def password = console.readPassword('GnuPG Private Key Password: ')
 
@@ -233,11 +259,18 @@ task distributionZip(type: Zip, dependsOn: [javadocAll, prepareReleasedocs, mark
 
 task maybeCheckForSnapshotDependencies {
 	// Don't check for Snapshot dependencies if this is a snapshot.
-	if (isSnapshot) return
-	allprojects { project ->
-		project.configurations.runtime.each {
-			if (it.toString().contains("-SNAPSHOT"))
-				throw new Exception("Release build contains snapshot dependencies: " + it)
+	onlyIf { isReleaseVersion }
+	// Run in the execution phase, not in configuration phase, as the
+	// 'each' forces the runtime configuration to be resovled, which
+	// causes "Cannot change dependencies of configuration after it
+	// has been included in dependency resolution." errors.
+	// See https://discuss.gradle.org/t/23153
+	doLast {
+		allprojects { project ->
+			project.configurations.runtime.each {
+				if (it.toString().contains("-SNAPSHOT"))
+					throw new Exception("Release build contains snapshot dependencies: " + it)
+			}
 		}
 	}
 }
@@ -266,6 +299,7 @@ subprojects {
 
 	checkstyle {
 		configFile = new File(rootConfigDir, 'checkstyle.xml')
+		toolVersion = '7.7'
 	}
 	task sourcesJar(type: Jar, dependsOn: classes) {
 		classifier = 'sources'
@@ -348,14 +382,6 @@ subprojects {
 						developerConnection 'scm:git:https://github.com/igniterealtime/Smack.git'
 					}
 
-					licenses {
-						license {
-							name 'The Apache Software License, Version 2.0'
-							url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-							distribution 'repo'
-						}
-					}
-
 					developers {
 						developer {
 							id 'flow'
@@ -381,17 +407,87 @@ subprojects {
 	}
 
 	clirr {
+		// 2018-08-14: Disabled Clirr because
+		// - It reports an breaking change in android.jar (seems right, but there is nothing we can do about it)
+		// - Only the first smack-* projects are correctly checked,
+		//   the other ones have the output of a clirr report from a previous project
+		//   (Look at the clirr reports).
+		enabled false
 		semver false
 	}
 }
 
-// No need to ever clirr smack-integration-test
-project(':smack-integration-test').clirr.enabled = false
+// There is no need to ever clirr integration test projects and the
+// smack-repl project.
+configure(integrationTestProjects + project(':smack-repl')) {
+	clirr {
+		enabled false
+	}
+}
+
+// Disable clirr on omemo modules
+project(':smack-omemo').clirr.enabled = false
+project(':smack-omemo-signal').clirr.enabled = false
+
+configure(
+	[ ':smack-omemo',
+	  ':smack-omemo-signal',
+	  ':smack-omemo-signal-integration-test',
+	].collect{ project(it) }) {
+	uploadArchives {
+		// Only enable uploadArchives for the smack-omemo* projects
+		// for snapshots. Not yet for releases.
+		enabled = isSnapshot
+	}
+}
 
 subprojects*.jar {
    manifest {
        from sharedManifest
    }
+}
+
+configure(subprojects - gplLicensedProjects) {
+	checkstyle {
+		configProperties.checkstyleLicenseHeader = "header"
+	}
+	uploadArchives {
+		repositories {
+			mavenDeployer {
+				pom.project {
+					licenses {
+						license {
+							name 'The Apache Software License, Version 2.0'
+							url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+							distribution 'repo'
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+configure(gplLicensedProjects) {
+	checkstyle {
+		configProperties.checkstyleLicenseHeader = "${project.name}-gplv3-license-header"
+	}
+	uploadArchives {
+	repositories {
+		mavenDeployer {
+			pom.project {
+				licenses {
+					license {
+						name 'GNU General Public License, version 3 or any later version'
+						url 'https://www.gnu.org/licenses/gpl.txt'
+						distribution 'repo'
+					}
+				}
+			}
+		}
+	}
+}
+
 }
 
 configure(androidBootClasspathProjects) {
@@ -432,6 +528,10 @@ task clirrRootReport(type: org.kordamp.gradle.clirr.ClirrReportTask) {
 
 task integrationTest {
 	dependsOn project(':smack-integration-test').tasks.run
+}
+
+task omemoSignalIntTest {
+	dependsOn project(':smack-omemo-signal-integration-test').tasks.run
 }
 
 def getGitCommit() {

@@ -16,13 +16,13 @@
  */
 package org.jivesoftware.smackx.httpfileupload;
 
-
 import org.jivesoftware.smackx.httpfileupload.element.FileTooLargeError;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 public class FileTooLargeErrorCreateTest {
-    String fileTooLargeErrorExtensionExample
+    private static final String fileTooLargeErrorExtensionExample
             = "<file-too-large xmlns='urn:xmpp:http:upload:0'>"
             +   "<max-file-size>20000</max-file-size>"
             + "</file-too-large>";

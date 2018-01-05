@@ -18,9 +18,11 @@ package org.jivesoftware.smackx.chat_markers;
 
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.chat_markers.element.ChatMarkersElements;
 import org.jivesoftware.smackx.chat_markers.element.ChatMarkersElements.AcknowledgedExtension;
 import org.jivesoftware.smackx.chat_markers.provider.AcknowledgedProvider;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.jxmpp.jid.impl.JidCreate;
@@ -47,7 +49,7 @@ public class AcknowledgedExtensionTest {
         AcknowledgedExtension acknowledgedExtension1 = new AcknowledgedProvider().parse(parser);
         Assert.assertEquals("message-1", acknowledgedExtension1.getId());
 
-        Message message = (Message) PacketParserUtils.parseStanza(acknowledgedMessageStanza);
+        Message message = PacketParserUtils.parseStanza(acknowledgedMessageStanza);
         AcknowledgedExtension acknowledgedExtension2 = AcknowledgedExtension.from(message);
         Assert.assertEquals("message-1", acknowledgedExtension2.getId());
     }

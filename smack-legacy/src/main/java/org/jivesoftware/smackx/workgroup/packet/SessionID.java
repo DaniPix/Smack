@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -36,7 +37,7 @@ public class SessionID implements ExtensionElement {
      */
     public static final String NAMESPACE = "http://jivesoftware.com/protocol/workgroup";
 
-    private String sessionID;
+    private final String sessionID;
 
     public SessionID(String sessionID) {
         this.sessionID = sessionID;

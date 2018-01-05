@@ -18,6 +18,7 @@ package org.jivesoftware.smackx.jingleold.listeners;
 
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPException;
+
 import org.jivesoftware.smackx.jingleold.nat.TransportCandidate;
 
 /**
@@ -37,7 +38,7 @@ public interface JingleTransportListener extends JingleListener {
      * @throws NotConnectedException 
      * @throws InterruptedException 
      */
-    public void transportEstablished(TransportCandidate local,
+    void transportEstablished(TransportCandidate local,
                                      TransportCandidate remote) throws NotConnectedException, InterruptedException;
 
     /**
@@ -46,13 +47,13 @@ public interface JingleTransportListener extends JingleListener {
      * @param cand The transport candidate that must be cancelled. A value
      *             of "null" means all the transports for this session.
      */
-    public void transportClosed(TransportCandidate cand);
+    void transportClosed(TransportCandidate cand);
 
     /**
      * Notification that the transport was closed due to an exception.
      *
      * @param e the exception.
      */
-    public void transportClosedOnError(XMPPException e);
+    void transportClosedOnError(XMPPException e);
 }
 

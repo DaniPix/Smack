@@ -30,8 +30,8 @@ import org.jivesoftware.smackx.jingleold.nat.TransportCandidate;
 
 /**
  * This Class implements a complete JingleMediaSession.
- * It sould be used to transmit and receive audio captured from the Mic.
- * This Class should be automaticly controlled by JingleSession.
+ * It should be used to transmit and receive audio captured from the Mic.
+ * This Class should be automatically controlled by JingleSession.
  * But you could also use in any VOIP application.
  * For better NAT Traversal support this implementation don't support only receive or only transmit.
  * To receive you MUST transmit. So the only implemented and functionally methods are startTransmit() and stopTransmit()
@@ -54,7 +54,7 @@ public class AudioMediaSession extends JingleMediaSession {
      */
     public AudioMediaSession(final PayloadType payloadType, final TransportCandidate remote,
             final TransportCandidate local, String locator, JingleSession jingleSession) {
-        super(payloadType, remote, local, locator==null?"dsound://":locator,jingleSession);
+        super(payloadType, remote, local, locator == null ? "dsound://" : locator,jingleSession);
         initialize();
     }
 
@@ -90,20 +90,42 @@ public class AudioMediaSession extends JingleMediaSession {
 
     /**
      * Starts transmission and for NAT Traversal reasons start receiving also.
+     *
+     * @deprecated use {@link #startTransmit()} instead.
+     */
+    @Deprecated
+    public void startTrasmit() {
+        startTransmit();
+    }
+
+    /**
+     * Starts transmission and for NAT Traversal reasons start receiving also.
      */
     @Override
-    public void startTrasmit() {
+    public void startTransmit() {
         audioChannel.start();
     }
 
     /**
-     * Set transmit activity. If the active is true, the instance should trasmit.
+     * Set transmit activity. If the active is true, the instance should transmit.
+     * If it is set to false, the instance should pause transmit.
+     *
+     * @param active active state
+     * @deprecated use {@link #setTransmit(boolean)} instead.
+     */
+    @Deprecated
+    public void setTrasmit(boolean active) {
+        setTransmit(active);
+    }
+
+    /**
+     * Set transmit activity. If the active is true, the instance should transmit.
      * If it is set to false, the instance should pause transmit.
      *
      * @param active active state
      */
     @Override
-    public void setTrasmit(boolean active) {
+    public void setTransmit(boolean active) {
         audioChannel.setTrasmit(active);
     }
 
@@ -117,9 +139,19 @@ public class AudioMediaSession extends JingleMediaSession {
 
     /**
      * Stops transmission and for NAT Traversal reasons stop receiving also.
+     *
+     * @deprecated use {@link #stopTransmit()} instead.
+     */
+    @Deprecated
+    public void stopTrasmit() {
+        stopTransmit();
+    }
+
+    /**
+     * Stops transmission and for NAT Traversal reasons stop receiving also.
      */
     @Override
-    public void stopTrasmit() {
+    public void stopTransmit() {
         if (audioChannel != null)
             audioChannel.stop();
     }

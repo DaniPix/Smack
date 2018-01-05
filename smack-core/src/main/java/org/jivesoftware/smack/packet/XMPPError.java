@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2003-2007 Jive Software, 2015 Florian Schmaus
+ * Copyright 2003-2007 Jive Software, 2015-2017 Florian Schmaus
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  */
 package org.jivesoftware.smack.packet;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -34,19 +33,19 @@ import org.jivesoftware.smack.util.XmlStringBuilder;
  *
  * <table border=1>
  *      <caption>XMPP Errors</caption>
- *      <hr><td><b>XMPP Error Condition</b></td><td><b>Type</b></td><td><b>RFC 6120 Section</b></td></hr>
+ *      <tr><th>XMPP Error Condition</th><th>Type</th><th>RFC 6120 Section</th></tr>
  *      <tr><td>bad-request</td><td>MODIFY</td><td>8.3.3.1</td></tr>
  *      <tr><td>conflict</td><td>CANCEL</td><td>8.3.3.2</td></tr>
  *      <tr><td>feature-not-implemented</td><td>CANCEL</td><td>8.3.3.3</td></tr>
  *      <tr><td>forbidden</td><td>AUTH</td><td>8.3.3.4</td></tr>
- *      <tr><td>gone</td><td>MODIFY</td><td>8.3.3.5</td></tr>
+ *      <tr><td>gone</td><td>CANCEL</td><td>8.3.3.5</td></tr>
  *      <tr><td>internal-server-error</td><td>WAIT</td><td>8.3.3.6</td></tr>
  *      <tr><td>item-not-found</td><td>CANCEL</td><td>8.3.3.7</td></tr>
  *      <tr><td>jid-malformed</td><td>MODIFY</td><td>8.3.3.8</td></tr>
- *      <tr><td>not-acceptable</td><td> MODIFY</td><td>8.3.3.9</td></tr>
+ *      <tr><td>not-acceptable</td><td>MODIFY</td><td>8.3.3.9</td></tr>
  *      <tr><td>not-allowed</td><td>CANCEL</td><td>8.3.3.10</td></tr>
  *      <tr><td>not-authorized</td><td>AUTH</td><td>8.3.3.11</td></tr>
- *      <tr><td>policy-violation</td><td>AUTH</td><td>8.3.3.12</td></tr>
+ *      <tr><td>policy-violation</td><td>MODIFY</td><td>8.3.3.12</td></tr>
  *      <tr><td>recipient-unavailable</td><td>WAIT</td><td>8.3.3.13</td></tr>
  *      <tr><td>redirect</td><td>MODIFY</td><td>8.3.3.14</td></tr>
  *      <tr><td>registration-required</td><td>AUTH</td><td>8.3.3.15</td></tr>
@@ -55,20 +54,22 @@ import org.jivesoftware.smack.util.XmlStringBuilder;
  *      <tr><td>resource-constraint</td><td>WAIT</td><td>8.3.3.18</td></tr>
  *      <tr><td>service-unavailable</td><td>CANCEL</td><td>8.3.3.19</td></tr>
  *      <tr><td>subscription-required</td><td>AUTH</td><td>8.3.3.20</td></tr>
- *      <tr><td>undefined-condition</td><td>WAIT</td><td>8.3.3.21</td></tr>
+ *      <tr><td>undefined-condition</td><td>MODIFY</td><td>8.3.3.21</td></tr>
  *      <tr><td>unexpected-request</td><td>WAIT</td><td>8.3.3.22</td></tr>
  * </table>
  *
  * @author Matt Tucker
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-syntax">RFC 6120 - 8.3.2 Syntax: The Syntax of XMPP error stanzas</a>
  */
+// TODO Rename this class to StanzaError (RFC 6120 § 8.3) in Smack 4.3, as this is what this class actually is. SMACK-769
+// TODO Use StanzaErrorTextElement here.
 public class XMPPError extends AbstractError {
 
     public static final String NAMESPACE = "urn:ietf:params:xml:ns:xmpp-stanzas";
     public static final String ERROR = "error";
 
     private static final Logger LOGGER = Logger.getLogger(XMPPError.class.getName());
-    private static final Map<Condition, Type> CONDITION_TO_TYPE = new HashMap<Condition, Type>();
+    static final Map<Condition, Type> CONDITION_TO_TYPE = new HashMap<Condition, Type>();
 
     static {
         CONDITION_TO_TYPE.put(Condition.bad_request, Type.MODIFY);
@@ -89,9 +90,10 @@ public class XMPPError extends AbstractError {
         CONDITION_TO_TYPE.put(Condition.remote_server_not_found, Type.CANCEL);
         CONDITION_TO_TYPE.put(Condition.remote_server_timeout, Type.WAIT);
         CONDITION_TO_TYPE.put(Condition.resource_constraint, Type.WAIT);
-        CONDITION_TO_TYPE.put(Condition.service_unavailable, Type.WAIT);
-        CONDITION_TO_TYPE.put(Condition.subscription_required, Type.WAIT);
-        CONDITION_TO_TYPE.put(Condition.unexpected_request, Type.MODIFY);
+        CONDITION_TO_TYPE.put(Condition.service_unavailable, Type.CANCEL);
+        CONDITION_TO_TYPE.put(Condition.subscription_required, Type.AUTH);
+        CONDITION_TO_TYPE.put(Condition.undefined_condition, Type.MODIFY);
+        CONDITION_TO_TYPE.put(Condition.unexpected_request, Type.WAIT);
     }
 
     private final Condition condition;
@@ -100,32 +102,6 @@ public class XMPPError extends AbstractError {
     private final Type type;
     private final Stanza stanza;
 
-    // TODO: Deprecated constructors
-    // deprecate in 4.3
-
-    /**
-     * Create a new XMPPError.
-     *
-     * @param condition
-     * @deprecated use {@link Builder} instead.
-     */
-    @Deprecated
-    public XMPPError(Condition condition) {
-        this(condition, null, null, null, null, null, null);
-    }
-
-    /**
-     * Create a new XMPPError.
-     *
-     * @param condition
-     * @param applicationSpecificCondition
-     * @deprecated use {@link Builder} instead.
-     */
-    @Deprecated
-    public XMPPError(Condition condition, ExtensionElement applicationSpecificCondition) {
-        this(condition, null, null, null, null, Arrays.asList(applicationSpecificCondition), null);
-    }
-
     /**
      * Creates a new error with the specified type, condition and message.
      * This constructor is used when the condition is not recognized automatically by XMPPError
@@ -134,24 +110,8 @@ public class XMPPError extends AbstractError {
      * 
      * @param type the error type.
      * @param condition the error condition.
-     * @param descriptiveTexts 
-     * @param extensions list of stanza(/packet) extensions
-     * @deprecated use {@link Builder} instead.
-     */
-    @Deprecated
-    public XMPPError(Condition condition, String conditionText, String errorGenerator, Type type, Map<String, String> descriptiveTexts,
-            List<ExtensionElement> extensions) {
-        this(condition, conditionText, errorGenerator, type, descriptiveTexts, extensions, null);
-    }
-
-    /**
-     * Creates a new error with the specified type, condition and message.
-     * This constructor is used when the condition is not recognized automatically by XMPPError
-     * i.e. there is not a defined instance of ErrorCondition or it does not apply the default 
-     * specification.
-     * 
-     * @param type the error type.
-     * @param condition the error condition.
+     * @param conditionText
+     * @param errorGenerator
      * @param descriptiveTexts 
      * @param extensions list of stanza(/packet) extensions
      * @param stanza the stanza carrying this XMPP error.
@@ -268,9 +228,13 @@ public class XMPPError extends AbstractError {
     }
 
     public static XMPPError.Builder from(Condition condition, String descriptiveText) {
-        Map<String, String> descriptiveTexts = new HashMap<String, String>();
-        descriptiveTexts.put("en", descriptiveText);
-        return getBuilder().setCondition(condition).setDescriptiveTexts(descriptiveTexts);
+        XMPPError.Builder builder = getBuilder().setCondition(condition);
+        if (descriptiveText != null) {
+            Map<String, String> descriptiveTexts = new HashMap<>();
+            descriptiveTexts.put("en", descriptiveText);
+            builder.setDescriptiveTexts(descriptiveTexts);
+        }
+        return builder;
     }
 
     public static Builder getBuilder() {

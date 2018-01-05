@@ -21,25 +21,25 @@ import static org.junit.Assert.assertArrayEquals;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.igniterealtime.smack.inttest.AbstractSmackIntegrationTest;
-import org.igniterealtime.smack.inttest.SmackIntegrationTest;
-import org.igniterealtime.smack.inttest.SmackIntegrationTestEnvironment;
-import org.igniterealtime.smack.inttest.TestNotPossibleException;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 
+import org.igniterealtime.smack.inttest.AbstractSmackIntegrationTest;
+import org.igniterealtime.smack.inttest.SmackIntegrationTest;
+import org.igniterealtime.smack.inttest.SmackIntegrationTestEnvironment;
+import org.igniterealtime.smack.inttest.TestNotPossibleException;
+
 public class HttpFileUploadIntegrationTest extends AbstractSmackIntegrationTest {
 
-    private static final int FILE_SIZE = 1024*128;
+    private static final int FILE_SIZE = 1024 * 128;
 
     private final HttpFileUploadManager hfumOne;
 
@@ -61,7 +61,7 @@ public class HttpFileUploadIntegrationTest extends AbstractSmackIntegrationTest 
     }
 
     @SmackIntegrationTest
-    public void httpFileUploadTest() throws FileNotFoundException, IOException, XMPPErrorException, InterruptedException, SmackException {
+    public void httpFileUploadTest() throws IOException, XMPPErrorException, InterruptedException, SmackException {
         final int fileSize = FILE_SIZE;
         File file = createNewTempFile();
         FileOutputStream fos = new FileOutputStream(file.getCanonicalPath());

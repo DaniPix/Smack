@@ -16,31 +16,30 @@
  */
 package org.jivesoftware.smack.debugger;
 
-import org.jivesoftware.smack.XMPPConnection;
-
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.jivesoftware.smack.XMPPConnection;
 
 /**
  * Very simple debugger that prints to the console (stdout) the sent and received stanzas. Use
  * this debugger with caution since printing to the console is an expensive operation that may
- * even block the thread since only one thread may print at a time.<p>
- * <p/>
+ * even block the thread since only one thread may print at a time.
+ * <p>
  * It is possible to not only print the raw sent and received stanzas but also the interpreted
  * packets by Smack. By default interpreted packets won't be printed. To enable this feature
  * just change the <tt>printInterpreted</tt> static variable to <tt>true</tt>.
+ * </p>
  *
  * @author Gaston Dombiak
  */
 public class ConsoleDebugger extends AbstractDebugger {
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss");
 
-    public ConsoleDebugger(XMPPConnection connection, Writer writer, Reader reader) {
-        super(connection, writer, reader);
+    public ConsoleDebugger(XMPPConnection connection) {
+        super(connection);
     }
 
     @Override
@@ -64,4 +63,17 @@ public class ConsoleDebugger extends AbstractDebugger {
         log(logMessage + sw);
     }
 
+    public static final class Factory implements SmackDebuggerFactory {
+
+        public static final SmackDebuggerFactory INSTANCE = new Factory();
+
+        private Factory() {
+        }
+
+        @Override
+        public SmackDebugger create(XMPPConnection connection) throws IllegalArgumentException {
+            return new ConsoleDebugger(connection);
+        }
+
+    }
 }

@@ -24,6 +24,7 @@ import org.jivesoftware.smack.util.Objects;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.util.TypedCloneable;
 import org.jivesoftware.smack.util.XmlStringBuilder;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -65,7 +66,15 @@ public final class Presence extends Stanza implements TypedCloneable<Presence> {
 
     private Type type = Type.available;
     private String status = null;
+
+    /**
+     * The priority of the presence. The magic value {@link Integer#MIN_VALUE} is used to indicate that the original
+     * presence stanza did not had an explicit priority set. In which case the priority defaults to 0.
+     *
+     * @see <a href="https://tools.ietf.org/html/rfc6121#section-4.7.2.3">RFC 6121 § 4.7.2.3.</a>
+     */
     private int priority = Integer.MIN_VALUE;
+
     private Mode mode = null;
 
     /**
@@ -146,7 +155,7 @@ public final class Presence extends Stanza implements TypedCloneable<Presence> {
      * {@link Mode#dnd do not disturb}. False will be returned when the type or mode
      * is any other value, including when the presence type is unavailable (offline).
      * This is a convenience method equivalent to
-     * <tt>type == Type.available && (mode == Mode.away || mode == Mode.xa || mode == Mode.dnd)</tt>.
+     * <tt>type == Type.available &amp;&amp; (mode == Mode.away || mode == Mode.xa || mode == Mode.dnd)</tt>.
      *
      * @return true if the presence type is available and the presence mode is away, xa, or dnd.
      */
@@ -200,6 +209,9 @@ public final class Presence extends Stanza implements TypedCloneable<Presence> {
      * @see <a href="https://tools.ietf.org/html/rfc6121#section-4.7.2.3">RFC 6121 § 4.7.2.3. Priority Element</a>
      */
     public int getPriority() {
+        if (priority == Integer.MIN_VALUE) {
+            return 0;
+        }
         return priority;
     }
 

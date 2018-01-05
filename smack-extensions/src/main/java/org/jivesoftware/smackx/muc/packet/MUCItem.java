@@ -19,8 +19,10 @@ package org.jivesoftware.smackx.muc.packet;
 import org.jivesoftware.smack.packet.NamedElement;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.XmlStringBuilder;
+
 import org.jivesoftware.smackx.muc.MUCAffiliation;
 import org.jivesoftware.smackx.muc.MUCRole;
+
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 
@@ -128,7 +130,7 @@ public class MUCItem implements NamedElement {
     }
 
     /**
-     * Returns the <room@service/nick> by which an occupant is identified within the context of a
+     * Returns the &lt;room@service/nick&gt; by which an occupant is identified within the context of a
      * room. If the room is non-anonymous, the JID will be included in the item.
      * 
      * @return the room JID by which an occupant is identified within the room.

@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.filter.StanzaExtensionFilter;
 import org.jivesoftware.smack.filter.StanzaFilter;
@@ -34,7 +34,9 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.RosterGroup;
+
 import org.jivesoftware.smackx.xroster.packet.RosterExchange;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -75,14 +77,13 @@ public class RosterExchangeManager {
      * @param connection an XMPPConnection which is used to send and receive messages.
      */
     public RosterExchangeManager(XMPPConnection connection) {
-        weakRefConnection = new WeakReference<XMPPConnection>(connection);
+        weakRefConnection = new WeakReference<>(connection);
         // Listens for all roster exchange packets and fire the roster exchange listeners.
         packetListener = new StanzaListener() {
             @Override
             public void processStanza(Stanza packet) {
                 Message message = (Message) packet;
-                RosterExchange rosterExchange =
-                    (RosterExchange) message.getExtension(ELEMENT, NAMESPACE);
+                RosterExchange rosterExchange = message.getExtension(ELEMENT, NAMESPACE);
                 // Fire event for roster exchange listeners
                 fireRosterExchangeListeners(message.getFrom(), rosterExchange.getRosterEntries());
             }
@@ -180,13 +181,13 @@ public class RosterExchangeManager {
      * Fires roster exchange listeners.
      */
     private void fireRosterExchangeListeners(Jid from, Iterator<RemoteRosterEntry> remoteRosterEntries) {
-        RosterExchangeListener[] listeners = null;
+        RosterExchangeListener[] listeners;
         synchronized (rosterExchangeListeners) {
             listeners = new RosterExchangeListener[rosterExchangeListeners.size()];
             rosterExchangeListeners.toArray(listeners);
         }
-        for (int i = 0; i < listeners.length; i++) {
-            listeners[i].entriesReceived(from, remoteRosterEntries);
+        for (RosterExchangeListener listener : listeners) {
+            listener.entriesReceived(from, remoteRosterEntries);
         }
     }
 }

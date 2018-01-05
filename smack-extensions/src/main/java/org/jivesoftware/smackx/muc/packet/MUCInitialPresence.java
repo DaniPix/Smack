@@ -17,13 +17,14 @@
 
 package org.jivesoftware.smackx.muc.packet;
 
+import java.util.Date;
+
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.NamedElement;
 import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.util.XmlStringBuilder;
-import org.jxmpp.util.XmppDateTime;
 
-import java.util.Date;
+import org.jxmpp.util.XmppDateTime;
 
 /**
  * Represents extended presence information whose sole purpose is to signal the ability of 
@@ -176,7 +177,7 @@ public class MUCInitialPresence implements ExtensionElement {
 
         /**
          * Deprecated constructor.
-         * @deprecated use {@link #MUCInitialPresence.History(int, int, int, Date)} instead.
+         * @deprecated use {@link #History(int, int, int, Date)} instead.
          */
         @Deprecated
         public History() {
@@ -239,7 +240,7 @@ public class MUCInitialPresence implements ExtensionElement {
          * Sets the total number of characters to receive in the history.
          * 
          * @param maxChars the total number of characters to receive in the history.
-         * @deprecated use {@link #MUCInitialPresence.History(int, int, int, Date)} instead.
+         * @deprecated use {@link #History(int, int, int, Date)} instead.
          */
         @Deprecated
         public void setMaxChars(int maxChars) {
@@ -250,7 +251,7 @@ public class MUCInitialPresence implements ExtensionElement {
          * Sets the total number of messages to receive in the history.
          * 
          * @param maxStanzas the total number of messages to receive in the history.
-         * @deprecated use {@link #MUCInitialPresence.History(int, int, int, Date)} instead.
+         * @deprecated use {@link #History(int, int, int, Date)} instead.
          */
         @Deprecated
         public void setMaxStanzas(int maxStanzas) {
@@ -264,7 +265,7 @@ public class MUCInitialPresence implements ExtensionElement {
          * 
          * @param seconds the number of seconds to use to filter the messages received during 
          * that time.
-         * @deprecated use {@link #MUCInitialPresence.History(int, int, int, Date)} instead.
+         * @deprecated use {@link #History(int, int, int, Date)} instead.
          */
         @Deprecated
         public void setSeconds(int seconds) {
@@ -277,7 +278,7 @@ public class MUCInitialPresence implements ExtensionElement {
          * included in the history.
          * 
          * @param since the since date to use to filter the messages received during that time.
-         * @deprecated use {@link #MUCInitialPresence.History(int, int, int, Date)} instead.
+         * @deprecated use {@link #History(int, int, int, Date)} instead.
          */
         @Deprecated
         public void setSince(Date since) {

@@ -16,16 +16,15 @@
  */
 package org.jivesoftware.smack.packet;
 
-import org.junit.Test;
-
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.xml.sax.SAXException;
-
 import java.io.IOException;
+
+import org.junit.Test;
+import org.xml.sax.SAXException;
 
 public class PresenceTest {
     @Test
@@ -60,7 +59,7 @@ public class PresenceTest {
         assertXMLEqual(control, presenceTypeSet.toXML().toString());
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void setNullPresenceTypeTest() {
         getNewPresence().setType(null);
     }
@@ -113,7 +112,7 @@ public class PresenceTest {
         assertXMLEqual(control, presence.toXML().toString());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void setIllegalPriorityTest() {
         getNewPresence().setPriority(Integer.MIN_VALUE);
     }

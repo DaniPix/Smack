@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNull;
 
 import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.packet.Stanza;
+
 import org.junit.Test;
 
 public class StanzaCollectorTest
@@ -31,7 +32,7 @@ public class StanzaCollectorTest
     {
         TestStanzaCollector collector = new TestStanzaCollector(null, new OKEverything(), 5);
 
-        for (int i=0; i<6; i++)
+        for (int i = 0; i < 6; i++)
         {
             Stanza testPacket = new TestPacket(i);
             collector.processStanza(testPacket);
@@ -45,7 +46,7 @@ public class StanzaCollectorTest
         assertEquals("5", collector.pollResult().getStanzaId());
         assertNull(collector.pollResult());
 
-        for (int i=10; i<15; i++)
+        for (int i = 10; i < 15; i++)
         {
             Stanza testPacket = new TestPacket(i);
             collector.processStanza(testPacket);
@@ -104,7 +105,7 @@ public class StanzaCollectorTest
             @Override
             public void run()
             {
-                Stanza p = null;
+                Stanza p;
 
                 do
                 {
@@ -133,7 +134,7 @@ public class StanzaCollectorTest
             @Override
             public void run()
             {
-                Stanza p = null;
+                Stanza p;
 
                 do
                 {
@@ -156,7 +157,7 @@ public class StanzaCollectorTest
         consumer2.start();
         consumer3.start();
 
-        for(int i=0; i<insertCount; i++)
+        for (int i = 0; i < insertCount; i++)
         {
             collector.processStanza(new TestPacket(i));
         }
@@ -171,7 +172,7 @@ public class StanzaCollectorTest
         catch (InterruptedException e)
         {
         }
-        //We cannot guarantee that this is going to pass due to the possible issue of timing between consumer 1 
+        // We cannot guarantee that this is going to pass due to the possible issue of timing between consumer 1 
         // and main, but the probability is extremely remote.
         assertNull(collector.pollResult());
     }

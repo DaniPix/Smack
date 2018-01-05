@@ -16,19 +16,20 @@
  */
 package org.jivesoftware.smackx.jingleold.packet;
 
-import org.jivesoftware.smack.packet.ExtensionElement;
-import org.jivesoftware.smackx.jingleold.nat.ICECandidate;
-import org.jivesoftware.smackx.jingleold.nat.TransportCandidate;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jivesoftware.smack.packet.ExtensionElement;
+
+import org.jivesoftware.smackx.jingleold.nat.ICECandidate;
+import org.jivesoftware.smackx.jingleold.nat.TransportCandidate;
+
 /**
  * A jingle transport extension.
  *
- * @author Alvaro Saurin <alvaro.saurin@gmail.com>
+ * @author Alvaro Saurin
  */
 public class JingleTransport implements ExtensionElement {
 
@@ -102,9 +103,9 @@ public class JingleTransport implements ExtensionElement {
      * @return The candidates list.
      */
     public List<JingleTransportCandidate> getCandidatesList() {
-        ArrayList<JingleTransportCandidate> res = null;
+        ArrayList<JingleTransportCandidate> res;
         synchronized (candidates) {
-            res = new ArrayList<JingleTransportCandidate>(candidates);
+            res = new ArrayList<>(candidates);
         }
         return res;
     }
@@ -245,7 +246,7 @@ public class JingleTransport implements ExtensionElement {
         }
 
         /**
-         * Obtain a valid XML representation of a trancport candidate.
+         * Obtain a valid XML representation of a transport candidate.
          *
          * @return A string containing the XML dump of the transport candidate.
          */
@@ -294,7 +295,7 @@ public class JingleTransport implements ExtensionElement {
          */
         @Override
         public List<JingleTransportCandidate> getCandidatesList() {
-            List<JingleTransportCandidate> copy = new ArrayList<JingleTransportCandidate>();
+            List<JingleTransportCandidate> copy = new ArrayList<>();
             List<JingleTransportCandidate> superCandidatesList = super.getCandidatesList();
             for (int i = 0; i < superCandidatesList.size(); i++) {
                 copy.add(superCandidatesList.get(i));
@@ -325,7 +326,7 @@ public class JingleTransport implements ExtensionElement {
             protected String getChildElements() {
                 StringBuilder buf = new StringBuilder();
 
-                if (transportCandidate != null) {// && transportCandidate instanceof ICECandidate) {
+                if (transportCandidate != null) { // && transportCandidate instanceof ICECandidate) {
                     ICECandidate tci = (ICECandidate) transportCandidate;
 
                     // We convert the transportElement candidate to XML here...
@@ -380,7 +381,7 @@ public class JingleTransport implements ExtensionElement {
          */
         @Override
         public List<JingleTransportCandidate> getCandidatesList() {
-            List<JingleTransportCandidate> copy = new ArrayList<JingleTransportCandidate>();
+            List<JingleTransportCandidate> copy = new ArrayList<>();
             List<JingleTransportCandidate> superCandidatesList = super.getCandidatesList();
             if (superCandidatesList.size() > 0) {
                 copy.add(superCandidatesList.get(0));

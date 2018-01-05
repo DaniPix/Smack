@@ -18,9 +18,10 @@ package org.jivesoftware.smackx.delay.packet;
 
 import java.util.Date;
 
-import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.XmlStringBuilder;
+
 import org.jxmpp.util.XmppDateTime;
 
 /**
@@ -46,6 +47,8 @@ public class DelayInformation implements ExtensionElement {
     /**
      * Creates a new instance with the specified timestamp. 
      * @param stamp the timestamp
+     * @param from sender
+     * @param reason reason of delay.
      */
     public DelayInformation(Date stamp, String from, String reason) {
         this.stamp = stamp;

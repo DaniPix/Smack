@@ -23,7 +23,7 @@ import java.util.List;
 import org.jivesoftware.smack.packet.ExtensionElement;
 
 /**
- * Represents the <b>configuration</b> element of a pubsub message event which 
+ * Represents the <b>configuration</b> element of a PubSub message event which
  * associates a configuration form to the node which was configured.  The form 
  * contains the current node configuration.
  *  
@@ -55,6 +55,6 @@ public class ConfigurationEvent extends NodeExtension implements EmbeddedPacketE
         if (getConfiguration() == null)
             return Collections.emptyList();
         else
-            return Arrays.asList(((ExtensionElement)getConfiguration().getDataFormToSend()));
+            return Arrays.asList(((ExtensionElement) getConfiguration().getDataFormToSend()));
     }
 }

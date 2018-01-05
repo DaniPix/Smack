@@ -37,7 +37,7 @@ public interface ConnectionListener {
      *
      * @param connection the XMPPConnection which successfully connected to its endpoint.
      */
-    public void connected(XMPPConnection connection);
+    void connected(XMPPConnection connection);
 
     /**
      * Notification that the connection has been authenticated.
@@ -45,12 +45,12 @@ public interface ConnectionListener {
      * @param connection the XMPPConnection which successfully authenticated.
      * @param resumed true if a previous XMPP session's stream was resumed.
      */
-    public void authenticated(XMPPConnection connection, boolean resumed);
+    void authenticated(XMPPConnection connection, boolean resumed);
 
     /**
      * Notification that the connection was closed normally.
      */
-    public void connectionClosed();
+    void connectionClosed();
 
     /**
      * Notification that the connection was closed due to an exception. When
@@ -59,13 +59,16 @@ public interface ConnectionListener {
      *
      * @param e the exception.
      */
-    public void connectionClosedOnError(Exception e);
+    void connectionClosedOnError(Exception e);
 
     /**
      * The connection has reconnected successfully to the server. Connections will
      * reconnect to the server when the previous socket connection was abruptly closed.
+     * @deprecated use {@link #connected(XMPPConnection)} or {@link #authenticated(XMPPConnection, boolean)} instead.
      */
-    public void reconnectionSuccessful();
+    // TODO: Remove in Smack 4.3
+    @Deprecated
+    void reconnectionSuccessful();
 
     // The next two methods *must* only be invoked by ReconnectionManager
 
@@ -78,7 +81,9 @@ public interface ConnectionListener {
      * 
      * @param seconds remaining seconds before attempting a reconnection.
      */
-    public void reconnectingIn(int seconds);
+    // TODO: Remove in Smack 4.3
+    @Deprecated
+    void reconnectingIn(int seconds);
 
     /**
      * An attempt to connect to the server has failed. The connection will keep trying reconnecting to the server in a
@@ -90,5 +95,7 @@ public interface ConnectionListener {
      *
      * @param e the exception that caused the reconnection to fail.
      */
-    public void reconnectionFailed(Exception e);
+    // TODO: Remove in Smack 4.3
+    @Deprecated
+    void reconnectionFailed(Exception e);
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.jivesoftware.smack.packet.Stanza;
+
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 
 /**
@@ -205,7 +206,7 @@ public class Form {
     }
 
     private static void validateThatFieldIsText(FormField field) {
-        switch(field.getType()) {
+        switch (field.getType()) {
         case text_multi:
         case text_private:
         case text_single:
@@ -412,7 +413,7 @@ public class Form {
      */
     public void setInstructions(String instructions) {
         // Split the instructions into multiple instructions for each existent newline
-        ArrayList<String> instructionsList = new ArrayList<String>();
+        ArrayList<String> instructionsList = new ArrayList<>();
         StringTokenizer st = new StringTokenizer(instructions, "\n");
         while (st.hasMoreTokens()) {
             instructionsList.add(st.nextToken());
@@ -444,7 +445,7 @@ public class Form {
         if (isSubmitType()) {
             // Create a new DataForm that contains only the answered fields 
             DataForm dataFormToSend = new DataForm(getType());
-            for(FormField field : getFields()) {
+            for (FormField field : getFields()) {
                 if (!field.getValues().isEmpty()) {
                     dataFormToSend.addField(field);
                 }
@@ -503,10 +504,8 @@ public class Form {
                 if (field.getType() == FormField.Type.hidden) {
                     // Since a hidden field could have many values we need to collect them 
                     // in a list
-                    List<String> values = new ArrayList<String>();
-                    for (String value : field.getValues()) {
-                        values.add(value);
-                    }
+                    List<String> values = new ArrayList<>();
+                    values.addAll(field.getValues());
                     form.setAnswer(field.getVariable(), values);
                 }
             }

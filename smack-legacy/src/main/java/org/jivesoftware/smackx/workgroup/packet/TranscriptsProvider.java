@@ -17,12 +17,6 @@
 
 package org.jivesoftware.smackx.workgroup.packet;
 
-import org.jivesoftware.smack.provider.IQProvider;
-import org.jivesoftware.smack.util.ParserUtils;
-import org.jxmpp.jid.Jid;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,6 +25,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.jivesoftware.smack.provider.IQProvider;
+import org.jivesoftware.smack.util.ParserUtils;
+
+import org.jxmpp.jid.Jid;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 /**
  * An IQProvider for transcripts summaries.
  *
@@ -38,6 +39,7 @@ import java.util.TimeZone;
  */
 public class TranscriptsProvider extends IQProvider<Transcripts> {
 
+    @SuppressWarnings("SimpleDateFormatConstant")
     private static final SimpleDateFormat UTC_FORMAT = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
     static {
         UTC_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -46,7 +48,7 @@ public class TranscriptsProvider extends IQProvider<Transcripts> {
     @Override
     public Transcripts parse(XmlPullParser parser, int initialDepth) throws XmlPullParserException, IOException {
         Jid userID = ParserUtils.getJidAttribute(parser, "userID");
-        List<Transcripts.TranscriptSummary> summaries = new ArrayList<Transcripts.TranscriptSummary>();
+        List<Transcripts.TranscriptSummary> summaries = new ArrayList<>();
 
         boolean done = false;
         while (!done) {
@@ -71,7 +73,7 @@ public class TranscriptsProvider extends IQProvider<Transcripts> {
         String sessionID =  parser.getAttributeValue("", "sessionID");
         Date joinTime = null;
         Date leftTime = null;
-        List<Transcripts.AgentDetail> agents = new ArrayList<Transcripts.AgentDetail>();
+        List<Transcripts.AgentDetail> agents = new ArrayList<>();
 
         boolean done = false;
         while (!done) {
@@ -79,13 +81,17 @@ public class TranscriptsProvider extends IQProvider<Transcripts> {
             if (eventType == XmlPullParser.START_TAG) {
                 if (parser.getName().equals("joinTime")) {
                     try {
-                        joinTime = UTC_FORMAT.parse(parser.nextText());
-                    } catch (ParseException e) {}
+                        synchronized (UTC_FORMAT) {
+                            joinTime = UTC_FORMAT.parse(parser.nextText());
+                        }
+                    } catch (ParseException e) { }
                 }
                 else if (parser.getName().equals("leftTime")) {
                     try {
-                        leftTime = UTC_FORMAT.parse(parser.nextText());
-                    } catch (ParseException e) {}
+                        synchronized (UTC_FORMAT) {
+                            leftTime = UTC_FORMAT.parse(parser.nextText());
+                        }
+                    } catch (ParseException e) { }
                 }
                 else if (parser.getName().equals("agents")) {
                     agents = parseAgents(parser);
@@ -102,7 +108,7 @@ public class TranscriptsProvider extends IQProvider<Transcripts> {
     }
 
     private List<Transcripts.AgentDetail> parseAgents(XmlPullParser parser) throws IOException, XmlPullParserException {
-        List<Transcripts.AgentDetail> agents = new ArrayList<Transcripts.AgentDetail>();
+        List<Transcripts.AgentDetail> agents = new ArrayList<>();
         String agentJID =  null;
         Date joinTime = null;
         Date leftTime = null;
@@ -116,13 +122,17 @@ public class TranscriptsProvider extends IQProvider<Transcripts> {
                 }
                 else if (parser.getName().equals("joinTime")) {
                     try {
-                        joinTime = UTC_FORMAT.parse(parser.nextText());
-                    } catch (ParseException e) {}
+                        synchronized (UTC_FORMAT) {
+                            joinTime = UTC_FORMAT.parse(parser.nextText());
+                        }
+                    } catch (ParseException e) { }
                 }
                 else if (parser.getName().equals("leftTime")) {
                     try {
-                        leftTime = UTC_FORMAT.parse(parser.nextText());
-                    } catch (ParseException e) {}
+                        synchronized (UTC_FORMAT) {
+                            leftTime = UTC_FORMAT.parse(parser.nextText());
+                        }
+                    } catch (ParseException e) { }
                 }
                 else if (parser.getName().equals("agent")) {
                     agentJID =  null;

@@ -18,6 +18,7 @@
 package org.jivesoftware.smack;
 
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.SmackException.NotLoggedInException;
 import org.jivesoftware.smack.packet.Stanza;
 
 /**
@@ -41,7 +42,7 @@ public interface StanzaListener {
     /**
      * Process the next stanza(/packet) sent to this stanza(/packet) listener.
      * <p>
-     * A single thread is responsible for invoking all listeners, so
+     * If this listener is synchronous, then a single thread is responsible for invoking all listeners, so
      * it's very important that implementations of this method not block
      * for any extended period of time.
      * </p>
@@ -49,7 +50,8 @@ public interface StanzaListener {
      * @param packet the stanza(/packet) to process.
      * @throws NotConnectedException
      * @throws InterruptedException 
+     * @throws NotLoggedInException 
      */
-    public void processStanza(Stanza packet) throws NotConnectedException, InterruptedException;
+    void processStanza(Stanza packet) throws NotConnectedException, InterruptedException, NotLoggedInException;
 
 }

@@ -19,11 +19,11 @@ package org.jivesoftware.smackx.time;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.jivesoftware.smack.ConnectionCreationListener;
+import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.iqrequest.AbstractIqRequestHandler;
@@ -31,13 +31,15 @@ import org.jivesoftware.smack.iqrequest.IQRequestHandler.Mode;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.XMPPError.Condition;
+
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.time.packet.Time;
+
 import org.jxmpp.jid.Jid;
 
 public final class EntityTimeManager extends Manager {
 
-    private static final Map<XMPPConnection, EntityTimeManager> INSTANCES = new WeakHashMap<XMPPConnection, EntityTimeManager>();
+    private static final Map<XMPPConnection, EntityTimeManager> INSTANCES = new WeakHashMap<>();
 
     private static boolean autoEnable = true;
 
@@ -111,7 +113,6 @@ public final class EntityTimeManager extends Manager {
         Time request = new Time();
         // TODO Add Time(Jid) constructor and use this constructor instead
         request.setTo(jid);
-        Time response = (Time) connection().createStanzaCollectorAndSend(request).nextResultOrThrow();
-        return response;
+        return connection().createStanzaCollectorAndSend(request).nextResultOrThrow();
     }
 }

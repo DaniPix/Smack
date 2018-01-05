@@ -17,6 +17,20 @@
 
 package org.jivesoftware.smack;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.net.ssl.SSLSession;
+import javax.security.auth.callback.CallbackHandler;
+
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.Mechanisms;
@@ -25,22 +39,9 @@ import org.jivesoftware.smack.sasl.SASLMechanism;
 import org.jivesoftware.smack.sasl.core.ScramSha1PlusMechanism;
 import org.jivesoftware.smack.sasl.packet.SaslStreamElements.SASLFailure;
 import org.jivesoftware.smack.sasl.packet.SaslStreamElements.Success;
+
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.EntityBareJid;
-
-import javax.net.ssl.SSLSession;
-import javax.security.auth.callback.CallbackHandler;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * <p>This class is responsible authenticating the user using SASL, binding the resource
@@ -63,9 +64,9 @@ public final class SASLAuthentication {
 
     private static final Logger LOGGER = Logger.getLogger(SASLAuthentication.class.getName());
 
-    private static final List<SASLMechanism> REGISTERED_MECHANISMS = new ArrayList<SASLMechanism>();
+    private static final List<SASLMechanism> REGISTERED_MECHANISMS = new ArrayList<>();
 
-    private static final Set<String> BLACKLISTED_MECHANISMS = new HashSet<String>();
+    private static final Set<String> BLACKLISTED_MECHANISMS = new HashSet<>();
 
     static {
         // Blacklist SCRAM-SHA-1-PLUS for now.
@@ -90,10 +91,10 @@ public final class SASLAuthentication {
      * @return the registered SASLMechanism sorted by the level of preference.
      */
     public static Map<String, String> getRegisterdSASLMechanisms() {
-        Map<String, String> answer = new HashMap<String, String>();
+        Map<String, String> answer = new LinkedHashMap<>();
         synchronized (REGISTERED_MECHANISMS) {
             for (SASLMechanism mechanism : REGISTERED_MECHANISMS) {
-                answer.put(mechanism.getClass().getName(), mechanism.getName());
+                answer.put(mechanism.getClass().getName(), mechanism.toString());
             }
         }
         return answer;
@@ -131,14 +132,14 @@ public final class SASLAuthentication {
         return false;
     }
 
-    public static boolean blacklistSASLMechanism(String mechansim) {
-        synchronized(BLACKLISTED_MECHANISMS) {
-            return BLACKLISTED_MECHANISMS.add(mechansim);
+    public static boolean blacklistSASLMechanism(String mechanism) {
+        synchronized (BLACKLISTED_MECHANISMS) {
+            return BLACKLISTED_MECHANISMS.add(mechanism);
         }
     }
 
     public static boolean unBlacklistSASLMechanism(String mechanism) {
-        synchronized(BLACKLISTED_MECHANISMS) {
+        synchronized (BLACKLISTED_MECHANISMS) {
             return BLACKLISTED_MECHANISMS.remove(mechanism);
         }
     }
@@ -209,7 +210,7 @@ public final class SASLAuthentication {
             }
         }
 
-        if (saslException != null){
+        if (saslException != null) {
             if (saslException instanceof SmackException) {
                 throw (SmackException) saslException;
             } else if (saslException instanceof SASLErrorException) {
@@ -259,6 +260,7 @@ public final class SASLAuthentication {
     /**
      * Notification message saying that SASL authentication was successful. The next step
      * would be to bind the resource.
+     * @param success result of the authentication.
      * @throws SmackException 
      * @throws InterruptedException 
      */
@@ -355,8 +357,8 @@ public final class SASLAuthentication {
             throw new SmackException(
                             "No supported and enabled SASL Mechanism provided by server. " +
                             "Server announced mechanisms: " + serverMechanisms + ". " +
-                            "Registerd SASL mechanisms with Smack: " + REGISTERED_MECHANISMS + ". " +
-                            "Enabled SASL mechansisms for this connection: " + configuration.getEnabledSaslMechanisms() + ". " +
+                            "Registered SASL mechanisms with Smack: " + REGISTERED_MECHANISMS + ". " +
+                            "Enabled SASL mechanisms for this connection: " + configuration.getEnabledSaslMechanisms() + ". " +
                             "Blacklisted SASL mechanisms: " + BLACKLISTED_MECHANISMS + '.'
                             );
             // @formatter;on

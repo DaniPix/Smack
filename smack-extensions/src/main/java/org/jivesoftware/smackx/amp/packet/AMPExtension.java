@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
+
 import org.jivesoftware.smackx.amp.AMPDeliverCondition;
 import org.jivesoftware.smackx.amp.AMPExpireAtCondition;
 import org.jivesoftware.smackx.amp.AMPMatchResourceCondition;
@@ -30,7 +31,7 @@ public class AMPExtension implements ExtensionElement {
     public static final String NAMESPACE = "http://jabber.org/protocol/amp";
     public static final String ELEMENT = "amp";
 
-    private CopyOnWriteArrayList<Rule> rules = new CopyOnWriteArrayList<Rule>();
+    private final CopyOnWriteArrayList<Rule> rules = new CopyOnWriteArrayList<>();
     private boolean perHop = false;
 
     private final String from;
@@ -224,22 +225,22 @@ public class AMPExtension implements ExtensionElement {
      * @see AMPExpireAtCondition
      * @see AMPMatchResourceCondition
      **/
-    public static interface Condition {
+    public interface Condition {
         String getName();
         String getValue();
 
-        static final String ATTRIBUTE_NAME="condition";
+        String ATTRIBUTE_NAME = "condition";
     }
 
     /**
      * amp action attribute.
      * See http://xmpp.org/extensions/xep-0079.html#actions-def
      **/
-    public static enum Action {
+    public enum Action {
         /**
-         * The "alert" action triggers a reply <message/> stanza to the sending entity.
-         * This <message/> stanza MUST contain the element <amp status='alert'/>,
-         * which itself contains the <rule/> that triggered this action. In all other respects,
+         * The "alert" action triggers a reply &lt;message/&gt; stanza to the sending entity.
+         * This &lt;message/&gt; stanza MUST contain the element &lt;amp status='alert'/&gt;,
+         * which itself contains the &lt;rule/&gt; that triggered this action. In all other respects,
          * this action behaves as "drop".
          */
         alert,
@@ -250,28 +251,28 @@ public class AMPExtension implements ExtensionElement {
          */
         drop,
         /**
-         * The "error" action triggers a reply <message/> stanza of type "error" to the sending entity.
-         * The <message/> stanza's <error/> child MUST contain a
-         * <failed-rules xmlns='http://jabber.org/protocol/amp#errors'/> error condition,
+         * The "error" action triggers a reply &lt;message/&gt; stanza of type "error" to the sending entity.
+         * The &lt;message/&gt; stanza's &lt;error/&gt; child MUST contain a
+         * &lt;failed-rules xmlns='http://jabber.org/protocol/amp#errors'/&gt; error condition,
          * which itself contains the rules that triggered this action.
          */
         error,
         /**
-         * The "notify" action triggers a reply <message/> stanza to the sending entity.
-         * This <message/> stanza MUST contain the element <amp status='notify'/>, which itself
-         * contains the <rule/> that triggered this action. Unlike the other actions,
+         * The "notify" action triggers a reply &lt;message/&gt; stanza to the sending entity.
+         * This &lt;message/&gt; stanza MUST contain the element &lt;amp status='notify'/&gt;, which itself
+         * contains the &lt;rule/&gt; that triggered this action. Unlike the other actions,
          * this action does not override the default behavior for a server.
          * Instead, the server then executes its default behavior after sending the notify.
          */
         notify;
 
-        public static final String ATTRIBUTE_NAME="action";
+        public static final String ATTRIBUTE_NAME = "action";
     }
 
     /**
      * amp notification status as defined by XEP-0079.
      */
-    public static enum Status {
+    public enum Status {
         alert,
         error,
         notify

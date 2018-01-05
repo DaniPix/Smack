@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2014-2015 Florian Schmaus
+ * Copyright 2014-2017 Florian Schmaus
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,9 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.jivesoftware.smack.packet.Element;
-import org.jivesoftware.smack.packet.NamedElement;
 import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.NamedElement;
+
 import org.jxmpp.util.XmppDateTime;
 
 public class XmlStringBuilder implements Appendable, CharSequence {
@@ -80,7 +81,7 @@ public class XmlStringBuilder implements Appendable, CharSequence {
 
     /**
      * Add a new element to this builder, with the {@link java.util.Date} instance as its content,
-     * which will get formated with {@link XmppDateTime#formatXEP0082Date(Date)}.
+     * which will get formatted with {@link XmppDateTime#formatXEP0082Date(Date)}.
      *
      * @param name element name
      * @param content content of element
@@ -122,7 +123,7 @@ public class XmlStringBuilder implements Appendable, CharSequence {
 
     /**
      * Add a new element to this builder, with the {@link java.util.Date} instance as its content,
-     * which will get formated with {@link XmppDateTime#formatXEP0082Date(Date)}
+     * which will get formatted with {@link XmppDateTime#formatXEP0082Date(Date)}
      * if {@link java.util.Date} instance is not <code>null</code>.
      *
      * @param name element name
@@ -172,7 +173,7 @@ public class XmlStringBuilder implements Appendable, CharSequence {
     }
 
     public XmlStringBuilder halfOpenElement(String name) {
-        assert(StringUtils.isNotEmpty(name));
+        assert (StringUtils.isNotEmpty(name));
         sb.append('<').append(name);
         return this;
     }
@@ -244,7 +245,7 @@ public class XmlStringBuilder implements Appendable, CharSequence {
 
     /**
      * Add a new attribute to this builder, with the {@link java.util.Date} instance as its value,
-     * which will get formated with {@link XmppDateTime#formatXEP0082Date(Date)}.
+     * which will get formatted with {@link XmppDateTime#formatXEP0082Date(Date)}.
      *
      * @param name name of attribute
      * @param value value of attribute
@@ -279,7 +280,7 @@ public class XmlStringBuilder implements Appendable, CharSequence {
 
     /**
      * Add a new attribute to this builder, with the {@link java.util.Date} instance as its value,
-     * which will get formated with {@link XmppDateTime#formatXEP0082Date(Date)}
+     * which will get formatted with {@link XmppDateTime#formatXEP0082Date(Date)}
      * if {@link java.util.Date} instance is not <code>null</code>.
      *
      * @param name attribute name
@@ -356,6 +357,13 @@ public class XmlStringBuilder implements Appendable, CharSequence {
 
     public XmlStringBuilder xmllangAttribute(String value) {
         optAttribute("xml:lang", value);
+        return this;
+    }
+
+    public XmlStringBuilder optXmlLangAttribute(String lang) {
+        if (!StringUtils.isNullOrEmpty(lang)) {
+            xmllangAttribute(lang);
+        }
         return this;
     }
 

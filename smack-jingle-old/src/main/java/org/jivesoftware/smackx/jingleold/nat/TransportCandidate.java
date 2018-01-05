@@ -32,12 +32,12 @@ import java.util.logging.Logger;
 
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smackx.jingleold.JingleSession;
-import org.jivesoftware.smackx.jingleold.nat.TransportResolverListener.Checker;
+
 import org.jxmpp.jid.Jid;
 
 /**
  * Transport candidate.
- * <p/>
+ *
  * A candidate represents the possible transport for data interchange between
  * the two endpoints.
  *
@@ -72,7 +72,7 @@ public abstract class TransportCandidate {
     private Thread echoThread = null;
 
     // Listeners for events
-    private final List<TransportResolverListener.Checker> listeners = new ArrayList<Checker>();
+    private final List<TransportResolverListener.Checker> listeners = new ArrayList<>();
 
     public void addCandidateEcho(JingleSession session) throws SocketException, UnknownHostException {
         candidateEcho = new CandidateEcho(this, session);
@@ -132,12 +132,12 @@ public abstract class TransportCandidate {
     }
 
     /**
-     * Set the symetric candidate for this candidate.
+     * Set the symmetric candidate for this candidate.
      *
-     * @param symetric
+     * @param symmetric
      */
-    public void setSymmetric(TransportCandidate symetric) {
-        this.symmetric = symetric;
+    public void setSymmetric(TransportCandidate symmetric) {
+        this.symmetric = symmetric;
     }
 
     /**
@@ -346,12 +346,12 @@ public abstract class TransportCandidate {
      * Check if a transport candidate is usable. The transport resolver should
      * check if the transport candidate the other endpoint has provided is
      * usable.
-     * <p/>
+     *
      * Subclasses should provide better methods if they can...
      */
     public void check(final List<TransportCandidate> localCandidates) {
-        //TODO candidate is being checked trigger
-        //candidatesChecking.add(cand);
+        // TODO candidate is being checked trigger
+        // candidatesChecking.add(cand);
 
         Thread checkThread = new Thread(new Runnable() {
             @Override
@@ -370,8 +370,8 @@ public abstract class TransportCandidate {
                 }
                 triggerCandidateChecked(isUsable);
 
-                //TODO candidate is being checked trigger
-                //candidatesChecking.remove(cand);
+                // TODO candidate is being checked trigger
+                // candidatesChecking.remove(cand);
             }
         }, "Transport candidate check");
 
@@ -398,7 +398,7 @@ public abstract class TransportCandidate {
      */
     public List<TransportResolverListener.Checker> getListenersList() {
         synchronized (listeners) {
-            return new ArrayList<Checker>(listeners);
+            return new ArrayList<>(listeners);
         }
     }
 
@@ -631,8 +631,8 @@ public abstract class TransportCandidate {
         byte[] send = null;
         byte[] receive = null;
         DatagramPacket sendStanza = null;
-        List<DatagramListener> listeners = new ArrayList<DatagramListener>();
-        List<ResultListener> resultListeners = new ArrayList<ResultListener>();
+        List<DatagramListener> listeners = new ArrayList<>();
+        List<ResultListener> resultListeners = new ArrayList<>();
         boolean enabled = true;
         boolean ended = false;
         long replyTries = 2;
@@ -678,7 +678,7 @@ public abstract class TransportCandidate {
 
                     socket.receive(packet);
 
-                    //LOGGER.fine("ECHO Packet Received in: " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort() + " From: " + packet.getAddress().getHostAddress() + ":" + packet.getPort());
+                    // LOGGER.fine("ECHO Packet Received in: " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort() + " From: " + packet.getAddress().getHostAddress() + ":" + packet.getPort());
 
                     boolean accept = false;
 

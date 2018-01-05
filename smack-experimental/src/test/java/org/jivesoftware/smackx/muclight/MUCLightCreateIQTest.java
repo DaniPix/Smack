@@ -21,15 +21,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.jivesoftware.smackx.muclight.element.MUCLightCreateIQ;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 
-import org.junit.Assert;
-
 public class MUCLightCreateIQTest {
 
-    String stanza = "<iq to='ef498f55-5f79-4238-a5ae-4efe19cbe617@muclight.test.com' id='1c72W-50' type='set'>"
+    private static final String stanza = "<iq to='ef498f55-5f79-4238-a5ae-4efe19cbe617@muclight.test.com' id='1c72W-50' type='set'>"
             + "<query xmlns='urn:xmpp:muclight:0#create'>" + "<configuration>" + "<roomname>test</roomname>"
             + "</configuration>" + "<occupants>" + "<user affiliation='member'>charlie@test.com</user>"
             + "<user affiliation='member'>pep@test.com</user>" + "</occupants>" + "</query>" + "</iq>";

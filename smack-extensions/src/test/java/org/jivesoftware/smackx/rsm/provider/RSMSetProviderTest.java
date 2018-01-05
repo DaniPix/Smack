@@ -21,8 +21,10 @@ import static org.junit.Assert.assertNotNull;
 
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.InitExtensions;
 import org.jivesoftware.smackx.rsm.packet.RSMSet;
+
 import org.junit.Test;
 
 public class RSMSetProviderTest extends InitExtensions {
@@ -46,8 +48,8 @@ public class RSMSetProviderTest extends InitExtensions {
           + "</iq>";
         // @formatter:on
 
-        IQ iqWithRsm = (IQ) PacketParserUtils.parseStanza(rsmset);
-        RSMSet rsm = (RSMSet) iqWithRsm.getExtension(RSMSet.ELEMENT, RSMSet.NAMESPACE);
+        IQ iqWithRsm = PacketParserUtils.parseStanza(rsmset);
+        RSMSet rsm = iqWithRsm.getExtension(RSMSet.ELEMENT, RSMSet.NAMESPACE);
         assertNotNull(rsm);
         assertEquals("aftervalue", rsm.getAfter());
         assertEquals("beforevalue", rsm.getBefore());

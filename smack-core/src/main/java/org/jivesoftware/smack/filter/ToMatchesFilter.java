@@ -17,6 +17,7 @@
 package org.jivesoftware.smack.filter;
 
 import org.jivesoftware.smack.packet.Stanza;
+
 import org.jxmpp.jid.Jid;
 
 public final class ToMatchesFilter extends AbstractFromToMatchesFilter {
@@ -34,6 +35,7 @@ public final class ToMatchesFilter extends AbstractFromToMatchesFilter {
      *
      * @param address The address to filter for. If <code>null</code> is given, the stanza must not
      *        have a from address.
+     * @return filter matching the "to" address.
      */
     public static ToMatchesFilter create(Jid address) {
         return new ToMatchesFilter(address, address != null ? address.hasNoResource() : false) ;
@@ -45,6 +47,7 @@ public final class ToMatchesFilter extends AbstractFromToMatchesFilter {
      *
      * @param address The address to filter for. If <code>null</code> is given, the stanza must not
      *        have a from address.
+     * @return filter matching the "to" address.
      */
     public static ToMatchesFilter createBare(Jid address) {
         return new ToMatchesFilter(address, true);
@@ -56,6 +59,7 @@ public final class ToMatchesFilter extends AbstractFromToMatchesFilter {
      *
      * @param address The address to filter for. If <code>null</code> is given, the stanza must not
      *        have a from address.
+     * @return filter matching the "to" address.
      */
     public static ToMatchesFilter createFull(Jid address) {
         return new ToMatchesFilter(address, false);

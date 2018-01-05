@@ -16,15 +16,17 @@
  */
 package org.jivesoftware.smackx.hoxt.provider;
 
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.util.PacketParserUtils;
-import org.jivesoftware.smackx.hoxt.packet.HttpMethod;
-import org.jivesoftware.smackx.hoxt.packet.HttpOverXmppReq;
-import org.junit.Test;
-import org.xmlpull.v1.XmlPullParser;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.util.PacketParserUtils;
+
+import org.jivesoftware.smackx.hoxt.packet.HttpMethod;
+import org.jivesoftware.smackx.hoxt.packet.HttpOverXmppReq;
+
+import org.junit.Test;
+import org.xmlpull.v1.XmlPullParser;
 
 public class HttpOverXmppReqProviderTest {
 
@@ -70,7 +72,6 @@ public class HttpOverXmppReqProviderTest {
         XmlPullParser parser = PacketParserUtils.getParserFor(string);
         IQ iq = provider.parse(parser);
         assertTrue(iq instanceof HttpOverXmppReq);
-        HttpOverXmppReq castedIq = (HttpOverXmppReq) iq;
-        return castedIq;
+        return  (HttpOverXmppReq) iq;
     }
 }

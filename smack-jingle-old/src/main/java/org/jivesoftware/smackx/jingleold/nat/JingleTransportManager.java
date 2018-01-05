@@ -18,6 +18,7 @@ package org.jivesoftware.smackx.jingleold.nat;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+
 import org.jivesoftware.smackx.jingleold.JingleSession;
 
 /**
@@ -41,7 +42,7 @@ public abstract class JingleTransportManager {
     // This class implements the context of a Strategy pattern...
 
     /**
-     * Deafult contructor.
+     * Default constructor.
      */
     public JingleTransportManager() {
 

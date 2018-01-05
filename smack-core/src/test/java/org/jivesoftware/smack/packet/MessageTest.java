@@ -21,14 +21,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.jivesoftware.smack.test.util.XmlUnitUtils;
-import org.junit.Test;
-import org.xml.sax.SAXException;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
+
+import org.jivesoftware.smack.test.util.XmlUnitUtils;
+
+import org.junit.Test;
+import org.xml.sax.SAXException;
 
 public class MessageTest {
 
@@ -64,7 +65,7 @@ public class MessageTest {
         assertXMLEqual(control, messageTypeSet.toXML().toString());
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void setNullMessageBodyTest() {
         Message message = getNewMessage();
         message.addBody(null, null);
@@ -141,7 +142,7 @@ public class MessageTest {
         XmlUnitUtils.assertSimilar(control, message.toXML());
 
         Collection<String> languages = message.getBodyLanguages();
-        List<String> controlLanguages = new ArrayList<String>();
+        List<String> controlLanguages = new ArrayList<>();
         controlLanguages.add(lang2);
         controlLanguages.add(lang3);
         controlLanguages.removeAll(languages);

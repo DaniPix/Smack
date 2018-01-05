@@ -20,10 +20,12 @@ import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.pubsub.Item;
 import org.jivesoftware.smackx.pubsub.PayloadItem;
 import org.jivesoftware.smackx.pubsub.SimplePayload;
 import org.jivesoftware.smackx.pubsub.packet.PubSubNamespace;
+
 import org.xmlpull.v1.XmlPullParser;
 
 /**
@@ -57,11 +59,11 @@ public class ItemProvider extends ExtensionElementProvider<Item>
             if (extensionProvider == null)
             {
                 CharSequence payloadText = PacketParserUtils.parseElement(parser, true);
-                return new PayloadItem<SimplePayload>(id, node, new SimplePayload(payloadElemName, payloadNS, payloadText));
+                return new PayloadItem<>(id, node, new SimplePayload(payloadElemName, payloadNS, payloadText));
             }
             else
             {
-                return new PayloadItem<ExtensionElement>(id, node, extensionProvider.parse(parser));
+                return new PayloadItem<>(id, node, extensionProvider.parse(parser));
             }
         }
     }

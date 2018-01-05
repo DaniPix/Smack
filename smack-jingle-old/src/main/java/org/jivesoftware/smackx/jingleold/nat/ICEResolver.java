@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+
 import org.jivesoftware.smackx.jingleold.JingleSession;
 
 import de.javawi.jstun.test.demo.ice.Candidate;
@@ -52,8 +53,8 @@ public class ICEResolver extends TransportResolver {
     long sid;
     String server;
     int port;
-    static Map<String, ICENegociator> negociatorsMap = new HashMap<String, ICENegociator>();
-    //ICENegociator iceNegociator = null;
+    static Map<String, ICENegociator> negociatorsMap = new HashMap<>();
+    // ICENegociator iceNegociator = null;
 
     public ICEResolver(XMPPConnection connection, String server, int port) {
         super();
@@ -79,7 +80,7 @@ public class ICEResolver extends TransportResolver {
 
                 // gather candidates
                 iceNegociator.gatherCandidateAddresses();
-                // priorize candidates
+                // prioritize candidates
                 iceNegociator.prioritizeCandidates();
             // CHECKSTYLE:ON
             }
@@ -116,7 +117,7 @@ public class ICEResolver extends TransportResolver {
         for (Candidate candidate : iceNegociator.getSortedCandidates())
             try {
                 Candidate.CandidateType type = candidate.getCandidateType();
-                ICECandidate.Type iceType = ICECandidate.Type.local;
+                ICECandidate.Type iceType;
                 if (type.equals(Candidate.CandidateType.ServerReflexive))
                     iceType = ICECandidate.Type.srflx;
                 else if (type.equals(Candidate.CandidateType.PeerReflexive))
@@ -132,7 +133,7 @@ public class ICEResolver extends TransportResolver {
                     Enumeration<NetworkInterface> nics = NetworkInterface.getNetworkInterfaces();
                     short i = 0;
                     NetworkInterface nic = NetworkInterface.getByInetAddress(candidate.getAddress().getInetAddress());
-                    while(nics.hasMoreElements()) {
+                    while (nics.hasMoreElements()) {
                         NetworkInterface checkNIC = nics.nextElement();
                         if (checkNIC.equals(nic)) {
                             nicNum = i;

@@ -24,8 +24,10 @@ import java.net.URI;
 
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.InitExtensions;
 import org.jivesoftware.smackx.geoloc.packet.GeoLocation;
+
 import org.junit.Test;
 import org.jxmpp.util.XmppDateTime;
 
@@ -35,38 +37,38 @@ public class GeoLocationProviderTest extends InitExtensions {
     public void testGeoLocationProviderWithNoDatumSet() throws Exception {
         // @formatter:off
         final String geoLocationString = "<message from='portia@merchantofvenice.lit'" 
-        +" to='bassanio@merchantofvenice.lit'>"
-        +"<geoloc xmlns='http://jabber.org/protocol/geoloc'>"
-        +"<accuracy>23</accuracy>"
-        +"<alt>1000</alt>"
-        +"<area>Delhi</area>"
-        +"<bearing>10</bearing>"
-        +"<building>Small Building</building>"
-        +"<country>India</country>"
-        +"<countrycode>IN</countrycode>"
-        +"<description>My Description</description>"
-        +"<error>90</error>"
-        +"<floor>top</floor>"
-        +"<lat>25.098345</lat>"
-        +"<locality>awesome</locality>"
-        +"<lon>77.992034</lon>"
-        +"<postalcode>110085</postalcode>"
-        +"<region>North</region>"
-        +"<room>small</room>"
-        +"<speed>250.0</speed>"
-        +"<street>Wall Street</street>"
-        +"<text>Unit Testing GeoLocation</text>"
-        +"<timestamp>2004-02-19</timestamp>"
-        +"<tzo>+5:30</tzo>"
-        +"<uri>http://xmpp.org</uri>"
-        +"</geoloc>"
-        +"</message>";
+        + " to='bassanio@merchantofvenice.lit'>"
+        + "<geoloc xmlns='http://jabber.org/protocol/geoloc'>"
+        + "<accuracy>23</accuracy>"
+        + "<alt>1000</alt>"
+        + "<area>Delhi</area>"
+        + "<bearing>10</bearing>"
+        + "<building>Small Building</building>"
+        + "<country>India</country>"
+        + "<countrycode>IN</countrycode>"
+        + "<description>My Description</description>"
+        + "<error>90</error>"
+        + "<floor>top</floor>"
+        + "<lat>25.098345</lat>"
+        + "<locality>awesome</locality>"
+        + "<lon>77.992034</lon>"
+        + "<postalcode>110085</postalcode>"
+        + "<region>North</region>"
+        + "<room>small</room>"
+        + "<speed>250.0</speed>"
+        + "<street>Wall Street</street>"
+        + "<text>Unit Testing GeoLocation</text>"
+        + "<timestamp>2004-02-19</timestamp>"
+        + "<tzo>+5:30</tzo>"
+        + "<uri>http://xmpp.org</uri>"
+        + "</geoloc>"
+        + "</message>";
         // @formatter:on
 
-        Message messageWithGeoLocation = (Message) PacketParserUtils.parseStanza(geoLocationString);
+        Message messageWithGeoLocation = PacketParserUtils.parseStanza(geoLocationString);
         assertNotNull(messageWithGeoLocation);
 
-        GeoLocation geoLocation = (GeoLocation) messageWithGeoLocation.getExtension(GeoLocation.ELEMENT,
+        GeoLocation geoLocation = messageWithGeoLocation.getExtension(GeoLocation.ELEMENT,
                         GeoLocation.NAMESPACE);
         assertNotNull(geoLocation);
 
@@ -101,39 +103,39 @@ public class GeoLocationProviderTest extends InitExtensions {
 
         // @formatter:off
         final String geoLocationString = "<message from='portia@merchantofvenice.lit'" 
-        +" to='bassanio@merchantofvenice.lit'>"
-        +"<geoloc xmlns='http://jabber.org/protocol/geoloc'>"
-        +"<accuracy>23</accuracy>"
-        +"<alt>1000</alt>"
-        +"<area>Delhi</area>"
-        +"<bearing>10</bearing>"
-        +"<building>Small Building</building>"
-        +"<country>India</country>"
-        +"<countrycode>IN</countrycode>"
-        +"<datum>Test Datum</datum>"
-        +"<description>My Description</description>"
-        +"<error>90</error>"
-        +"<floor>top</floor>"
-        +"<lat>25.098345</lat>"
-        +"<locality>awesome</locality>"
-        +"<lon>77.992034</lon>"
-        +"<postalcode>110085</postalcode>"
-        +"<region>North</region>"
-        +"<room>small</room>"
-        +"<speed>250.0</speed>"
-        +"<street>Wall Street</street>"
-        +"<text>Unit Testing GeoLocation</text>"
-        +"<timestamp>2004-02-19</timestamp>"
-        +"<tzo>+5:30</tzo>"
-        +"<uri>http://xmpp.org</uri>"
-        +"</geoloc>"
-        +"</message>";
+        + " to='bassanio@merchantofvenice.lit'>"
+        + "<geoloc xmlns='http://jabber.org/protocol/geoloc'>"
+        + "<accuracy>23</accuracy>"
+        + "<alt>1000</alt>"
+        + "<area>Delhi</area>"
+        + "<bearing>10</bearing>"
+        + "<building>Small Building</building>"
+        + "<country>India</country>"
+        + "<countrycode>IN</countrycode>"
+        + "<datum>Test Datum</datum>"
+        + "<description>My Description</description>"
+        + "<error>90</error>"
+        + "<floor>top</floor>"
+        + "<lat>25.098345</lat>"
+        + "<locality>awesome</locality>"
+        + "<lon>77.992034</lon>"
+        + "<postalcode>110085</postalcode>"
+        + "<region>North</region>"
+        + "<room>small</room>"
+        + "<speed>250.0</speed>"
+        + "<street>Wall Street</street>"
+        + "<text>Unit Testing GeoLocation</text>"
+        + "<timestamp>2004-02-19</timestamp>"
+        + "<tzo>+5:30</tzo>"
+        + "<uri>http://xmpp.org</uri>"
+        + "</geoloc>"
+        + "</message>";
         // @formatter:on
 
-        Message messageWithGeoLocation = (Message) PacketParserUtils.parseStanza(geoLocationString);
+        Message messageWithGeoLocation = PacketParserUtils.parseStanza(geoLocationString);
         assertNotNull(messageWithGeoLocation);
 
-        GeoLocation geoLocation = (GeoLocation) messageWithGeoLocation.getExtension(GeoLocation.ELEMENT,
+        GeoLocation geoLocation = messageWithGeoLocation.getExtension(GeoLocation.ELEMENT,
                         GeoLocation.NAMESPACE);
         assertNotNull(geoLocation);
 
@@ -168,16 +170,16 @@ public class GeoLocationProviderTest extends InitExtensions {
 
         // @formatter:off
         final String geoLocationString = "<message from='portia@merchantofvenice.lit'" 
-        +" to='bassanio@merchantofvenice.lit'>"
-        +"<geoloc xmlns='http://jabber.org/protocol/geoloc'>"
-        +"<error>90</error>"
-        +"</geoloc>"
-        +"</message>";
+        + " to='bassanio@merchantofvenice.lit'>"
+        + "<geoloc xmlns='http://jabber.org/protocol/geoloc'>"
+        + "<error>90</error>"
+        + "</geoloc>"
+        + "</message>";
         // @formatter:on
 
-        Message messageWithGeoLocation = (Message) PacketParserUtils.parseStanza(geoLocationString);
+        Message messageWithGeoLocation = PacketParserUtils.parseStanza(geoLocationString);
 
-        GeoLocation geoLocation = (GeoLocation) messageWithGeoLocation.getExtension(GeoLocation.ELEMENT,
+        GeoLocation geoLocation = messageWithGeoLocation.getExtension(GeoLocation.ELEMENT,
                         GeoLocation.NAMESPACE);
 
         assertEquals((Double) 90d, geoLocation.getError());
@@ -188,16 +190,16 @@ public class GeoLocationProviderTest extends InitExtensions {
 
         // @formatter:off
         final String geoLocationString = "<message from='portia@merchantofvenice.lit'" 
-        +" to='bassanio@merchantofvenice.lit'>"
-        +"<geoloc xmlns='http://jabber.org/protocol/geoloc'>"
-        +"<accuracy>90</accuracy>"
-        +"</geoloc>"
-        +"</message>";
+        + " to='bassanio@merchantofvenice.lit'>"
+        + "<geoloc xmlns='http://jabber.org/protocol/geoloc'>"
+        + "<accuracy>90</accuracy>"
+        + "</geoloc>"
+        + "</message>";
         // @formatter:on
 
-        Message messageWithGeoLocation = (Message) PacketParserUtils.parseStanza(geoLocationString);
+        Message messageWithGeoLocation = PacketParserUtils.parseStanza(geoLocationString);
 
-        GeoLocation geoLocation = (GeoLocation) messageWithGeoLocation.getExtension(GeoLocation.ELEMENT,
+        GeoLocation geoLocation = messageWithGeoLocation.getExtension(GeoLocation.ELEMENT,
                         GeoLocation.NAMESPACE);
 
         assertEquals((Double) 90d, geoLocation.getAccuracy());
@@ -208,17 +210,17 @@ public class GeoLocationProviderTest extends InitExtensions {
 
         // @formatter:off
         final String geoLocationString = "<message from='portia@merchantofvenice.lit'" 
-        +" to='bassanio@merchantofvenice.lit'>"
-        +"<geoloc xmlns='http://jabber.org/protocol/geoloc'>"
-        +"<accuracy>90</accuracy>"
-        +"<error>100</error>"
-        +"</geoloc>"
-        +"</message>";
+        + " to='bassanio@merchantofvenice.lit'>"
+        + "<geoloc xmlns='http://jabber.org/protocol/geoloc'>"
+        + "<accuracy>90</accuracy>"
+        + "<error>100</error>"
+        + "</geoloc>"
+        + "</message>";
         // @formatter:on
 
-        Message messageWithGeoLocation = (Message) PacketParserUtils.parseStanza(geoLocationString);
+        Message messageWithGeoLocation = PacketParserUtils.parseStanza(geoLocationString);
 
-        GeoLocation geoLocation = (GeoLocation) messageWithGeoLocation.getExtension(GeoLocation.ELEMENT,
+        GeoLocation geoLocation = messageWithGeoLocation.getExtension(GeoLocation.ELEMENT,
                         GeoLocation.NAMESPACE);
 
         assertEquals((Double) 90d, geoLocation.getAccuracy());

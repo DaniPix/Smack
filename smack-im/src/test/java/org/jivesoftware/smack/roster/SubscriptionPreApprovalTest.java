@@ -26,14 +26,15 @@ import org.jivesoftware.smack.DummyConnection;
 import org.jivesoftware.smack.SmackException.FeatureNotSupportedException;
 import org.jivesoftware.smack.im.InitSmackIm;
 import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.IQ.Type;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.roster.RosterTest.TestRosterListener;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jivesoftware.smack.roster.packet.RosterPacket.Item;
 import org.jivesoftware.smack.roster.packet.RosterPacket.ItemType;
 import org.jivesoftware.smack.roster.packet.SubscriptionPreApproval;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +71,7 @@ public class SubscriptionPreApprovalTest extends InitSmackIm {
         connection = null;
     }
 
-    @Test(expected=FeatureNotSupportedException.class)
+    @Test(expected = FeatureNotSupportedException.class)
     public void testPreApprovalNotSupported() throws Throwable {
         final Jid contactJID = JidCreate.from("preapproval@example.com");
         roster.preApprove(contactJID.asBareJid());
@@ -149,7 +150,7 @@ public class SubscriptionPreApprovalTest extends InitSmackIm {
          */
         abstract void verifyRosterUpdateRequest(final RosterPacket updateRequest);
         /**
-         * Overwrite this method to check if recieved pre-approval request is valid
+         * Overwrite this method to check if received pre-approval request is valid
          *
          * @param preApproval the request which would be sent to server.
          */

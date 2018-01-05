@@ -17,18 +17,19 @@
 
 package org.jivesoftware.smackx.xdata.packet;
 
-import org.jivesoftware.smack.packet.Element;
-import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.packet.ExtensionElement;
-import org.jivesoftware.smack.util.XmlStringBuilder;
-import org.jivesoftware.smackx.xdata.FormField;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.jivesoftware.smack.packet.Element;
+import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.util.XmlStringBuilder;
+
+import org.jivesoftware.smackx.xdata.FormField;
 
 /**
  * Represents a form that could be use for gathering data as well as for reporting data
@@ -72,9 +73,9 @@ public class DataForm implements ExtensionElement {
     private String title;
     private final List<String> instructions = new ArrayList<>();
     private ReportedData reportedData;
-    private final List<Item> items = new ArrayList<Item>();
+    private final List<Item> items = new ArrayList<>();
     private final Map<String, FormField> fields = new LinkedHashMap<>();
-    private final List<Element> extensionElements = new ArrayList<Element>();
+    private final List<Element> extensionElements = new ArrayList<>();
 
     public DataForm(Type type) {
         this.type = type;
@@ -92,7 +93,7 @@ public class DataForm implements ExtensionElement {
 
     /**
      * Returns the description of the data. It is similar to the title on a web page or an X 
-     * window.  You can put a <title/> on either a form to fill out, or a set of data results.
+     * window.  You can put a &lt;title/&gt; on either a form to fill out, or a set of data results.
      * 
      * @return description of the data.
      */
@@ -110,7 +111,7 @@ public class DataForm implements ExtensionElement {
      */
     public List<String> getInstructions() {
         synchronized (instructions) {
-            return Collections.unmodifiableList(new ArrayList<String>(instructions));
+            return Collections.unmodifiableList(new ArrayList<>(instructions));
         }
     }
 
@@ -130,7 +131,7 @@ public class DataForm implements ExtensionElement {
      */
     public List<Item> getItems() {
         synchronized (items) {
-            return Collections.unmodifiableList(new ArrayList<Item>(items));
+            return Collections.unmodifiableList(new ArrayList<>(items));
         }
     }
 
@@ -183,7 +184,7 @@ public class DataForm implements ExtensionElement {
 
     /**
      * Sets the description of the data. It is similar to the title on a web page or an X window.
-     * You can put a <title/> on either a form to fill out, or a set of data results.
+     * You can put a &lt;title/&gt; on either a form to fill out, or a set of data results.
      * 
      * @param title description of the data.
      */
@@ -337,7 +338,7 @@ public class DataForm implements ExtensionElement {
     public static class ReportedData {
         public static final String ELEMENT = "reported";
 
-        private List<FormField> fields = new ArrayList<FormField>();
+        private List<FormField> fields = new ArrayList<>();
 
         public ReportedData(List<FormField> fields) {
             this.fields = fields;
@@ -349,7 +350,7 @@ public class DataForm implements ExtensionElement {
          * @return the fields returned from a search.
          */
         public List<FormField> getFields() {
-            return Collections.unmodifiableList(new ArrayList<FormField>(fields));
+            return Collections.unmodifiableList(new ArrayList<>(fields));
         }
 
         public CharSequence toXML() {
@@ -373,7 +374,7 @@ public class DataForm implements ExtensionElement {
     public static class Item {
         public static final String ELEMENT = "item";
 
-        private List<FormField> fields = new ArrayList<FormField>();
+        private List<FormField> fields = new ArrayList<>();
 
         public Item(List<FormField> fields) {
             this.fields = fields;
@@ -385,7 +386,7 @@ public class DataForm implements ExtensionElement {
          * @return the fields that define the data that goes with the item.
          */
         public List<FormField> getFields() {
-            return Collections.unmodifiableList(new ArrayList<FormField>(fields));
+            return Collections.unmodifiableList(new ArrayList<>(fields));
         }
 
         public CharSequence toXML() {

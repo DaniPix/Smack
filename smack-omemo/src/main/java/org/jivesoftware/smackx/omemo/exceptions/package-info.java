@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2015 Florian Schmaus
+ * Copyright 2017 Paul Schaub
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
- * TODO describe me
+ * Exceptions.
+ * 
+ * @author Paul Schaub
+ * @see <a href="https://conversations.im/xeps/multi-end.html">XEP-0384: OMEMO</a>
  */
-package org.jivesoftware.smackx.iqprivate;
+package org.jivesoftware.smackx.omemo.exceptions;

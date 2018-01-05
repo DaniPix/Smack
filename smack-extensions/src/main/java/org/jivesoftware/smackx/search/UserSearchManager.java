@@ -16,15 +16,17 @@
  */
 package org.jivesoftware.smackx.search;
 
+import java.util.List;
+
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
+
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.xdata.Form;
-import org.jxmpp.jid.DomainBareJid;
 
-import java.util.List;
+import org.jxmpp.jid.DomainBareJid;
 
 /**
  * The UserSearchManager is a facade built upon Jabber Search Services (XEP-055) to allow for searching
@@ -46,8 +48,8 @@ import java.util.List;
  */
 public class UserSearchManager {
 
-    private XMPPConnection con;
-    private UserSearch userSearch;
+    private final XMPPConnection con;
+    private final UserSearch userSearch;
 
     /**
      * Creates a new UserSearchManager.

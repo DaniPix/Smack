@@ -32,6 +32,7 @@ import org.jivesoftware.smack.util.ByteUtils;
 import org.jivesoftware.smack.util.SHA1;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.util.stringencoder.Base64;
+
 import org.jxmpp.util.cache.Cache;
 import org.jxmpp.util.cache.LruCache;
 
@@ -232,7 +233,7 @@ public abstract class ScramMechanism extends SASLMechanism {
         }
 
         String cbName = getChannelBindingName();
-        assert(StringUtils.isNotEmpty(cbName));
+        assert (StringUtils.isNotEmpty(cbName));
 
         return cbName + ',' + authzidPortion + ",";
     }
@@ -245,10 +246,13 @@ public abstract class ScramMechanism extends SASLMechanism {
             return gs2Header;
         }
 
-        return ByteUtils.concact(gs2Header, cbindData);
+        return ByteUtils.concat(gs2Header, cbindData);
     }
 
     protected String getChannelBindingName() {
+        // Check if we are using TLS and if a "-PLUS" variant of this mechanism is enabled. Assuming that the "-PLUS"
+        // variants always have precedence before the non-"-PLUS" variants this means that the server did not announce
+        // the "-PLUS" variant, as otherwise we would have tried it.
         if (sslSession != null && connectionConfiguration.isEnabledSaslMechanism(getName() + "-PLUS")) {
             // Announce that we support Channel Binding, i.e., the '-PLUS' flavor of this SASL mechanism, but that we
             // believe the server does not.
@@ -390,7 +394,7 @@ public abstract class ScramMechanism extends SASLMechanism {
             throw new AssertionError();
         }
         // U1 := HMAC(str, salt + INT(1))
-        byte[] u = hmac(key, ByteUtils.concact(salt, ONE));
+        byte[] u = hmac(key, ByteUtils.concat(salt, ONE));
         byte[] res = u.clone();
         for (int i = 1; i < iterations; i++) {
             u = hmac(key, u);

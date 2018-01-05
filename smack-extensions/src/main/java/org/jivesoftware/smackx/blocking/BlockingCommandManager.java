@@ -36,10 +36,12 @@ import org.jivesoftware.smack.iqrequest.AbstractIqRequestHandler;
 import org.jivesoftware.smack.iqrequest.IQRequestHandler.Mode;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
+
 import org.jivesoftware.smackx.blocking.element.BlockContactsIQ;
 import org.jivesoftware.smackx.blocking.element.BlockListIQ;
 import org.jivesoftware.smackx.blocking.element.UnblockContactsIQ;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -101,7 +103,7 @@ public final class BlockingCommandManager extends Manager {
                         BlockContactsIQ blockContactIQ = (BlockContactsIQ) iqRequest;
 
                         if (blockListCached == null) {
-                            blockListCached = new ArrayList<Jid>();
+                            blockListCached = new ArrayList<>();
                         }
 
                         List<Jid> blockedJids = blockContactIQ.getJids();
@@ -123,7 +125,7 @@ public final class BlockingCommandManager extends Manager {
                 UnblockContactsIQ unblockContactIQ = (UnblockContactsIQ) iqRequest;
 
                 if (blockListCached == null) {
-                    blockListCached = new ArrayList<Jid>();
+                    blockListCached = new ArrayList<>();
                 }
 
                 List<Jid> unblockedJids = unblockContactIQ.getJids();

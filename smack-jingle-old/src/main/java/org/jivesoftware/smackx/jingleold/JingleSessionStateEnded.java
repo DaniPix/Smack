@@ -19,6 +19,7 @@ package org.jivesoftware.smackx.jingleold;
 import java.util.logging.Logger;
 
 import org.jivesoftware.smack.packet.IQ;
+
 import org.jivesoftware.smackx.jingleold.packet.Jingle;
 import org.jivesoftware.smackx.jingleold.packet.JingleError;
 
@@ -67,7 +68,7 @@ public class JingleSessionStateEnded extends JingleSessionState {
      */
     @Override
     public IQ processJingle(JingleSession session, Jingle jingle, JingleActionEnum action) {
-        IQ response = null;
+        IQ response;
 
         response = session.createJingleError(jingle, JingleError.MALFORMED_STANZA);
 

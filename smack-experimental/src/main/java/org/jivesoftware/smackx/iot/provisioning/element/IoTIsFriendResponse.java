@@ -1,6 +1,6 @@
 /**
  *
- * Copyright © 2016 Florian Schmaus
+ * Copyright © 2016-2017 Florian Schmaus
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,12 @@
 package org.jivesoftware.smackx.iot.provisioning.element;
 
 import org.jivesoftware.smack.packet.IQ;
+
 import org.jxmpp.jid.BareJid;
 
 public class IoTIsFriendResponse extends IQ {
 
-    public static final String ELEMENT = "isFriend";
+    public static final String ELEMENT = "isFriendResponse";
     public static final String NAMESPACE = Constants.IOT_PROVISIONING_NAMESPACE;
 
     private final BareJid jid;
@@ -46,6 +47,7 @@ public class IoTIsFriendResponse extends IQ {
     protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder xml) {
         xml.attribute("jid", jid);
         xml.attribute("result", result);
+        xml.setEmptyElement();
         return xml;
     }
 

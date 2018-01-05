@@ -25,28 +25,29 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
+
 import org.jivesoftware.smackx.bytestreams.ibb.packet.Open;
 import org.jivesoftware.smackx.bytestreams.socks5.packet.Bytestream;
 import org.jivesoftware.smackx.si.packet.StreamInitiation;
+
 import org.jxmpp.jid.Jid;
 
 
 /**
  * The fault tolerant negotiator takes two stream negotiators, the primary and the secondary
- * negotiator. If the primary negotiator fails during the stream negotiaton process, the second
+ * negotiator. If the primary negotiator fails during the stream negotiation process, the second
  * negotiator is used.
  */
 public class FaultTolerantNegotiator extends StreamNegotiator {
 
     private final StreamNegotiator primaryNegotiator;
     private final StreamNegotiator secondaryNegotiator;
-    private final XMPPConnection connection;
 
     public FaultTolerantNegotiator(XMPPConnection connection, StreamNegotiator primary,
             StreamNegotiator secondary) {
+        super(connection);
         this.primaryNegotiator = primary;
         this.secondaryNegotiator = secondary;
-        this.connection = connection;
     }
 
     @Override
@@ -64,20 +65,20 @@ public class FaultTolerantNegotiator extends StreamNegotiator {
     @Override
     public InputStream createIncomingStream(final StreamInitiation initiation) throws SmackException, XMPPErrorException, InterruptedException {
         // This could be either an xep47 ibb 'open' iq or an xep65 streamhost iq
-        IQ initationSet = initiateIncomingStream(connection, initiation);
+        IQ initiationSet = initiateIncomingStream(connection(), initiation);
 
-        StreamNegotiator streamNegotiator = determineNegotiator(initationSet);
+        StreamNegotiator streamNegotiator = determineNegotiator(initiationSet);
 
-        return streamNegotiator.negotiateIncomingStream(initationSet);
+        return streamNegotiator.negotiateIncomingStream(initiationSet);
     }
 
     private StreamNegotiator determineNegotiator(Stanza streamInitiation) {
         if (streamInitiation instanceof Bytestream) {
             return primaryNegotiator;
-        } else if (streamInitiation instanceof Open){
+        } else if (streamInitiation instanceof Open) {
             return secondaryNegotiator;
         } else {
-            throw new IllegalStateException("Unknown stream initation type");
+            throw new IllegalStateException("Unknown stream initiation type");
         }
     }
 

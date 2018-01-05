@@ -19,11 +19,12 @@ package org.jivesoftware.smackx.workgroup.packet;
 
 import java.io.IOException;
 
-import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.IQChildElementXmlStringBuilder;
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smack.util.XmlStringBuilder;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -132,7 +133,7 @@ public class RoomInvitation implements ExtensionElement {
     /**
      * Type of entity being invited to a groupchat support session.
      */
-    public static enum Type {
+    public enum Type {
         /**
          * A user is being invited to a groupchat support session. The user could be another agent
          * or just a regular XMPP user.

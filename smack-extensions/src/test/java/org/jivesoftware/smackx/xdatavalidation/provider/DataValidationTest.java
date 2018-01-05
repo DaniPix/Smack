@@ -23,10 +23,12 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import org.jivesoftware.smack.test.util.TestUtils;
+
 import org.jivesoftware.smackx.xdatavalidation.packet.ValidateElement;
 import org.jivesoftware.smackx.xdatavalidation.packet.ValidateElement.BasicValidateElement;
 import org.jivesoftware.smackx.xdatavalidation.packet.ValidateElement.ListRange;
 import org.jivesoftware.smackx.xdatavalidation.packet.ValidateElement.RangeValidateElement;
+
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -122,7 +124,7 @@ public class DataValidationTest {
         assertEquals(TEST_OUTPUT_RANGE2, output);
     }
 
-    @Test(expected=NumberFormatException.class)
+    @Test(expected = NumberFormatException.class)
     public void testRangeFailure() throws IOException, XmlPullParserException {
             XmlPullParser parser = getParser(TEST_OUTPUT_FAIL);
             DataValidationProvider.parse(parser);

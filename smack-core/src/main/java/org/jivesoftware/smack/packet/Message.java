@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.jivesoftware.smack.util.TypedCloneable;
 import org.jivesoftware.smack.util.XmlStringBuilder;
+
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -488,11 +489,9 @@ public final class Message extends Stanza implements TypedCloneable<Message> {
         // Add the subject in other languages
         for (Subject subject : getSubjects()) {
             // Skip the default language
-            if(subject.equals(defaultSubject))
+            if (subject.equals(defaultSubject))
                 continue;
-            buf.halfOpenElement("subject").xmllangAttribute(subject.language).rightAngleBracket();
-            buf.escape(subject.subject);
-            buf.closeElement("subject");
+            buf.append(subject.toXML());
         }
         // Add the body in the default language
         Body defaultBody = getMessageBody(null);
@@ -502,11 +501,9 @@ public final class Message extends Stanza implements TypedCloneable<Message> {
         // Add the bodies in other languages
         for (Body body : getBodies()) {
             // Skip the default language
-            if(body.equals(defaultBody))
+            if (body.equals(defaultBody))
                 continue;
-            buf.halfOpenElement(BODY).xmllangAttribute(body.getLanguage()).rightAngleBracket();
-            buf.escape(body.getMessage());
-            buf.closeElement(BODY);
+            buf.append(body.toXML());
         }
         buf.optElement("thread", thread);
         // Append the error subpacket if the message type is an error.
@@ -535,7 +532,10 @@ public final class Message extends Stanza implements TypedCloneable<Message> {
     /**
      * Represents a message subject, its language and the content of the subject.
      */
-    public static final class Subject {
+    public static final class Subject implements ExtensionElement {
+
+        public static final String ELEMENT = "subject";
+        public static final String NAMESPACE = StreamOpen.CLIENT_NAMESPACE;
 
         private final String subject;
         private final String language;
@@ -595,12 +595,34 @@ public final class Message extends Stanza implements TypedCloneable<Message> {
             return this.language.equals(other.language) && this.subject.equals(other.subject);
         }
 
+        @Override
+        public String getElementName() {
+            return ELEMENT;
+        }
+
+        @Override
+        public String getNamespace() {
+            return NAMESPACE;
+        }
+
+        @Override
+        public XmlStringBuilder toXML() {
+            XmlStringBuilder xml = new XmlStringBuilder();
+            xml.halfOpenElement(getElementName()).xmllangAttribute(getLanguage()).rightAngleBracket();
+            xml.escape(subject);
+            xml.closeElement(getElementName());
+            return xml;
+        }
+
     }
 
     /**
      * Represents a message body, its language and the content of the message.
      */
-    public static final class Body {
+    public static final class Body implements ExtensionElement {
+
+        public static final String ELEMENT = "body";
+        public static final String NAMESPACE = StreamOpen.CLIENT_NAMESPACE;
 
         private final String message;
         private final String language;
@@ -657,6 +679,25 @@ public final class Message extends Stanza implements TypedCloneable<Message> {
             Body other = (Body) obj;
             // simplified comparison because language and message are always set
             return this.language.equals(other.language) && this.message.equals(other.message);
+        }
+
+        @Override
+        public String getElementName() {
+            return ELEMENT;
+        }
+
+        @Override
+        public String getNamespace() {
+            return NAMESPACE;
+        }
+
+        @Override
+        public XmlStringBuilder toXML() {
+            XmlStringBuilder xml = new XmlStringBuilder();
+            xml.halfOpenElement(getElementName()).xmllangAttribute(getLanguage()).rightAngleBracket();
+            xml.escape(message);
+            xml.closeElement(getElementName());
+            return xml;
         }
 
     }

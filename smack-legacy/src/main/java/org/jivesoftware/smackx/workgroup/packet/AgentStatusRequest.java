@@ -17,16 +17,17 @@
 
 package org.jivesoftware.smackx.workgroup.packet;
 
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.provider.IQProvider;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.provider.IQProvider;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * Agent status request packet. This stanza(/packet) is used by agents to request the list of
@@ -73,11 +74,11 @@ public class AgentStatusRequest extends IQ {
     protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder buf) {
         buf.rightAngleBracket();
         synchronized (agents) {
-            for (Iterator<Item> i=agents.iterator(); i.hasNext(); ) {
+            for (Iterator<Item> i = agents.iterator(); i.hasNext(); ) {
                 Item item = i.next();
                 buf.append("<agent jid=\"").append(item.getJID()).append("\">");
                 if (item.getName() != null) {
-                    buf.append("<name xmlns=\""+ AgentInfo.NAMESPACE + "\">");
+                    buf.append("<name xmlns=\"" + AgentInfo.NAMESPACE + "\">");
                     buf.append(item.getName());
                     buf.append("</name>");
                 }
@@ -89,9 +90,9 @@ public class AgentStatusRequest extends IQ {
 
     public static class Item {
 
-        private String jid;
-        private String type;
-        private String name;
+        private final String jid;
+        private final String type;
+        private final String name;
 
         public Item(String jid, String type, String name) {
             this.jid = jid;

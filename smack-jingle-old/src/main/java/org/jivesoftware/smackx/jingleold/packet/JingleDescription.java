@@ -23,12 +23,13 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
+
 import org.jivesoftware.smackx.jingleold.media.PayloadType;
 
 /**
  * Jingle content description.
  *
- * @author Alvaro Saurin <alvaro.saurin@gmail.com>
+ * @author Alvaro Saurin
  */
 public abstract class JingleDescription implements ExtensionElement {
 
@@ -40,7 +41,7 @@ public abstract class JingleDescription implements ExtensionElement {
 
     // non-static
 
-    private final List<PayloadType> payloads = new ArrayList<PayloadType>();
+    private final List<PayloadType> payloads = new ArrayList<>();
 
     /**
      * Creates a content description..
@@ -113,7 +114,7 @@ public abstract class JingleDescription implements ExtensionElement {
      */
     public List<PayloadType> getPayloadTypesList() {
         synchronized (payloads) {
-            return new ArrayList<PayloadType>(payloads);
+            return new ArrayList<>(payloads);
         }
     }
 
@@ -123,7 +124,7 @@ public abstract class JingleDescription implements ExtensionElement {
      * @return a list of PayloadType.Audio
      */
     public List<PayloadType> getAudioPayloadTypesList() {
-        ArrayList<PayloadType> result = new ArrayList<PayloadType>();
+        ArrayList<PayloadType> result = new ArrayList<>();
         Iterator<PayloadType> jinglePtsIter = getPayloadTypes();
 
         while (jinglePtsIter.hasNext()) {

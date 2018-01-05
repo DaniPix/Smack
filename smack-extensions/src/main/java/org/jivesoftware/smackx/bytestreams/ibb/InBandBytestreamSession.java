@@ -25,8 +25,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.SmackException.NotLoggedInException;
 import org.jivesoftware.smack.StanzaListener;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.filter.AndFilter;
 import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.filter.StanzaTypeFilter;
@@ -35,11 +36,13 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.util.stringencoder.Base64;
+
 import org.jivesoftware.smackx.bytestreams.BytestreamSession;
 import org.jivesoftware.smackx.bytestreams.ibb.packet.Close;
 import org.jivesoftware.smackx.bytestreams.ibb.packet.Data;
 import org.jivesoftware.smackx.bytestreams.ibb.packet.DataPacketExtension;
 import org.jivesoftware.smackx.bytestreams.ibb.packet.Open;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -187,7 +190,8 @@ public class InBandBytestreamSession implements BytestreamSession {
     /**
      * This method is invoked if one of the streams has been closed locally, if an error occurred
      * locally or if the whole session should be closed.
-     * 
+     *
+     * @param in do we want to close the Input- or OutputStream?
      * @throws IOException if an error occurs while sending the close request
      */
     protected synchronized void closeByLocal(boolean in) throws IOException {
@@ -529,7 +533,7 @@ public class InBandBytestreamSession implements BytestreamSession {
                 @Override
                 public void processStanza(Stanza packet) {
                     // get data packet extension
-                    DataPacketExtension data = (DataPacketExtension) packet.getExtension(
+                    DataPacketExtension data = packet.getExtension(
                                     DataPacketExtension.ELEMENT,
                                     DataPacketExtension.NAMESPACE);
 
@@ -845,8 +849,9 @@ public class InBandBytestreamSession implements BytestreamSession {
      * @param data
      * @throws NotConnectedException
      * @throws InterruptedException 
+     * @throws NotLoggedInException 
      */
-    public void processIQPacket(Data data) throws NotConnectedException, InterruptedException {
+    public void processIQPacket(Data data) throws NotConnectedException, InterruptedException, NotLoggedInException {
         inputStream.dataPacketListener.processStanza(data);
     }
 

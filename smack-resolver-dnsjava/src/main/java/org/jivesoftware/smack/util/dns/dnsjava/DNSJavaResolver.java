@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2013-2016 Florian Schmaus
+ * Copyright 2013-2017 Florian Schmaus
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.jivesoftware.smack.util.DNSUtil;
 import org.jivesoftware.smack.util.dns.DNSResolver;
 import org.jivesoftware.smack.util.dns.HostAddress;
 import org.jivesoftware.smack.util.dns.SRVRecord;
+
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TextParseException;
@@ -37,7 +38,7 @@ import org.xbill.DNS.Type;
  */
 public class DNSJavaResolver extends DNSResolver implements SmackInitializer {
 
-    private static DNSJavaResolver instance = new DNSJavaResolver();
+    private static final DNSJavaResolver instance = new DNSJavaResolver();
 
     public static DNSResolver getInstance() {
         return instance;
@@ -49,7 +50,7 @@ public class DNSJavaResolver extends DNSResolver implements SmackInitializer {
 
     @Override
     protected List<SRVRecord> lookupSRVRecords0(String name, List<HostAddress> failedAddresses, DnssecMode dnssecMode) {
-        List<SRVRecord> res = new ArrayList<SRVRecord>();
+        List<SRVRecord> res = new ArrayList<>();
 
         Lookup lookup;
         try {
@@ -72,7 +73,7 @@ public class DNSJavaResolver extends DNSResolver implements SmackInitializer {
                 int weight = srvRecord.getWeight();
 
                 List<InetAddress> hostAddresses = lookupHostAddress0(host, failedAddresses, dnssecMode);
-                if (hostAddresses == null) {
+                if (shouldContinue(name, host, hostAddresses)) {
                     continue;
                 }
 

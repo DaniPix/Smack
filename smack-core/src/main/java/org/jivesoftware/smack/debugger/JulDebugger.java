@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2014 Florian Schmaus
+ * Copyright 2014-2017 Florian Schmaus
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,20 @@
  */
 package org.jivesoftware.smack.debugger;
 
-import org.jivesoftware.smack.XMPPConnection;
-
-import java.io.Reader;
-import java.io.Writer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.jivesoftware.smack.XMPPConnection;
 
 /**
  * Very simple debugger that prints to the console (stdout) the sent and received stanzas. Use
  * this debugger with caution since printing to the console is an expensive operation that may
- * even block the thread since only one thread may print at a time.<p>
- * <p/>
+ * even block the thread since only one thread may print at a time.
+ * <p>
  * It is possible to not only print the raw sent and received stanzas but also the interpreted
  * packets by Smack. By default interpreted packets won't be printed. To enable this feature
  * just change the <tt>printInterpreted</tt> static variable to <tt>true</tt>.
+ * </p>
  *
  * @author Gaston Dombiak
  */
@@ -38,8 +37,8 @@ public class JulDebugger extends AbstractDebugger {
 
     private static final Logger LOGGER = Logger.getLogger(JulDebugger.class.getName());
 
-    public JulDebugger(XMPPConnection connection, Writer writer, Reader reader) {
-        super(connection, writer, reader);
+    public JulDebugger(XMPPConnection connection) {
+        super(connection);
     }
 
     @Override

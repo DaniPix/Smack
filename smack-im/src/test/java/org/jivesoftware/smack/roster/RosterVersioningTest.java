@@ -26,10 +26,10 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.jivesoftware.smack.ConnectionConfiguration.Builder;
 import org.jivesoftware.smack.DummyConnection;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.ConnectionConfiguration.Builder;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.Stanza;
@@ -39,6 +39,7 @@ import org.jivesoftware.smack.roster.packet.RosterPacket.Item;
 import org.jivesoftware.smack.roster.packet.RosterPacket.ItemType;
 import org.jivesoftware.smack.roster.rosterstore.DirectoryRosterStore;
 import org.jivesoftware.smack.roster.rosterstore.RosterStore;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -107,13 +108,13 @@ public class RosterVersioningTest {
         Collection<RosterEntry> entries = roster.getEntries();
         assertSame("Size of the roster", 3, entries.size());
 
-        HashSet<Item> items = new HashSet<Item>();
+        HashSet<Item> items = new HashSet<>();
         for (RosterEntry entry : entries) {
             items.add(RosterEntry.toRosterItem(entry));
         }
         RosterStore store = DirectoryRosterStore.init(tmpFolder.newFolder());
         populateStore(store);
-        assertEquals("Elements of the roster", new HashSet<Item>(store.getEntries()), items);
+        assertEquals("Elements of the roster", new HashSet<>(store.getEntries()), items);
 
         for (RosterEntry entry : entries) {
             assertTrue("joe stevens".equals(entry.getName()) || "geoff hurley".equals(entry.getName())
@@ -142,7 +143,7 @@ public class RosterVersioningTest {
         // but a shortcut in the test implementation.
         Stanza sentPacket = connection.getSentPacket();
         if (sentPacket instanceof RosterPacket) {
-            RosterPacket sentRP = (RosterPacket)sentPacket;
+            RosterPacket sentRP = (RosterPacket) sentPacket;
             RosterPacket answer = new RosterPacket();
             answer.setStanzaId(sentRP.getStanzaId());
             answer.setType(Type.result);
@@ -167,7 +168,7 @@ public class RosterVersioningTest {
         RosterStore store = roster.getRosterStore();
         assertEquals("Size of store", 1, store.getEntries().size());
         Item item = store.getEntry(vaglafItem.getJid());
-        assertNotNull("Store contains vaglaf entry");
+        assertNotNull("Store contains vaglaf entry", item);
         assertEquals("vaglaf entry in store equals the sent entry", vaglafItem, item);
     }
 
@@ -200,11 +201,11 @@ public class RosterVersioningTest {
             assertNotNull("Expect vaglaf to be added", storedItem);
             assertEquals("Expect vaglaf to be equal to pushed item", pushedItem, storedItem);
 
-            Collection<Item> rosterItems = new HashSet<Item>();
+            Collection<Item> rosterItems = new HashSet<>();
             for (RosterEntry entry : roster.getEntries()) {
                 rosterItems.add(RosterEntry.toRosterItem(entry));
             }
-            assertEquals(rosterItems, new HashSet<Item>(store.getEntries()));
+            assertEquals(rosterItems, new HashSet<>(store.getEntries()));
         }
 
         // Simulate a roster push removing vaglaf
@@ -254,7 +255,7 @@ public class RosterVersioningTest {
         // but a shortcut in the test implementation.
         Stanza sentPacket = connection.getSentPacket();
         if (sentPacket instanceof RosterPacket) {
-            final IQ emptyIQ = IQ.createResultIQ((RosterPacket)sentPacket);
+            final IQ emptyIQ = IQ.createResultIQ((RosterPacket) sentPacket);
             connection.processStanza(emptyIQ);
         } else {
             assertTrue("Expected to get a RosterPacket ", false);

@@ -20,8 +20,10 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
+
 import org.jivesoftware.smackx.bytestreams.ibb.InBandBytestreamRequest;
 import org.jivesoftware.smackx.bytestreams.socks5.Socks5BytestreamRequest;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -39,14 +41,14 @@ public interface BytestreamRequest {
      * 
      * @return the sender of the bytestream open request
      */
-    public Jid getFrom();
+    Jid getFrom();
 
     /**
      * Returns the session ID of the bytestream open request.
      * 
      * @return the session ID of the bytestream open request
      */
-    public String getSessionID();
+    String getSessionID();
 
     /**
      * Accepts the bytestream open request and returns the session to send/receive data.
@@ -58,13 +60,13 @@ public interface BytestreamRequest {
      * @throws NoResponseException 
      * @throws SmackException 
      */
-    public BytestreamSession accept() throws InterruptedException, NoResponseException, XMPPErrorException, SmackException;
+    BytestreamSession accept() throws InterruptedException, XMPPErrorException, SmackException;
 
     /**
      * Rejects the bytestream request by sending a reject error to the initiator.
      * @throws NotConnectedException 
      * @throws InterruptedException 
      */
-    public void reject() throws NotConnectedException, InterruptedException;
+    void reject() throws NotConnectedException, InterruptedException;
 
 }

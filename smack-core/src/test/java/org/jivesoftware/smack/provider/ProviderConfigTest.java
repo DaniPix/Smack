@@ -19,10 +19,10 @@ package org.jivesoftware.smack.provider;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.junit.Assert;
-
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.util.FileUtils;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParser;
 
@@ -54,7 +54,7 @@ public class ProviderConfigTest {
     }
 
     @Test
-    public void addClasspathFileLoaderProvider() throws Exception{
+    public void addClasspathFileLoaderProvider() throws Exception {
         ProviderManager.addLoader(new ProviderFileLoader(FileUtils.getStreamForUrl("classpath:test.providers", null)));
         Assert.assertNotNull(ProviderManager.getIQProvider("provider", "test:file_provider"));
     }

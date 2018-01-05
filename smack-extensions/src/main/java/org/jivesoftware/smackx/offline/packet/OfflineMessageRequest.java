@@ -17,15 +17,16 @@
 
 package org.jivesoftware.smackx.offline.packet;
 
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.provider.IQProvider;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.provider.IQProvider;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * Represents a request to get some or all the offline messages of a user. This class can also
@@ -47,15 +48,15 @@ public class OfflineMessageRequest extends IQ {
     }
 
     /**
-     * Returns a List of item childs that holds information about offline messages to
+     * Returns a List of item children that holds information about offline messages to
      * view or delete.
      *
-     * @return a List of item childs that holds information about offline messages to
+     * @return a List of item children that holds information about offline messages to
      *         view or delete.
      */
     public List<Item> getItems() {
         synchronized (items) {
-            return Collections.unmodifiableList(new ArrayList<Item>(items));
+            return Collections.unmodifiableList(new ArrayList<>(items));
         }
     }
 
@@ -111,8 +112,7 @@ public class OfflineMessageRequest extends IQ {
         buf.rightAngleBracket();
 
         synchronized (items) {
-            for (int i = 0; i < items.size(); i++) {
-                Item item = items.get(i);
+            for (Item item : items) {
                 buf.append(item.toXML());
             }
         }

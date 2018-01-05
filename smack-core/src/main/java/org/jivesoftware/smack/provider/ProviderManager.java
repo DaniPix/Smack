@@ -23,9 +23,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jivesoftware.smack.SmackConfiguration;
-import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.util.StringUtils;
+
 import org.jxmpp.util.XmppStringUtils;
 
 /**
@@ -44,7 +45,7 @@ import org.jxmpp.util.XmppStringUtils;
  *      <li>jabber:iq:register</ul>
  *
  * Because many more IQ types are part of XMPP and its extensions, a pluggable IQ parsing
- * mechanism is provided. IQ providers are registered programatically or by creating a
+ * mechanism is provided. IQ providers are registered programmatically or by creating a
  * providers file. The file is an XML
  * document that contains one or more iqProvider entries, as in the following example:
  *
@@ -54,7 +55,7 @@ import org.jxmpp.util.XmppStringUtils;
  *     &lt;iqProvider&gt;
  *         &lt;elementName&gt;query&lt;/elementName&gt;
  *         &lt;namespace&gt;jabber:iq:time&lt;/namespace&gt;
- *         &lt;className&gt;org.jivesoftware.smack.packet.Time&lt/className&gt;
+ *         &lt;className&gt;org.jivesoftware.smack.packet.Time&lt;/className&gt;
  *     &lt;/iqProvider&gt;
  * &lt;/smackProviders&gt;</pre>
  *
@@ -90,7 +91,7 @@ import org.jxmpp.util.XmppStringUtils;
  *     &lt;extensionProvider&gt;
  *         &lt;elementName&gt;x&lt;/elementName&gt;
  *         &lt;namespace&gt;jabber:iq:event&lt;/namespace&gt;
- *         &lt;className&gt;org.jivesoftware.smack.packet.MessageEvent&lt/className&gt;
+ *         &lt;className&gt;org.jivesoftware.smack.packet.MessageEvent&lt;/className&gt;
  *     &lt;/extensionProvider&gt;
  * &lt;/smackProviders&gt;</pre>
  *
@@ -99,7 +100,7 @@ import org.jxmpp.util.XmppStringUtils;
  * is found in a packet, parsing will be passed to the correct provider. Each provider
  * can either implement the PacketExtensionProvider interface or be a standard Java Bean. In
  * the former case, each extension provider is responsible for parsing the raw XML stream to
- * contruct an object. In the latter case, bean introspection is used to try to automatically
+ * construct an object. In the latter case, bean introspection is used to try to automatically
  * set the properties of th class using the values in the stanza(/packet) extension sub-element. When an
  * extension provider is not registered for an element name and namespace combination, Smack will
  * store all top-level elements of the sub-packet in DefaultPacketExtension object and then
@@ -206,7 +207,7 @@ public final class ProviderManager {
 
     /**
      * Removes an IQ provider with the specified element name and namespace. This
-     * method is typically called to cleanup providers that are programatically added
+     * method is typically called to cleanup providers that are programmatically added
      * using the {@link #addIQProvider(String, String, Object) addIQProvider} method.
      *
      * @param elementName the XML element name.
@@ -236,7 +237,7 @@ public final class ProviderManager {
      *
      * @param elementName element name associated with extension provider.
      * @param namespace namespace associated with extension provider.
-     * @return the extenion provider.
+     * @return the extension provider.
      */
     public static ExtensionElementProvider<ExtensionElement> getExtensionProvider(String elementName, String namespace) {
         String key = getKey(elementName, namespace);
@@ -268,7 +269,7 @@ public final class ProviderManager {
 
     /**
      * Removes an extension provider with the specified element name and namespace. This
-     * method is typically called to cleanup providers that are programatically added
+     * method is typically called to cleanup providers that are programmatically added
      * using the {@link #addExtensionProvider(String, String, Object) addExtensionProvider} method.
      *
      * @param elementName the XML element name.

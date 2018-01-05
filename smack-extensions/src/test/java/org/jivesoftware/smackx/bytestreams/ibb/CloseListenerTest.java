@@ -23,8 +23,10 @@ import static org.mockito.Mockito.verify;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.XMPPError;
+
 import org.jivesoftware.smackx.InitExtensions;
 import org.jivesoftware.smackx.bytestreams.ibb.packet.Close;
+
 import org.junit.Test;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.JidTestUtil;
@@ -38,8 +40,8 @@ import org.powermock.reflect.Whitebox;
  */
 public class CloseListenerTest extends InitExtensions {
 
-    static final Jid initiatorJID = JidTestUtil.DUMMY_AT_EXAMPLE_ORG_SLASH_DUMMYRESOURCE;
-    static final Jid targetJID = JidTestUtil.FULL_JID_1_RESOURCE_1;
+    private static final Jid initiatorJID = JidTestUtil.DUMMY_AT_EXAMPLE_ORG_SLASH_DUMMYRESOURCE;
+    private static final Jid targetJID = JidTestUtil.FULL_JID_1_RESOURCE_1;
 
     /**
      * If a close request to an unknown session is received it should be replied

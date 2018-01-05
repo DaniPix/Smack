@@ -215,7 +215,15 @@ public abstract class IQ extends Stanza {
      */
     protected abstract IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder xml);
 
+    /**
+     * @deprecated use {@link #initializeAsResultFor(IQ)} instead.
+     */
+    @Deprecated
     protected final void initialzeAsResultFor(IQ request) {
+        initializeAsResultFor(request);
+    }
+
+    protected final void initializeAsResultFor(IQ request) {
         if (!(request.getType() == Type.get || request.getType() == Type.set)) {
             throw new IllegalArgumentException(
                     "IQ must be of type 'set' or 'get'. Original IQ: " + request.toXML());

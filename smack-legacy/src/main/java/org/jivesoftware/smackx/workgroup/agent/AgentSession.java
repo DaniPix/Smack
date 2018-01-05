@@ -17,7 +17,6 @@
 
 package org.jivesoftware.smackx.workgroup.agent;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -29,11 +28,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jivesoftware.smack.StanzaCollector;
-import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.StanzaCollector;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
@@ -45,9 +44,10 @@ import org.jivesoftware.smack.iqrequest.AbstractIqRequestHandler;
 import org.jivesoftware.smack.iqrequest.IQRequestHandler.Mode;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.StandardExtensionElement;
+import org.jivesoftware.smack.packet.Stanza;
+
 import org.jivesoftware.smackx.muc.packet.MUCUser;
 import org.jivesoftware.smackx.search.ReportedData;
 import org.jivesoftware.smackx.workgroup.MetaData;
@@ -75,6 +75,7 @@ import org.jivesoftware.smackx.workgroup.packet.Transcripts;
 import org.jivesoftware.smackx.workgroup.settings.GenericSettings;
 import org.jivesoftware.smackx.workgroup.settings.SearchSettings;
 import org.jivesoftware.smackx.xdata.Form;
+
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -93,9 +94,9 @@ import org.jxmpp.stringprep.XmppStringprepException;
 public class AgentSession {
     private static final Logger LOGGER = Logger.getLogger(AgentSession.class.getName());
 
-    private XMPPConnection connection;
+    private final XMPPConnection connection;
 
-    private Jid workgroupJID;
+    private final Jid workgroupJID;
 
     private boolean online = false;
     private Presence.Mode presenceMode;
@@ -109,10 +110,10 @@ public class AgentSession {
     private final List<QueueUsersListener> queueUsersListeners;
 
     private AgentRoster agentRoster = null;
-    private TranscriptManager transcriptManager;
-    private TranscriptSearchManager transcriptSearchManager;
-    private Agent agent;
-    private StanzaListener packetListener;
+    private final TranscriptManager transcriptManager;
+    private final TranscriptSearchManager transcriptSearchManager;
+    private final Agent agent;
+    private final StanzaListener packetListener;
 
     /**
      * Constructs a new agent session instance. Note, the {@link #setOnline(boolean)}
@@ -136,11 +137,11 @@ public class AgentSession {
 
         this.maxChats = -1;
 
-        this.metaData = new HashMap<String, List<String>>();
+        this.metaData = new HashMap<>();
 
-        offerListeners = new ArrayList<OfferListener>();
-        invitationListeners = new ArrayList<WorkgroupInvitationListener>();
-        queueUsersListeners = new ArrayList<QueueUsersListener>();
+        offerListeners = new ArrayList<>();
+        invitationListeners = new ArrayList<>();
+        queueUsersListeners = new ArrayList<>();
 
         // Create a filter to listen for packets we're interested in.
         OrFilter filter = new OrFilter(
@@ -340,7 +341,7 @@ public class AgentSession {
             StanzaCollector collector = this.connection.createStanzaCollectorAndSend(new AndFilter(
                             new StanzaTypeFilter(Presence.class), FromMatchesFilter.create(workgroupJID)), presence);
 
-            presence = (Presence)collector.nextResultOrThrow();
+            presence = collector.nextResultOrThrow();
 
             // We can safely update this iv since we didn't get any error
             this.online = online;
@@ -362,14 +363,14 @@ public class AgentSession {
      * Sets the agent's current status with the workgroup. The presence mode affects
      * how offers are routed to the agent. The possible presence modes with their
      * meanings are as follows:<ul>
-     * <p/>
+     *
      * <li>Presence.Mode.AVAILABLE -- (Default) the agent is available for more chats
      * (equivalent to Presence.Mode.CHAT).
      * <li>Presence.Mode.DO_NOT_DISTURB -- the agent is busy and should not be disturbed.
      * However, special case, or extreme urgency chats may still be offered to the agent.
      * <li>Presence.Mode.AWAY -- the agent is not available and should not
      * have a chat routed to them (equivalent to Presence.Mode.EXTENDED_AWAY).</ul>
-     * <p/>
+     *
      * The max chats value is the maximum number of chats the agent is willing to have
      * routed to them at once. Some servers may be configured to only accept max chat
      * values in a certain range; for example, between two and five. In that case, the
@@ -390,14 +391,14 @@ public class AgentSession {
     /**
      * Sets the agent's current status with the workgroup. The presence mode affects how offers
      * are routed to the agent. The possible presence modes with their meanings are as follows:<ul>
-     * <p/>
+     *
      * <li>Presence.Mode.AVAILABLE -- (Default) the agent is available for more chats
      * (equivalent to Presence.Mode.CHAT).
      * <li>Presence.Mode.DO_NOT_DISTURB -- the agent is busy and should not be disturbed.
      * However, special case, or extreme urgency chats may still be offered to the agent.
      * <li>Presence.Mode.AWAY -- the agent is not available and should not
      * have a chat routed to them (equivalent to Presence.Mode.EXTENDED_AWAY).</ul>
-     * <p/>
+     *
      * The max chats value is the maximum number of chats the agent is willing to have routed to
      * them at once. Some servers may be configured to only accept max chat values in a certain
      * range; for example, between two and five. In that case, the maxChats value the agent sends
@@ -449,7 +450,7 @@ public class AgentSession {
     /**
      * Sets the agent's current status with the workgroup. The presence mode affects how offers
      * are routed to the agent. The possible presence modes with their meanings are as follows:<ul>
-     * <p/>
+     *
      * <li>Presence.Mode.AVAILABLE -- (Default) the agent is available for more chats
      * (equivalent to Presence.Mode.CHAT).
      * <li>Presence.Mode.DO_NOT_DISTURB -- the agent is busy and should not be disturbed.
@@ -492,7 +493,7 @@ public class AgentSession {
 
     /**
      * Removes a user from the workgroup queue. This is an administrative action that the
-     * <p/>
+     *
      * The agent is not guaranteed of having privileges to perform this action; an exception
      * denying the request may be thrown.
      *
@@ -757,7 +758,7 @@ public class AgentSession {
 
     private void handlePacket(Stanza packet) {
         if (packet instanceof Presence) {
-            Presence presence = (Presence)packet;
+            Presence presence = (Presence) packet;
 
             // The workgroup can send us a number of different presence packets. We
             // check for different packet extensions to see what type of presence
@@ -772,7 +773,7 @@ public class AgentSession {
             }
 
             // QueueOverview packet extensions contain basic information about a queue.
-            QueueOverview queueOverview = (QueueOverview)presence.getExtension(QueueOverview.ELEMENT_NAME, QueueOverview.NAMESPACE);
+            QueueOverview queueOverview = presence.getExtension(QueueOverview.ELEMENT_NAME, QueueOverview.NAMESPACE);
             if (queueOverview != null) {
                 if (queueOverview.getStatus() == null) {
                     queue.setStatus(WorkgroupQueue.Status.CLOSED);
@@ -791,7 +792,7 @@ public class AgentSession {
 
             // QueueDetails packet extensions contain information about the users in
             // a queue.
-            QueueDetails queueDetails = (QueueDetails)packet.getExtension(QueueDetails.ELEMENT_NAME, QueueDetails.NAMESPACE);
+            QueueDetails queueDetails = packet.getExtension(QueueDetails.ELEMENT_NAME, QueueDetails.NAMESPACE);
             if (queueDetails != null) {
                 queue.setUsers(queueDetails.getUsers());
                 // Fire event.
@@ -812,23 +813,23 @@ public class AgentSession {
             }
         }
         else if (packet instanceof Message) {
-            Message message = (Message)packet;
+            Message message = (Message) packet;
 
             // Check if a room invitation was sent and if the sender is the workgroup
-            MUCUser mucUser = (MUCUser)message.getExtension("x",
+            MUCUser mucUser = message.getExtension("x",
                     "http://jabber.org/protocol/muc#user");
             MUCUser.Invite invite = mucUser != null ? mucUser.getInvite() : null;
             if (invite != null && workgroupJID.equals(invite.getFrom())) {
                 String sessionID = null;
                 Map<String, List<String>> metaData = null;
 
-                SessionID sessionIDExt = (SessionID)message.getExtension(SessionID.ELEMENT_NAME,
+                SessionID sessionIDExt = message.getExtension(SessionID.ELEMENT_NAME,
                         SessionID.NAMESPACE);
                 if (sessionIDExt != null) {
                     sessionID = sessionIDExt.getSessionID();
                 }
 
-                MetaData metaDataExt = (MetaData)message.getExtension(MetaData.ELEMENT_NAME,
+                MetaData metaDataExt = message.getExtension(MetaData.ELEMENT_NAME,
                         MetaData.NAMESPACE);
                 if (metaDataExt != null) {
                     metaData = metaDataExt.getMetaData();
@@ -875,7 +876,7 @@ public class AgentSession {
         request.setTo(workgroupJID);
         request.setSessionID(sessionID);
 
-        ChatNotes response = (ChatNotes) connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
+        ChatNotes response = connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
         return response;
     }
 
@@ -884,6 +885,7 @@ public class AgentSession {
      *
      * @param jid the jid of the agent.
      * @param maxSessions the max number of sessions to retrieve.
+     * @param startDate point in time from which on history should get retrieved.
      * @return the chat history associated with a given jid.
      * @throws XMPPException if an error occurs while retrieving the AgentChatHistory.
      * @throws NotConnectedException 
@@ -921,7 +923,7 @@ public class AgentSession {
         request.setType(IQ.Type.get);
         request.setTo(workgroupJID);
 
-        SearchSettings response = (SearchSettings) connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
+        SearchSettings response = connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
         return response;
     }
 
@@ -941,7 +943,7 @@ public class AgentSession {
         request.setTo(workgroupJID);
         request.setPersonal(!global);
 
-        Macros response = (Macros) connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
+        Macros response = connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
         return response.getRootGroup();
     }
 
@@ -989,7 +991,7 @@ public class AgentSession {
      * a user, an agent, a queue or a workgroup. In the case of a queue or a workgroup the workgroup service
      * will decide the best agent to receive the invitation.<p>
      *
-     * This method will return either when the service returned an ACK of the request or if an error occured
+     * This method will return either when the service returned an ACK of the request or if an error occurred
      * while requesting the invitation. After sending the ACK the service will send the invitation to the target
      * entity. When dealing with agents the common sequence of offer-response will be followed. However, when
      * sending an invitation to a user a standard MUC invitation will be sent.<p>
@@ -999,7 +1001,7 @@ public class AgentSession {
      * accepted the offer but failed to join the room.
      *
      * Different situations may lead to a failed invitation. Possible cases are: 1) all agents rejected the
-     * offer and ther are no agents available, 2) the agent that accepted the offer failed to join the room or
+     * offer and there are no agents available, 2) the agent that accepted the offer failed to join the room or
      * 2) the user that received the MUC invitation never replied or joined the room. In any of these cases
      * (or other failing cases) the inviter will get an error message with the failed notification.
      *
@@ -1029,7 +1031,7 @@ public class AgentSession {
      * a user, an agent, a queue or a workgroup. In the case of a queue or a workgroup the workgroup service
      * will decide the best agent to receive the invitation.<p>
      *
-     * This method will return either when the service returned an ACK of the request or if an error occured
+     * This method will return either when the service returned an ACK of the request or if an error occurred
      * while requesting the transfer. After sending the ACK the service will send the invitation to the target
      * entity. When dealing with agents the common sequence of offer-response will be followed. However, when
      * sending an invitation to a user a standard MUC invitation will be sent.<p>
@@ -1078,7 +1080,7 @@ public class AgentSession {
         setting.setType(IQ.Type.get);
         setting.setTo(workgroupJID);
 
-        GenericSettings response = (GenericSettings) connection.createStanzaCollectorAndSend(
+        GenericSettings response = connection.createStanzaCollectorAndSend(
                         setting).nextResultOrThrow();
         return response;
     }
@@ -1088,7 +1090,7 @@ public class AgentSession {
         request.setType(IQ.Type.get);
         request.setTo(workgroupJID);
 
-        MonitorPacket response = (MonitorPacket) connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
+        MonitorPacket response = connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
         return response.isMonitor();
     }
 

@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -64,7 +65,7 @@ public class MonitorPacket extends IQ {
         buf.rightAngleBracket();
 
         if (sessionID != null) {
-            buf.append("<makeOwner sessionID=\""+sessionID+"\"></makeOwner>");
+            buf.append("<makeOwner sessionID=\"" + sessionID + "\"></makeOwner>");
         }
 
         return buf;

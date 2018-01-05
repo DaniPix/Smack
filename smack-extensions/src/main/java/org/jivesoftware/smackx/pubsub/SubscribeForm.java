@@ -23,10 +23,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.UnknownFormatConversionException;
 
-import org.jxmpp.util.XmppDateTime;
 import org.jivesoftware.smackx.xdata.Form;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
+
+import org.jxmpp.util.XmppDateTime;
 
 /**
  * A decorator for a {@link Form} to easily enable reading and updating
@@ -180,7 +181,7 @@ public class SubscribeForm extends Form
      */
     public List<PresenceState> getShowValues()
     {
-        ArrayList<PresenceState> result = new ArrayList<PresenceState>(5);
+        ArrayList<PresenceState> result = new ArrayList<>(5);
 
         for (String state : getFieldValues(SubscribeOptionFields.show_values))
         {
@@ -197,7 +198,7 @@ public class SubscribeForm extends Form
      */
     public void setShowValues(Collection<PresenceState> stateValues)
     {
-        ArrayList<String> values = new ArrayList<String>(stateValues.size());
+        ArrayList<String> values = new ArrayList<>(stateValues.size());
 
         for (PresenceState state : stateValues)
         {

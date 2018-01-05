@@ -146,7 +146,7 @@ public class ImageReceiver extends Canvas {
 
     public void drawTile(int x, int y, BufferedImage bufferedImage) {
         tiles[x][y] = bufferedImage;
-        //repaint(x * tileWidth, y * tileWidth, tileWidth, tileWidth);
+        // repaint(x * tileWidth, y * tileWidth, tileWidth, tileWidth);
         this.getGraphics().drawImage(bufferedImage, tileWidth * x, tileWidth * y, this);
     }
 
@@ -167,8 +167,8 @@ public class ImageReceiver extends Canvas {
         this.decoder = decoder;
     }
 
-    public void stop(){
-        this.on=false;
+    public void stop() {
+        this.on = false;
         socket.close();
     }
 }

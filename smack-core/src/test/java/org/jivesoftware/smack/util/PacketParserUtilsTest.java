@@ -25,7 +25,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.parsers.FactoryConfigurationError;
@@ -33,19 +35,20 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.sasl.SASLError;
 import org.jivesoftware.smack.sasl.packet.SaslStreamElements;
 import org.jivesoftware.smack.sasl.packet.SaslStreamElements.SASLFailure;
 import org.jivesoftware.smack.test.util.TestUtils;
 import org.jivesoftware.smack.test.util.XmlUnitUtils;
+
+import com.jamesmurty.utils.XMLBuilder;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-
-import com.jamesmurty.utils.XMLBuilder;
 
 public class PacketParserUtilsTest {
 
@@ -664,7 +667,7 @@ public class PacketParserUtilsTest {
      * 
      * @throws Exception
      */
-    @Test(expected=XmlPullParserException.class)
+    @Test(expected = XmlPullParserException.class)
     public void invalidMessageBodyContainingTagTest() throws Exception {
         String control = XMLBuilder.create("message")
             .a("from", "romeo@montague.lit/orchard")
@@ -701,7 +704,7 @@ public class PacketParserUtilsTest {
         try {
             PacketParserUtils.parseMessage(PacketParserUtils.getParserFor(invalidControl));
             fail("Exception should be thrown");
-        } catch(XmlPullParserException e) {
+        } catch (XmlPullParserException e) {
             assertTrue(e.getMessage().contains("end tag name </span>"));
         }
 
@@ -710,7 +713,7 @@ public class PacketParserUtilsTest {
         try {
             PacketParserUtils.parseMessage(PacketParserUtils.getParserFor(invalidControl));
             fail("Exception should be thrown");
-        } catch(XmlPullParserException e) {
+        } catch (XmlPullParserException e) {
             assertTrue(e.getMessage().contains("end tag name </body>"));
         }
 
@@ -719,7 +722,7 @@ public class PacketParserUtilsTest {
         try {
             PacketParserUtils.parseMessage(PacketParserUtils.getParserFor(invalidControl));
             fail("Exception should be thrown");
-        } catch(XmlPullParserException e) {
+        } catch (XmlPullParserException e) {
             assertTrue(e.getMessage().contains("end tag name </message>"));
         }
 
@@ -806,7 +809,7 @@ public class PacketParserUtilsTest {
                     IOException, TransformerException, SAXException {
         // @formatter:off
         final String stanza = XMLBuilder.create("outer", "outerNamespace").a("outerAttribute", "outerValue")
-                        .element("inner", "innerNamespace").a("innverAttribute", "innerValue")
+                        .element("inner", "innerNamespace").a("innerAttribute", "innerValue")
                             .element("innermost")
                                 .t("some text")
                         .asString();
@@ -867,4 +870,44 @@ public class PacketParserUtilsTest {
         return otherLanguage;
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void descriptiveTextNullLangPassedMap() throws Exception {
+        final String text = "Dummy descriptive text";
+        Map<String, String> texts = new HashMap<>();
+        texts.put(null, text);
+        XMPPError
+            .getBuilder(XMPPError.Condition.internal_server_error)
+            .setDescriptiveTexts(texts)
+            .build();
+    }
+
+    @Test
+    public void ensureNoEmptyLangInDescriptiveText() throws Exception {
+        final String text = "Dummy descriptive text";
+        Map<String, String> texts = new HashMap<>();
+        texts.put("", text);
+        XMPPError error = XMPPError
+                .getBuilder(XMPPError.Condition.internal_server_error)
+                .setDescriptiveTexts(texts)
+                .build();
+        final String errorXml = XMLBuilder
+                .create(XMPPError.ERROR).a("type", "cancel").up()
+                .element("internal-server-error", XMPPError.NAMESPACE).up()
+                .element("text", XMPPError.NAMESPACE).t(text).up()
+                .asString();
+        XmlUnitUtils.assertSimilar(errorXml, error.toXML());
+    }
+
+    @Test
+    public void ensureNoNullLangInParsedDescriptiveTexts() throws Exception {
+        final String text = "Dummy descriptive text";
+        final String errorXml = XMLBuilder
+            .create(XMPPError.ERROR).a("type", "cancel").up()
+            .element("internal-server-error", XMPPError.NAMESPACE).up()
+            .element("text", XMPPError.NAMESPACE).t(text).up()
+            .asString();
+        XmlPullParser parser = TestUtils.getParser(errorXml);
+        XMPPError error = PacketParserUtils.parseError(parser).build();
+        assertEquals(text, error.getDescriptiveText());
+    }
 }

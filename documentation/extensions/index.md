@@ -1,4 +1,4 @@
-smackSmack Extensions User Manual
+Smack Extensions User Manual
 ============================
 
 The XMPP protocol includes a base protocol and many optional extensions
@@ -56,6 +56,7 @@ Smack Extensions and currently supported XEPs of smack-extensions
 | Stream Initation                            | [XEP-0095](http://xmpp.org/extensions/xep-0095.html) | Initiating a data stream between any two XMPP entities. |
 | [SI File Transfer](filetransfer.md)       | [XEP-0096](http://xmpp.org/extensions/xep-0096.html) | Transfer files between two users over XMPP. |
 | [Entity Capabilities](caps.md)            | [XEP-0115](http://xmpp.org/extensions/xep-0115.html) | Broadcasting and dynamic discovery of entity capabilities. |
+| [Jingle](jingle.html)                       | [XEP-0116](http://xmpp.org/extensions/xep-0166.html) | Initiate and manage sessions between two XMPP entities. |
 | Data Forms Validation                       | [XEP-0122](http://xmpp.org/extensions/xep-0122.html) | Enables an application to specify additional validation guidelines . |
 | Service Administration                      | [XEP-0133](http://xmpp.org/extensions/xep-0133.html) | Recommended best practices for service-level administration of servers and components using Ad-Hoc Commands. |
 | Stream Compression                          | [XEP-0138](http://xmpp.org/extensions/xep-0138.html) | Support for optional compression of the XMPP stream.
@@ -87,12 +88,14 @@ Experimental Smack Extensions and currently supported XEPs of smack-experimental
 | [Internet of Things - Control](iot.md)      | [XEP-0325](http://xmpp.org/extensions/xep-0325.html) | Describes how to control devices or actuators in an XMPP-based sensor netowrk. |
 | [HTTP over XMPP transport](hoxt.md)         | [XEP-0332](http://xmpp.org/extensions/xep-0332.html) | Allows to transport HTTP communication over XMPP peer-to-peer networks. |
 | Chat Markers         			  			  | [XEP-0333](http://xmpp.org/extensions/xep-0333.html) | A solution of marking the last received, displayed and acknowledged message in a chat. |
+| Message Processing Hints                    | [XEP-0334](http://xmpp.org/extensions/xep-0334.html) | Hints to entities routing or receiving a message. |
 | JSON Containers                             | [XEP-0335](http://xmpp.org/extensions/xep-0335.html) | Encapsulation of JSON data within XMPP Stanzas. |
 | [Internet of Things - Discovery](iot.md)    | [XEP-0347](http://xmpp.org/extensions/xep-0347.html) | Describes how Things can be installed and discovered by their owners. |
 | Client State Indication                     | [XEP-0352](http://xmpp.org/extensions/xep-0352.html) | A way for the client to indicate its active/inactive state. |
-| [Push Notifications](pushnotifications.md)  | [XEP-0357](http://xmpp.org/extensions/xep-0357.html) |  Defines a way to manage push notifications from an XMPP Server. |
+| [Push Notifications](pushnotifications.md)  | [XEP-0357](http://xmpp.org/extensions/xep-0357.html) | Defines a way to manage push notifications from an XMPP Server. |
 | HTTP File Upload                            | [XEP-0363](http://xmpp.org/extensions/xep-0363.html) | Protocol to request permissions to upload a file to an HTTP server and get a shareable URL. |
 | [Multi-User Chat Light](muclight.md)        | [XEP-xxxx](http://mongooseim.readthedocs.io/en/latest/open-extensions/xeps/xep-muc-light.html) | Multi-User Chats for mobile XMPP applications and specific enviroment. |
+| [OMEMO Multi End Message and Object Encryption](omemo.md)            | [XEP-XXXX](https://conversations.im/omemo/xep-omemo.html) | Encrypt messages using OMEMO encryption (currently only with smack-omemo-signal -> GPLv3). |
 | Google GCM JSON payload                     | n/a                                                  | Semantically the same as XEP-0335: JSON Containers |
 
 

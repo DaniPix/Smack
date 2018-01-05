@@ -16,14 +16,15 @@
  */
 package org.jivesoftware.smackx.disco.packet;
 
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.util.XmlStringBuilder;
-import org.jxmpp.jid.Jid;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.util.XmlStringBuilder;
+
+import org.jxmpp.jid.Jid;
 
 /**
  * A DiscoverItems IQ packet, which is used by XMPP clients to request and receive items 
@@ -39,7 +40,7 @@ public class DiscoverItems extends IQ {
     public static final String ELEMENT = QUERY_ELEMENT;
     public static final String NAMESPACE = "http://jabber.org/protocol/disco#items";
 
-    private final List<Item> items = new LinkedList<Item>();
+    private final List<Item> items = new LinkedList<>();
     private String node;
 
     public DiscoverItems() {

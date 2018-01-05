@@ -26,10 +26,12 @@ import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
+
 import org.jivesoftware.smackx.commands.AdHocCommandManager;
 import org.jivesoftware.smackx.commands.RemoteCommand;
 import org.jivesoftware.smackx.xdata.Form;
 import org.jivesoftware.smackx.xdata.FormField;
+
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.util.JidUtil;
@@ -60,7 +62,7 @@ public class ServiceAdministrationManager extends Manager {
     }
 
     public RemoteCommand addUser() {
-        return addUser(connection().getServiceName());
+        return addUser(connection().getXMPPServiceDomain());
     }
 
     public RemoteCommand addUser(Jid service) {
@@ -84,11 +86,11 @@ public class ServiceAdministrationManager extends Manager {
         passwordVerifyField.addValue(password);
 
         command.next(answerForm);
-        assert(command.isCompleted());
+        assert (command.isCompleted());
     }
 
     public RemoteCommand deleteUser() {
-        return deleteUser(connection().getServiceName());
+        return deleteUser(connection().getXMPPServiceDomain());
     }
 
     public RemoteCommand deleteUser(Jid service) {
@@ -112,6 +114,6 @@ public class ServiceAdministrationManager extends Manager {
         accountJids.addValues(JidUtil.toStringList(jidsToDelete));
 
         command.next(answerForm);
-        assert(command.isCompleted());
+        assert (command.isCompleted());
     }
 }

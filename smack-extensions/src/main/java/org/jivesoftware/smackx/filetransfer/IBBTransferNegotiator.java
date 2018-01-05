@@ -24,12 +24,14 @@ import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.Stanza;
+
 import org.jivesoftware.smackx.bytestreams.ibb.InBandBytestreamManager;
 import org.jivesoftware.smackx.bytestreams.ibb.InBandBytestreamRequest;
 import org.jivesoftware.smackx.bytestreams.ibb.InBandBytestreamSession;
 import org.jivesoftware.smackx.bytestreams.ibb.packet.DataPacketExtension;
 import org.jivesoftware.smackx.bytestreams.ibb.packet.Open;
 import org.jivesoftware.smackx.si.packet.StreamInitiation;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -44,9 +46,7 @@ import org.jxmpp.jid.Jid;
  */
 public class IBBTransferNegotiator extends StreamNegotiator {
 
-    private XMPPConnection connection;
-
-    private InBandBytestreamManager manager;
+    private final InBandBytestreamManager manager;
 
     /**
      * The default constructor for the In-Band Bytestream Negotiator.
@@ -54,7 +54,7 @@ public class IBBTransferNegotiator extends StreamNegotiator {
      * @param connection The connection which this negotiator works on.
      */
     protected IBBTransferNegotiator(XMPPConnection connection) {
-        this.connection = connection;
+        super(connection);
         this.manager = InBandBytestreamManager.getByteStreamManager(connection);
     }
 
@@ -75,7 +75,7 @@ public class IBBTransferNegotiator extends StreamNegotiator {
          */
         this.manager.ignoreBytestreamRequestOnce(initiation.getSessionID());
 
-        Stanza streamInitiation = initiateIncomingStream(this.connection, initiation);
+        Stanza streamInitiation = initiateIncomingStream(connection(), initiation);
         return negotiateIncomingStream(streamInitiation);
     }
 

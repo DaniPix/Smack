@@ -16,7 +16,7 @@
  */
 package org.jivesoftware.smackx.forward;
 
-import static org.jivesoftware.smack.test.util.CharsequenceEquals.equalsCharSequence;
+import static org.jivesoftware.smack.test.util.CharSequenceEquals.equalsCharSequence;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -24,13 +24,14 @@ import static org.junit.Assert.assertThat;
 import java.util.Properties;
 
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.forward.provider.ForwardedProvider;
-import org.junit.Test;
-import org.xmlpull.v1.XmlPullParser;
 
 import com.jamesmurty.utils.XMLBuilder;
+import org.junit.Test;
+import org.xmlpull.v1.XmlPullParser;
 
 public class ForwardedTest {
 
@@ -93,7 +94,7 @@ public class ForwardedTest {
         assertEquals("forwarded", parser.getName());
     }
 
-    @Test(expected=Exception.class)
+    @Test(expected = Exception.class)
     public void forwardedEmptyTest() throws Exception {
         XmlPullParser parser;
         String control;

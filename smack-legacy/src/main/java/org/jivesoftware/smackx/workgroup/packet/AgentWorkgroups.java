@@ -17,18 +17,19 @@
 
 package org.jivesoftware.smackx.workgroup.packet;
 
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.provider.IQProvider;
-import org.jivesoftware.smack.util.ParserUtils;
-import org.jxmpp.jid.Jid;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.provider.IQProvider;
+import org.jivesoftware.smack.util.ParserUtils;
+
+import org.jxmpp.jid.Jid;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * Represents a request for getting the jid of the workgroups where an agent can work or could
@@ -55,7 +56,7 @@ public class AgentWorkgroups extends IQ {
     public AgentWorkgroups(Jid agentJID) {
         this();
         this.agentJID = agentJID;
-        this.workgroups = new ArrayList<String>();
+        this.workgroups = new ArrayList<>();
     }
 
     /**
@@ -88,7 +89,7 @@ public class AgentWorkgroups extends IQ {
     protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder buf) {
         buf.attribute("jid", agentJID).rightAngleBracket();
 
-        for (Iterator<String> it=workgroups.iterator(); it.hasNext();) {
+        for (Iterator<String> it = workgroups.iterator(); it.hasNext();) {
             String workgroupJID = it.next();
             buf.append("<workgroup jid=\"" + workgroupJID + "\"/>");
         }
@@ -106,7 +107,7 @@ public class AgentWorkgroups extends IQ {
         @Override
         public AgentWorkgroups parse(XmlPullParser parser, int initialDepth) throws XmlPullParserException, IOException {
             final Jid agentJID = ParserUtils.getJidAttribute(parser);
-            List<String> workgroups = new ArrayList<String>();
+            List<String> workgroups = new ArrayList<>();
 
             boolean done = false;
             while (!done) {

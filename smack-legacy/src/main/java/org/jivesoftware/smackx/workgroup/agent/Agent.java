@@ -17,16 +17,18 @@
 
 package org.jivesoftware.smackx.workgroup.agent;
 
-import org.jivesoftware.smackx.workgroup.packet.AgentInfo;
-import org.jivesoftware.smackx.workgroup.packet.AgentWorkgroups;
+import java.util.Collection;
+
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.IQ;
-import org.jxmpp.jid.Jid;
 
-import java.util.Collection;
+import org.jivesoftware.smackx.workgroup.packet.AgentInfo;
+import org.jivesoftware.smackx.workgroup.packet.AgentWorkgroups;
+
+import org.jxmpp.jid.Jid;
 
 /**
  * The <code>Agent</code> class is used to represent one agent in a Workgroup Queue.
@@ -40,7 +42,7 @@ public class Agent {
     public static Collection<String> getWorkgroups(Jid serviceJID, Jid agentJID, XMPPConnection connection) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
         AgentWorkgroups request = new AgentWorkgroups(agentJID);
         request.setTo(serviceJID);
-        AgentWorkgroups response = (AgentWorkgroups) connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
+        AgentWorkgroups response = connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
         return response.getWorkgroups();
     }
 
@@ -75,7 +77,7 @@ public class Agent {
         agentInfo.setType(IQ.Type.get);
         agentInfo.setTo(workgroupJID);
         agentInfo.setFrom(getUser());
-        AgentInfo response = (AgentInfo) connection.createStanzaCollectorAndSend(agentInfo).nextResultOrThrow();
+        AgentInfo response = connection.createStanzaCollectorAndSend(agentInfo).nextResultOrThrow();
         return response.getName();
     }
 

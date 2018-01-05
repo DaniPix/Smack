@@ -75,9 +75,8 @@ public class MiniDnsResolver extends DNSResolver implements SmackInitializer {
             return null;
         }
 
-        // TODO: Use ResolverResult.getResolutionUnsuccessfulException() found in newer MiniDNS versions.
-        if (!result.wasSuccessful()) {
-            ResolutionUnsuccessfulException resolutionUnsuccessfulException = getExceptionFrom(result);
+        ResolutionUnsuccessfulException resolutionUnsuccessfulException = result.getResolutionUnsuccessfulException();
+        if (resolutionUnsuccessfulException != null) {
             failedAddresses.add(new HostAddress(name, resolutionUnsuccessfulException));
             return null;
         }
@@ -86,11 +85,11 @@ public class MiniDnsResolver extends DNSResolver implements SmackInitializer {
             return null;
         }
 
-        List<SRVRecord> res = new LinkedList<SRVRecord>();
+        List<SRVRecord> res = new LinkedList<>();
         for (SRV srv : result.getAnswers()) {
             String hostname = srv.name.ace;
             List<InetAddress> hostAddresses = lookupHostAddress0(hostname, failedAddresses, dnssecMode);
-            if (hostAddresses == null) {
+            if (shouldContinue(name, hostname, hostAddresses)) {
                 continue;
             }
 

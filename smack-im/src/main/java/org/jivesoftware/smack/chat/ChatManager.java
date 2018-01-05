@@ -28,10 +28,10 @@ import java.util.logging.Logger;
 
 import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.MessageListener;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.StanzaCollector;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.filter.AndFilter;
 import org.jivesoftware.smack.filter.FlexibleStanzaTypeFilter;
 import org.jivesoftware.smack.filter.FromMatchesFilter;
@@ -42,9 +42,10 @@ import org.jivesoftware.smack.filter.ThreadFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
+
 import org.jxmpp.jid.EntityBareJid;
-import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.EntityJid;
+import org.jxmpp.jid.Jid;
 
 /**
  * The chat manager keeps track of references to all current chats. It will not hold any references
@@ -59,7 +60,7 @@ public final class ChatManager extends Manager{
 
     private static final Logger LOGGER = Logger.getLogger(ChatManager.class.getName());
 
-    private static final Map<XMPPConnection, ChatManager> INSTANCES = new WeakHashMap<XMPPConnection, ChatManager>();
+    private static final Map<XMPPConnection, ChatManager> INSTANCES = new WeakHashMap<>();
 
     /**
      * Sets the default behaviour for allowing 'normal' messages to be used in chats. As some clients don't set
@@ -127,23 +128,21 @@ public final class ChatManager extends Manager{
     /**
      * Maps thread ID to chat.
      */
-    private Map<String, Chat> threadChats = new ConcurrentHashMap<>();
+    private final Map<String, Chat> threadChats = new ConcurrentHashMap<>();
 
     /**
      * Maps jids to chats
      */
-    private Map<Jid, Chat> jidChats = new ConcurrentHashMap<>();
+    private final Map<Jid, Chat> jidChats = new ConcurrentHashMap<>();
 
     /**
      * Maps base jids to chats
      */
-    private Map<EntityBareJid, Chat> baseJidChats = new ConcurrentHashMap<>();
+    private final Map<EntityBareJid, Chat> baseJidChats = new ConcurrentHashMap<>();
 
-    private Set<ChatManagerListener> chatManagerListeners
-            = new CopyOnWriteArraySet<ChatManagerListener>();
+    private final Set<ChatManagerListener> chatManagerListeners = new CopyOnWriteArraySet<>();
 
-    private Map<MessageListener, StanzaFilter> interceptors
-            = new WeakHashMap<MessageListener, StanzaFilter>();
+    private final Map<MessageListener, StanzaFilter> interceptors = new WeakHashMap<>();
 
     private ChatManager(XMPPConnection connection) {
         super(connection);
@@ -164,7 +163,7 @@ public final class ChatManager extends Manager{
                     chat = getThreadChat(message.getThread());
                 }
 
-                if(chat == null) {
+                if (chat == null) {
                     chat = createChat(message);
                 }
                 // The chat could not be created, abort here
@@ -248,7 +247,7 @@ public final class ChatManager extends Manager{
             thread = nextID();
         }
         Chat chat = threadChats.get(thread);
-        if(chat != null) {
+        if (chat != null) {
             throw new IllegalArgumentException("ThreadID is already used");
         }
         chat = createChat(userJID, thread, true);
@@ -262,7 +261,7 @@ public final class ChatManager extends Manager{
         jidChats.put(userJID, chat);
         baseJidChats.put(userJID.asEntityBareJid(), chat);
 
-        for(ChatManagerListener listener : chatManagerListeners) {
+        for (ChatManagerListener listener : chatManagerListeners) {
             listener.chatCreated(chat, createdLocally);
         }
 
@@ -293,11 +292,11 @@ public final class ChatManager extends Manager{
 
         EntityJid userJID = from.asEntityJidIfPossible();
         if (userJID == null) {
-            LOGGER.warning("Message from JID without localpart: '" +message.toXML() + "'");
+            LOGGER.warning("Message from JID without localpart: '" + message.toXML() + "'");
             return null;
         }
         String threadID = message.getThread();
-        if(threadID == null) {
+        if (threadID == null) {
             threadID = nextID();
         }
 
@@ -338,7 +337,7 @@ public final class ChatManager extends Manager{
     }
 
     /**
-     * Register a new listener with the ChatManager to recieve events related to chats.
+     * Register a new listener with the ChatManager to receive events related to chats.
      *
      * @param listener the listener.
      */
@@ -372,9 +371,9 @@ public final class ChatManager extends Manager{
     }
 
     void sendMessage(Chat chat, Message message) throws NotConnectedException, InterruptedException {
-        for(Map.Entry<MessageListener, StanzaFilter> interceptor : interceptors.entrySet()) {
+        for (Map.Entry<MessageListener, StanzaFilter> interceptor : interceptors.entrySet()) {
             StanzaFilter filter = interceptor.getValue();
-            if(filter != null && filter.accept(message)) {
+            if (filter != null && filter.accept(message)) {
                 interceptor.getKey().processMessage(message);
             }
         }

@@ -17,6 +17,7 @@
 package org.jivesoftware.smackx.pubsub;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
+
 import org.jivesoftware.smackx.pubsub.packet.PubSubNamespace;
 
 /**
@@ -26,7 +27,7 @@ import org.jivesoftware.smackx.pubsub.packet.PubSubNamespace;
  */
 public class RetractItem implements ExtensionElement
 {
-    private String id;
+    private final String id;
 
     /**
      * Construct a <tt>RetractItem</tt> with the specified id.

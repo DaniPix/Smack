@@ -18,6 +18,7 @@
 package org.jivesoftware.smackx.xevent;
 
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -51,7 +52,7 @@ public interface MessageEventRequestListener {
      * @throws NotConnectedException 
      * @throws InterruptedException 
      */
-    public void deliveredNotificationRequested(Jid from, String packetID,
+    void deliveredNotificationRequested(Jid from, String packetID,
             MessageEventManager messageEventManager) throws NotConnectedException, InterruptedException;
 
     /**
@@ -61,7 +62,7 @@ public interface MessageEventRequestListener {
      * @param packetID the id of the message that was sent.
      * @param messageEventManager the messageEventManager that fired the listener.
      */
-    public void displayedNotificationRequested(Jid from, String packetID,
+    void displayedNotificationRequested(Jid from, String packetID,
             MessageEventManager messageEventManager);
 
     /**
@@ -72,7 +73,7 @@ public interface MessageEventRequestListener {
      * @param packetID the id of the message that was sent.
      * @param messageEventManager the messageEventManager that fired the listener.
      */
-    public void composingNotificationRequested(Jid from, String packetID,
+    void composingNotificationRequested(Jid from, String packetID,
                 MessageEventManager messageEventManager);
 
     /**
@@ -82,7 +83,7 @@ public interface MessageEventRequestListener {
      * @param packetID the id of the message that was sent.
      * @param messageEventManager the messageEventManager that fired the listener.
      */
-    public void offlineNotificationRequested(Jid from, String packetID,
+    void offlineNotificationRequested(Jid from, String packetID,
             MessageEventManager messageEventManager);
 
 }

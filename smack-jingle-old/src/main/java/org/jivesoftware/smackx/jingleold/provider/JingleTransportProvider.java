@@ -20,17 +20,19 @@ import java.io.IOException;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
+
 import org.jivesoftware.smackx.jingleold.nat.ICECandidate;
 import org.jivesoftware.smackx.jingleold.nat.TransportCandidate;
 import org.jivesoftware.smackx.jingleold.packet.JingleTransport;
 import org.jivesoftware.smackx.jingleold.packet.JingleTransport.JingleTransportCandidate;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * Provider for a Jingle transport element.
  *
- * @author Alvaro Saurin <alvaro.saurin@gmail.com>
+ * @author Alvaro Saurin
  */
 public abstract class JingleTransportProvider extends ExtensionElementProvider<JingleTransport> {
 
@@ -230,7 +232,7 @@ public abstract class JingleTransportProvider extends ExtensionElementProvider<J
             String name = parser.getAttributeValue("", "name");
             String port = parser.getAttributeValue("", "port");
 
-            //LOGGER.debug();
+            // LOGGER.debug();
 
             if (generation != null) {
                 try {

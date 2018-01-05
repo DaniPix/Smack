@@ -16,19 +16,19 @@
  */
 package org.jivesoftware.smackx.jingleold.media;
 
-import org.jivesoftware.smackx.jingleold.JingleSession;
-import org.jivesoftware.smackx.jingleold.nat.TransportCandidate;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jivesoftware.smackx.jingleold.JingleSession;
+import org.jivesoftware.smackx.jingleold.nat.TransportCandidate;
+
 /**
  * Public Abstract Class provides a clear interface between Media Session and Jingle API.
- * <p/>
+ * <p>
  * When a Jingle Session is fully stablished, we will have a Payload Type and two transport candidates defined for it.
  * Smack Jingle API don't implement Media Transmit and Receive methods.
  * But provides an interface to let the user implements it using another API. For instance: JMF.
- * <p/>
+ * </p>
  * <i>The Class that implements this one, must have the support to transmit and receive the jmf.</i>
  * <i>This interface let the user choose his own jmf API.</i>
  *
@@ -45,14 +45,14 @@ public abstract class JingleMediaSession {
     // Media Locator
     private String mediaLocator;
     // Media Received Listener
-    private List<MediaReceivedListener> mediaReceivedListeners = new ArrayList<MediaReceivedListener>();
+    private List<MediaReceivedListener> mediaReceivedListeners = new ArrayList<>();
     // Jingle Session
     private JingleSession jingleSession;
 
     /**
      * Creates a new JingleMediaSession Instance to handle Media methods.
      *
-     * @param payloadType  Payload Type of the transmittion
+     * @param payloadType  Payload Type of the transmission
      * @param remote       Remote accepted Transport Candidate
      * @param local        Local accepted Transport Candidate
      * @param mediaLocator Media Locator of the capture device
@@ -144,7 +144,7 @@ public abstract class JingleMediaSession {
     /**
      * Starts a RTP / UDP / TCP Transmission to the remote Candidate.
      */
-    public abstract void startTrasmit();
+    public abstract void startTransmit();
 
     /**
      * Starts a RTP / UDP / TCP Receiver from the remote Candidate to local Candidate.
@@ -157,12 +157,12 @@ public abstract class JingleMediaSession {
      *
      * @param active
      */
-    public abstract void setTrasmit(boolean active);
+    public abstract void setTransmit(boolean active);
 
     /**
      * Stops a RTP / UDP / TCP Transmission to the remote Candidate.
      */
-    public abstract void stopTrasmit();
+    public abstract void stopTransmit();
 
     /**
      * Stops a RTP / UDP / TCP Receiver from the remote Candidate to local Candidate.

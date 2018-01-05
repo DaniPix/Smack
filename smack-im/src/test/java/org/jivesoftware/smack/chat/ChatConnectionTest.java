@@ -16,11 +16,11 @@
  */
 package org.jivesoftware.smack.chat;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import org.jivesoftware.smack.DummyConnection;
@@ -28,6 +28,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.test.util.WaitForPacketListener;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -373,12 +374,12 @@ public class ChatConnectionTest {
     }
 
     private static class TestChatServer extends Thread {
-        private Stanza chatPacket;
-        private DummyConnection con;
+        private final Stanza chatPacket;
+        private final DummyConnection con;
 
-        TestChatServer(Stanza chatMsg, DummyConnection conect) {
+        TestChatServer(Stanza chatMsg, DummyConnection connection) {
             chatPacket = chatMsg;
-            con = conect;
+            con = connection;
         }
 
         @Override
@@ -387,7 +388,7 @@ public class ChatConnectionTest {
         }
     }
 
-    private class TestMessageListener implements ChatMessageListener {
+    private static class TestMessageListener implements ChatMessageListener {
         private Chat msgChat;
         private int counter = 0;
 

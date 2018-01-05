@@ -23,14 +23,15 @@ import java.util.List;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
-import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.IQ.Type;
+
 import org.jivesoftware.smackx.disco.packet.DiscoverItems;
 import org.jivesoftware.smackx.pubsub.packet.PubSub;
 
 /**
- * The main class for the majority of pubsub functionality.  In general
- * almost all pubsub capabilities are related to the concept of a node.
+ * The main class for the majority of PubSub functionality. In general
+ * almost all PubSub capabilities are related to the concept of a node.
  * All items are published to a node, and typically subscribed to by other
  * users.  These users then retrieve events based on this subscription.
  * 
@@ -63,7 +64,8 @@ public class LeafNode extends Node
 
     /**
      * Get the current items stored in the node.
-     * 
+     *
+     * @param <T> type of the items.
      * @return List of {@link Item} in the node
      * @throws XMPPErrorException
      * @throws NoResponseException if there was no response from the server.
@@ -72,7 +74,7 @@ public class LeafNode extends Node
      */
     public <T extends Item> List<T> getItems() throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException
     {
-        return getItems((List<ExtensionElement>) null, (List<ExtensionElement>) null);
+        return getItems((List<ExtensionElement>) null, null);
     }
 
     /**
@@ -82,6 +84,8 @@ public class LeafNode extends Node
      * 
      * @param subscriptionId -  The subscription id for the 
      * associated subscription.
+     * @param <T> type of the items.
+     *
      * @return List of {@link Item} in the node
      * @throws XMPPErrorException
      * @throws NoResponseException if there was no response from the server.
@@ -102,7 +106,8 @@ public class LeafNode extends Node
      * event, that did not include the payload.
      * 
      * @param ids Item ids of the items to retrieve
-     * 
+     * @param <T> type of the items.
+     *
      * @return The list of {@link Item} with payload
      * @throws XMPPErrorException 
      * @throws NoResponseException if there was no response from the server.
@@ -111,7 +116,7 @@ public class LeafNode extends Node
      */
     public <T extends Item> List<T> getItems(Collection<String> ids) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException
     {
-        List<Item> itemList = new ArrayList<Item>(ids.size());
+        List<Item> itemList = new ArrayList<>(ids.size());
 
         for (String id : ids)
         {
@@ -125,7 +130,8 @@ public class LeafNode extends Node
      * Get items persisted on the node, limited to the specified number.
      * 
      * @param maxItems Maximum number of items to return
-     * 
+     * @param <T> type of the items.
+     *
      * @return List of {@link Item}
      * @throws XMPPErrorException
      * @throws NoResponseException if there was no response from the server.
@@ -147,6 +153,8 @@ public class LeafNode extends Node
      * on.
      * 
      * @return List of {@link Item}
+     * @param <T> type of the items.
+     *
      * @throws XMPPErrorException
      * @throws NoResponseException if there was no response from the server.
      * @throws NotConnectedException 
@@ -169,6 +177,8 @@ public class LeafNode extends Node
      *        This is an optional argument, if provided as null no extensions will be added.
      * @param returnedExtensions a collection that will be filled with the returned packet
      *        extensions. This is an optional argument, if provided as null it won't be populated.
+     * @param <T> type of the items.
+     *
      * @return List of {@link Item}
      * @throws NoResponseException
      * @throws XMPPErrorException
@@ -207,18 +217,16 @@ public class LeafNode extends Node
      * This is only acceptable for nodes with {@link ConfigureForm#isPersistItems()}=false
      * and {@link ConfigureForm#isDeliverPayloads()}=false.
      * 
-     * This is an asynchronous call which returns as soon as the 
-     * stanza(/packet) has been sent.
-     * 
-     * For synchronous calls use {@link #send() send()}.
      * @throws NotConnectedException 
      * @throws InterruptedException 
+     * @throws XMPPErrorException
+     * @throws NoResponseException
+     * @deprecated use {@link #publish()} instead.
      */
-    public void publish() throws NotConnectedException, InterruptedException
+    @Deprecated
+    public void send() throws NotConnectedException, InterruptedException, NoResponseException, XMPPErrorException
     {
-        PubSub packet = createPubsubPacket(Type.set, new NodeExtension(PubSubElementType.PUBLISH, getId()));
-
-        pubSubManager.getConnection().sendStanza(packet);
+        publish();
     }
 
     /**
@@ -229,21 +237,20 @@ public class LeafNode extends Node
      * Please note that this is not the same as {@link #send()}, which
      * publishes an event with NO item.
      * 
-     * This is an asynchronous call which returns as soon as the 
-     * stanza(/packet) has been sent.
-     * 
-     * For synchronous calls use {@link #send(Item) send(Item))}.
-     * 
      * @param item - The item being sent
+     * @param <T> type of the items.
+     *
      * @throws NotConnectedException 
      * @throws InterruptedException 
+     * @throws XMPPErrorException
+     * @throws NoResponseException
+     * @deprecated use {@link #publish(Item)} instead.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Item> void publish(T item) throws NotConnectedException, InterruptedException
+    @Deprecated
+    public <T extends Item> void send(T item) throws NotConnectedException, InterruptedException, NoResponseException, XMPPErrorException
     {
-        Collection<T> items = new ArrayList<T>(1);
-        items.add((T)(item == null ? new Item() : item));
-        publish(items);
+        publish(item);
     }
 
     /**
@@ -252,20 +259,19 @@ public class LeafNode extends Node
      * In addition, if {@link ConfigureForm#isPersistItems()}=false, only the last item in the input
      * list will get stored on the node, assuming it stores the last sent item.
      * 
-     * This is an asynchronous call which returns as soon as the 
-     * stanza(/packet) has been sent.
-     * 
-     * For synchronous calls use {@link #send(Collection) send(Collection))}.
-     * 
      * @param items - The collection of items being sent
+     * @param <T> type of the items.
+     *
      * @throws NotConnectedException 
      * @throws InterruptedException 
+     * @throws XMPPErrorException
+     * @throws NoResponseException
+     * @deprecated use {@link #publish(Collection)} instead.
      */
-    public <T extends Item> void publish(Collection<T> items) throws NotConnectedException, InterruptedException
+    @Deprecated
+    public <T extends Item> void send(Collection<T> items) throws NotConnectedException, InterruptedException, NoResponseException, XMPPErrorException
     {
-        PubSub packet = createPubsubPacket(Type.set, new PublishItem<T>(getId(), items));
-
-        pubSubManager.getConnection().sendStanza(packet);
+        publish(items);
     }
 
     /**
@@ -275,17 +281,13 @@ public class LeafNode extends Node
      * This is only acceptable for nodes with {@link ConfigureForm#isPersistItems()}=false
      * and {@link ConfigureForm#isDeliverPayloads()}=false.
      * 
-     * This is a synchronous call which will throw an exception 
-     * on failure.
-     * 
-     * For asynchronous calls, use {@link #publish() publish()}.
      * @throws XMPPErrorException 
      * @throws NoResponseException 
      * @throws NotConnectedException 
      * @throws InterruptedException 
      * 
      */
-    public void send() throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException
+    public void publish() throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException
     {
         PubSub packet = createPubsubPacket(Type.set, new NodeExtension(PubSubElementType.PUBLISH, getId()));
 
@@ -304,12 +306,9 @@ public class LeafNode extends Node
      * Please note that this is not the same as {@link #send()}, which
      * publishes an event with NO item.
      * 
-     * This is a synchronous call which will throw an exception 
-     * on failure.
-     * 
-     * For asynchronous calls, use {@link #publish(Item) publish(Item)}.
-     * 
      * @param item - The item being sent
+     * @param <T> type of the items.
+     *
      * @throws XMPPErrorException 
      * @throws NoResponseException 
      * @throws NotConnectedException 
@@ -317,11 +316,11 @@ public class LeafNode extends Node
      * 
      */
     @SuppressWarnings("unchecked")
-    public <T extends Item> void send(T item) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException
+    public <T extends Item> void publish(T item) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException
     {
-        Collection<T> items = new ArrayList<T>(1);
-        items.add((item == null ? (T)new Item() : item));
-        send(items);
+        Collection<T> items = new ArrayList<>(1);
+        items.add((item == null ? (T) new Item() : item));
+        publish(items);
     }
 
     /**
@@ -329,22 +328,19 @@ public class LeafNode extends Node
      * 
      * In addition, if {@link ConfigureForm#isPersistItems()}=false, only the last item in the input
      * list will get stored on the node, assuming it stores the last sent item.
-     *  
-     * This is a synchronous call which will throw an exception 
-     * on failure.
-     * 
-     * For asynchronous calls, use {@link #publish(Collection) publish(Collection))}.
      * 
      * @param items - The collection of {@link Item} objects being sent
+     * @param <T> type of the items.
+     *
      * @throws XMPPErrorException 
      * @throws NoResponseException 
      * @throws NotConnectedException 
      * @throws InterruptedException 
      * 
      */
-    public <T extends Item> void send(Collection<T> items) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException
+    public <T extends Item> void publish(Collection<T> items) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException
     {
-        PubSub packet = createPubsubPacket(Type.set, new PublishItem<T>(getId(), items));
+        PubSub packet = createPubsubPacket(Type.set, new PublishItem<>(getId(), items));
 
         pubSubManager.getConnection().createStanzaCollectorAndSend(packet).nextResultOrThrow();
     }
@@ -377,7 +373,7 @@ public class LeafNode extends Node
      */
     public void deleteItem(String itemId) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException
     {
-        Collection<String> items = new ArrayList<String>(1);
+        Collection<String> items = new ArrayList<>(1);
         items.add(itemId);
         deleteItem(items);
     }
@@ -393,7 +389,7 @@ public class LeafNode extends Node
      */
     public void deleteItem(Collection<String> itemIds) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException
     {
-        List<Item> items = new ArrayList<Item>(itemIds.size());
+        List<Item> items = new ArrayList<>(itemIds.size());
 
         for (String id : itemIds)
         {

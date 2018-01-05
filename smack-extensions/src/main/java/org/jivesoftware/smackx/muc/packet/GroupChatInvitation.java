@@ -19,10 +19,11 @@ package org.jivesoftware.smackx.muc.packet;
 
 import java.io.IOException;
 
-import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smack.util.XmlStringBuilder;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -72,7 +73,7 @@ public class GroupChatInvitation implements ExtensionElement {
     /**
      * Creates a new group chat invitation to the specified room address.
      * GroupChat room addresses are in the form <tt>room@service</tt>,
-     * where <tt>service</tt> is the name of groupchat server, such as
+     * where <tt>service</tt> is the name of group chat server, such as
      * <tt>chat.example.com</tt>.
      *
      * @param roomAddress the address of the group chat room.
@@ -84,7 +85,7 @@ public class GroupChatInvitation implements ExtensionElement {
     /**
      * Returns the address of the group chat room. GroupChat room addresses
      * are in the form <tt>room@service</tt>, where <tt>service</tt> is
-     * the name of groupchat server, such as <tt>chat.example.com</tt>.
+     * the name of group chat server, such as <tt>chat.example.com</tt>.
      *
      * @return the address of the group chat room.
      */

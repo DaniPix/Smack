@@ -22,6 +22,7 @@ import java.io.IOException;
 import org.jivesoftware.smack.packet.SimpleIQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.util.StringUtils;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -80,7 +81,7 @@ public class OfflineSettings extends SimpleIQ {
         return (StringUtils.isNotEmpty(getRedirectURL()));
     }
 
-    public boolean isConfigured(){
+    public boolean isConfigured() {
         return StringUtils.isNotEmpty(getEmailAddress()) &&
                StringUtils.isNotEmpty(getSubject()) &&
                StringUtils.isNotEmpty(getOfflineText());

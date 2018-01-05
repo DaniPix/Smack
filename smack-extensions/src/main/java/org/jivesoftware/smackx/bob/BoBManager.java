@@ -35,8 +35,10 @@ import org.jivesoftware.smack.iqrequest.IQRequestHandler.Mode;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.util.SHA1;
+
 import org.jivesoftware.smackx.bob.element.BoBIQ;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+
 import org.jxmpp.jid.Jid;
 import org.jxmpp.util.cache.LruCache;
 
@@ -157,7 +159,7 @@ public final class BoBManager extends Manager {
 
     public BoBInfo addBoB(BoBData bobData) {
         // We only support SHA-1 for now.
-        BoBHash bobHash = new BoBHash("sha1", SHA1.hex(bobData.getContent()));
+        BoBHash bobHash = new BoBHash(SHA1.hex(bobData.getContent()), "sha1");
 
         Set<BoBHash> bobHashes = Collections.singleton(bobHash);
         bobHashes = Collections.unmodifiableSet(bobHashes);

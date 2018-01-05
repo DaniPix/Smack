@@ -21,6 +21,7 @@ import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
+
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.EntityFullJid;
 import org.jxmpp.jid.Jid;
@@ -41,6 +42,7 @@ public final class Chat extends Manager {
     public void send(CharSequence message) throws NotConnectedException, InterruptedException {
         Message stanza = new Message();
         stanza.setBody(message);
+        stanza.setType(Message.Type.chat);
         send(stanza);
     }
 

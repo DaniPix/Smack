@@ -17,16 +17,17 @@
 
 package org.jivesoftware.smackx.workgroup.settings;
 
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.provider.IQProvider;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.provider.IQProvider;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 public class ChatSettings extends IQ {
 
@@ -45,7 +46,7 @@ public class ChatSettings extends IQ {
      */
     public static final int BOT_SETTINGS = 2;
 
-    private List<ChatSetting> settings;
+    private final List<ChatSetting> settings;
     private String key;
     private int type = -1;
 
@@ -61,7 +62,7 @@ public class ChatSettings extends IQ {
 
     public ChatSettings() {
         super(ELEMENT_NAME, NAMESPACE);
-        settings = new ArrayList<ChatSetting>();
+        settings = new ArrayList<>();
     }
 
     public ChatSettings(String key) {

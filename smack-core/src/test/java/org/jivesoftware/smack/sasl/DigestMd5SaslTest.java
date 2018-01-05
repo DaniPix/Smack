@@ -1,6 +1,6 @@
 /**
  *
- * Copyright © 2014 Florian Schmaus
+ * Copyright © 2014-2017 Florian Schmaus
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,22 +24,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.util.StringUtils;
+
+import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
-import org.jxmpp.jid.EntityBareJid;
 
 public class DigestMd5SaslTest extends AbstractSaslTest {
 
-    protected static final String challenge = "realm=\"xmpp.org\",nonce=\"aTUr3GXqUtyy2B7HVDW6C+gQs+j+0EhWWjoBKkkg\",qop=\"auth\",charset=utf-8,algorithm=md5-sess";
-    protected static final byte[] challengeBytes = StringUtils.toBytes(challenge);
+    protected static final String challenge = "realm=\"xmpp.org\",nonce=\"jgGgnz+cQcmyVaAs2n88kQ==\",qop=\"auth\",charset=utf-8,algorithm=md5-sess";
+    protected static final byte[] challengeBytes = StringUtils.toUtf8Bytes(challenge);
 
     public DigestMd5SaslTest(SASLMechanism saslMechanism) {
         super(saslMechanism);
     }
 
-    protected void runTest(boolean useAuthzid) throws NotConnectedException, SmackException, InterruptedException, XmppStringprepException, UnsupportedEncodingException {
+    protected void runTest(boolean useAuthzid) throws SmackException, InterruptedException, XmppStringprepException, UnsupportedEncodingException {
         EntityBareJid authzid = null;
         if (useAuthzid) {
             authzid = JidCreate.entityBareFrom("shazbat@xmpp.org");
@@ -50,8 +50,7 @@ public class DigestMd5SaslTest extends AbstractSaslTest {
         String[] responseParts = responseString.split(",");
         Map<String, String> responsePairs = new HashMap<String, String>();
         for (String part : responseParts) {
-            String[] keyValue = part.split("=");
-            assertTrue(keyValue.length == 2);
+            String[] keyValue = part.split("=", 2);
             String key = keyValue[0];
             String value = keyValue[1].replace("\"", "");
             responsePairs.put(key, value);
@@ -59,7 +58,7 @@ public class DigestMd5SaslTest extends AbstractSaslTest {
         if (useAuthzid) {
           assertMapValue("authzid", "shazbat@xmpp.org", responsePairs);
         } else {
-          assert(!responsePairs.containsKey("authzid"));
+          assertTrue (!responsePairs.containsKey("authzid"));
         }
         assertMapValue("username", "florian", responsePairs);
         assertMapValue("realm", "xmpp.org", responsePairs);

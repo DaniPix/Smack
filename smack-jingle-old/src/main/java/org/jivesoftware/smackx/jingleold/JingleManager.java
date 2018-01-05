@@ -23,18 +23,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterListener;
+
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.jingleold.listeners.CreatedJingleSessionListener;
 import org.jivesoftware.smackx.jingleold.listeners.JingleListener;
@@ -47,6 +48,7 @@ import org.jivesoftware.smackx.jingleold.nat.TransportCandidate;
 import org.jivesoftware.smackx.jingleold.nat.TransportResolver;
 import org.jivesoftware.smackx.jingleold.packet.Jingle;
 import org.jivesoftware.smackx.jingleold.provider.JingleProvider;
+
 import org.jxmpp.jid.EntityFullJid;
 import org.jxmpp.jid.Jid;
 
@@ -54,34 +56,41 @@ import org.jxmpp.jid.Jid;
  * Jingle is a session establishment protocol defined in (XEP-0166).
  * It defines a framework for negotiating and managing out-of-band ( data that is send and receive through other connection than XMPP connection) data sessions over XMPP.
  * With this protocol you can setup VOIP Calls, Video Streaming, File transfers and whatever out-of-band session based transmission.
- * <p/>
+ * <p>
  * To create a Jingle Session you need a Transport method and a Payload type.
- * <p/>
- * A transport method is how it will trasmit and receive network packets. Transport MUST have one or more candidates.
+ * </p>
+ * <p>
+ * A transport method is how it will transmit and receive network packets. Transport MUST have one or more candidates.
  * A transport candidate is an IP Address with a defined port, that other party must send data to.
- * <p/>
+ * </p>
+ * <p>
  * A supported payload type, is the data encoding format that the jmf will be transmitted.
  * For instance an Audio Payload "GSM".
- * <p/>
- * A Jingle session negociates a payload type and a pair of transport candidates.
- * Which means that when a Jingle Session is establhished you will have two defined transport candidates with addresses
+ * </p>
+ * <p>
+ * A Jingle session negotiates a payload type and a pair of transport candidates.
+ * Which means that when a Jingle Session is established you will have two defined transport candidates with addresses
  * and a defined Payload type.
  * In other words, you will have two IP address with their respective ports, and a Codec type defined.
- * <p/>
+ * </p>
+ * <p>
  * The JingleManager is a facade built upon Jabber Jingle (XEP-166) to allow the
  * use of Jingle. This implementation allows the user to simply
  * use this class for setting the Jingle parameters, create and receive Jingle Sessions.
- * <p/>
+ * </p>
+ * <p>
  * In order to use the Jingle, the user must provide a
- * TransportManager that will handle the resolution of potential IP addresses taht can be used to transport the streaming (jmf).
+ * TransportManager that will handle the resolution of potential IP addresses that can be used to transport the streaming (jmf).
  * This TransportManager can be initialized with several default resolvers,
  * including a fixed solver that can be used when the address and port are know
  * in advance.
  * This API have ready to use Transport Managers, for instance: BasicTransportManager, STUNTransportManager, BridgedTransportManager.
- * <p/>
- * You should also especify a JingleMediaManager if you want that JingleManager assume Media control
+ * </p>
+ * <p>
+ * You should also specify a JingleMediaManager if you want that JingleManager assume Media control
  * Using a JingleMediaManager implementation is the easier way to implement a Jingle Application.
- * <p/>
+ * </p>
+ * <p>
  * Otherwise before creating an outgoing connection, the user must create jingle session
  * listeners that will be called when different events happen. The most
  * important event is <i>sessionEstablished()</i>, that will be called when all
@@ -89,85 +98,60 @@ import org.jxmpp.jid.Jid;
  * transmission as well as the remote and local addresses and ports for the
  * communication. See JingleSessionListener for a complete list of events that can be
  * observed.
- * <p/>
+ * </p>
  * This is an example of how to use the JingleManager:
  * <i>This example implements a Jingle VOIP Call between two users.</i>
- * <p/>
  * <pre>
- * <p/>
  *                               To wait for an Incoming Jingle Session:
- * <p/>
  *                               try {
- * <p/>
  *                                           // Connect to an XMPP Server
  *                                           XMPPConnection x1 = new XMPPTCPConnection("xmpp.com");
  *                                           x1.connect();
  *                                           x1.login("juliet", "juliet");
- * <p/>
  *                                           // Create a JingleManager using a BasicResolver
  *                                           final JingleManager jm1 = new JingleManager(
  *                                                   x1, new BasicTransportManager());
- * <p/>
  *                                           // Create a JingleMediaManager. In this case using Jingle Audio Media API
  *                                           JingleMediaManager jingleMediaManager = new AudioMediaManager();
- * <p/>
  *                                           // Set the JingleMediaManager
  *                                           jm1.setMediaManager(jingleMediaManager);
- * <p/>
  *                                           // Listen for incoming calls
  *                                           jm1.addJingleSessionRequestListener(new JingleSessionRequestListener() {
  *                                               public void sessionRequested(JingleSessionRequest request) {
- * <p/>
  *                                                   try {
  *                                                      // Accept the call
  *                                                      IncomingJingleSession session = request.accept();
- * <p/>
- * <p/>
  *                                                       // Start the call
  *                                                       session.start();
  *                                                   } catch (XMPPException e) {
  *                                                       LOGGER.log(Level.WARNING, "exception", e);
  *                                                   }
- * <p/>
  *                                               }
  *                                           });
- * <p/>
  *                                       Thread.sleep(15000);
- * <p/>
  *                                       } catch (Exception e) {
  *                                           LOGGER.log(Level.WARNING, "exception", e);
  *                                       }
- * <p/>
  *                               To create an Outgoing Jingle Session:
- * <p/>
  *                                     try {
- * <p/>
  *                                           // Connect to an XMPP Server
  *                                           XMPPConnection x0 = new XMPPTCPConnection("xmpp.com");
  *                                           x0.connect();
  *                                           x0.login("romeo", "romeo");
- * <p/>
  *                                           // Create a JingleManager using a BasicResolver
  *                                           final JingleManager jm0 = new JingleManager(
  *                                                   x0, new BasicTransportManager());
- * <p/>
  *                                           // Create a JingleMediaManager. In this case using Jingle Audio Media API
  *                                           JingleMediaManager jingleMediaManager = new AudioMediaManager(); // Using Jingle Media API
- * <p/>
  *                                           // Set the JingleMediaManager
  *                                           jm0.setMediaManager(jingleMediaManager);
- * <p/>
  *                                           // Create a new Jingle Call with a full JID
  *                                           OutgoingJingleSession js0 = jm0.createOutgoingJingleSession("juliet@xmpp.com/Smack");
- * <p/>
  *                                           // Start the call
  *                                           js0.start();
- * <p/>
  *                                           Thread.sleep(10000);
  *                                           js0.terminate();
- * <p/>
  *                                           Thread.sleep(3000);
- * <p/>
  *                                       } catch (Exception e) {
  *                                           LOGGER.log(Level.WARNING, "exception", e);
  *                                       }
@@ -190,16 +174,16 @@ public class JingleManager implements JingleSessionListener {
 
     // non-static
 
-    final List<JingleSession> jingleSessions = new ArrayList<JingleSession>();
+    private final List<JingleSession> jingleSessions = new ArrayList<>();
 
     // Listeners for manager events (ie, session requests...)
     private List<JingleSessionRequestListener> jingleSessionRequestListeners;
 
     // Listeners for created JingleSessions
-    private List<CreatedJingleSessionListener> creationListeners = new ArrayList<CreatedJingleSessionListener>();
+    private final List<CreatedJingleSessionListener> creationListeners = new ArrayList<>();
 
     // The XMPP connection
-    private XMPPConnection connection;
+    private final XMPPConnection connection;
 
     // The Media Managers
     private List<JingleMediaManager> jingleMediaManagers;
@@ -209,7 +193,7 @@ public class JingleManager implements JingleSessionListener {
      * If a fully implemented JingleMediaSession is entered, JingleManager manage Jingle signalling and jmf
      *
      * @param connection             XMPP XMPPConnection to be used
-     * @param jingleMediaManagers     an implemeted JingleMediaManager to be used.
+     * @param jingleMediaManagers     an implemented JingleMediaManager to be used.
      * @throws SmackException 
      * @throws XMPPException 
      */
@@ -277,11 +261,11 @@ public class JingleManager implements JingleSessionListener {
 
     /**
      * Enables or disables the Jingle support on a given connection.
-     * <p/>
-     * <p/>
+     * <p>
      * Before starting any Jingle jmf session, check that the user can handle
      * it. Enable the Jingle support to indicate that this client handles Jingle
      * messages.
+     * </p>
      *
      * @param connection the connection where the service will be enabled or
      *                   disabled
@@ -475,7 +459,7 @@ public class JingleManager implements JingleSessionListener {
             }
         };
 
-        jingleSessionRequestListeners = new ArrayList<JingleSessionRequestListener>();
+        jingleSessionRequestListeners = new ArrayList<>();
 
         // Start a packet listener for session initiation requests
         connection.addAsyncStanzaListener(new StanzaListener() {
@@ -510,7 +494,7 @@ public class JingleManager implements JingleSessionListener {
      */
     void triggerSessionRequested(Jingle initJin) {
 
-        JingleSessionRequestListener[] jingleSessionRequestListeners = null;
+        JingleSessionRequestListener[] jingleSessionRequestListeners;
 
         // Make a synchronized copy of the listenerJingles
         synchronized (this.jingleSessionRequestListeners) {
@@ -535,7 +519,7 @@ public class JingleManager implements JingleSessionListener {
      * @return The session on which the negotiation can be run.
      */
     public JingleSession createOutgoingJingleSession(EntityFullJid responder) throws XMPPException {
-        JingleSession session = new JingleSession(connection, (JingleSessionRequest) null, connection.getUser(), responder, jingleMediaManagers);
+        JingleSession session = new JingleSession(connection, null, connection.getUser(), responder, jingleMediaManagers);
 
         triggerSessionCreated(session);
 

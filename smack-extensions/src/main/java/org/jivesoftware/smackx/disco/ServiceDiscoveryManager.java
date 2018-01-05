@@ -16,30 +16,6 @@
  */
 package org.jivesoftware.smackx.disco;
 
-import org.jivesoftware.smack.SmackException.NoResponseException;
-import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.Manager;
-import org.jivesoftware.smack.XMPPConnectionRegistry;
-import org.jivesoftware.smack.XMPPException.XMPPErrorException;
-import org.jivesoftware.smack.iqrequest.AbstractIqRequestHandler;
-import org.jivesoftware.smack.iqrequest.IQRequestHandler.Mode;
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.packet.ExtensionElement;
-import org.jivesoftware.smack.packet.XMPPError;
-import org.jivesoftware.smack.util.Objects;
-import org.jivesoftware.smackx.caps.EntityCapsManager;
-import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
-import org.jivesoftware.smackx.disco.packet.DiscoverItems;
-import org.jivesoftware.smackx.disco.packet.DiscoverInfo.Identity;
-import org.jivesoftware.smackx.xdata.packet.DataForm;
-import org.jxmpp.jid.DomainBareJid;
-import org.jxmpp.jid.Jid;
-import org.jxmpp.util.cache.Cache;
-import org.jxmpp.util.cache.ExpirationCache;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,8 +27,34 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.jivesoftware.smack.ConnectionCreationListener;
+import org.jivesoftware.smack.Manager;
+import org.jivesoftware.smack.SmackException.NoResponseException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPConnectionRegistry;
+import org.jivesoftware.smack.XMPPException.XMPPErrorException;
+import org.jivesoftware.smack.iqrequest.AbstractIqRequestHandler;
+import org.jivesoftware.smack.iqrequest.IQRequestHandler.Mode;
+import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.packet.XMPPError;
+import org.jivesoftware.smack.util.Objects;
+
+import org.jivesoftware.smackx.caps.EntityCapsManager;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo.Identity;
+import org.jivesoftware.smackx.disco.packet.DiscoverItems;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
+
+import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.util.cache.Cache;
+import org.jxmpp.util.cache.ExpirationCache;
 
 /**
  * Manages discovery of services in XMPP entities. This class provides:
@@ -76,17 +78,16 @@ public final class ServiceDiscoveryManager extends Manager {
     private static DiscoverInfo.Identity defaultIdentity = new Identity(DEFAULT_IDENTITY_CATEGORY,
             DEFAULT_IDENTITY_NAME, DEFAULT_IDENTITY_TYPE);
 
-    private Set<DiscoverInfo.Identity> identities = new HashSet<DiscoverInfo.Identity>();
+    private final Set<DiscoverInfo.Identity> identities = new HashSet<>();
     private DiscoverInfo.Identity identity = defaultIdentity;
 
     private EntityCapsManager capsManager;
 
-    private static Map<XMPPConnection, ServiceDiscoveryManager> instances = new WeakHashMap<>();
+    private static final Map<XMPPConnection, ServiceDiscoveryManager> instances = new WeakHashMap<>();
 
-    private final Set<String> features = new HashSet<String>();
+    private final Set<String> features = new HashSet<>();
     private DataForm extendedInfo = null;
-    private Map<String, NodeInformationProvider> nodeInformationProviders =
-            new ConcurrentHashMap<String, NodeInformationProvider>();
+    private final Map<String, NodeInformationProvider> nodeInformationProviders = new ConcurrentHashMap<>();
 
     // Create a new ServiceDiscoveryManager on every established connection
     static {
@@ -140,7 +141,7 @@ public final class ServiceDiscoveryManager extends Manager {
                     response.addItems(nodeInformationProvider.getNodeItems());
                     // Add packet extensions
                     response.addExtensions(nodeInformationProvider.getNodePacketExtensions());
-                } else if(discoverItems.getNode() != null) {
+                } else if (discoverItems.getNode() != null) {
                     // Return <item-not-found/> error since client doesn't contain
                     // the specified node
                     response.setType(IQ.Type.error);
@@ -268,7 +269,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @return all identies as set
      */
     public Set<DiscoverInfo.Identity> getIdentities() {
-        Set<Identity> res = new HashSet<Identity>(identities);
+        Set<Identity> res = new HashSet<>(identities);
         // Add the default identity that must exist
         res.add(defaultIdentity);
         return Collections.unmodifiableSet(res);
@@ -366,7 +367,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @return a List of the supported features by this XMPP entity.
      */
     public synchronized List<String> getFeatures() {
-        return new ArrayList<String>(features);
+        return new ArrayList<>(features);
     }
 
     /**
@@ -453,7 +454,7 @@ public final class ServiceDiscoveryManager extends Manager {
     public List<ExtensionElement> getExtendedInfoAsList() {
         List<ExtensionElement> res = null;
         if (extendedInfo != null) {
-            res = new ArrayList<ExtensionElement>(1);
+            res = new ArrayList<>(1);
             res.add(extendedInfo);
         }
         return res;
@@ -679,6 +680,41 @@ public final class ServiceDiscoveryManager extends Manager {
     }
 
     /**
+     * Check if the given features are supported by the connection account. This means that the discovery information
+     * lookup will be performed on the bare JID of the connection managed by this ServiceDiscoveryManager.
+     *
+     * @param features the features to check
+     * @return <code>true</code> if all features are supported by the connection account, <code>false</code> otherwise
+     * @throws NoResponseException
+     * @throws XMPPErrorException
+     * @throws NotConnectedException
+     * @throws InterruptedException
+     * @since 4.2.2
+     */
+    public boolean accountSupportsFeatures(CharSequence... features)
+                    throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
+        return accountSupportsFeatures(Arrays.asList(features));
+    }
+
+    /**
+     * Check if the given collection of features are supported by the connection account. This means that the discovery
+     * information lookup will be performed on the bare JID of the connection managed by this ServiceDiscoveryManager.
+     *
+     * @param features a collection of features
+     * @return <code>true</code> if all features are supported by the connection account, <code>false</code> otherwise
+     * @throws NoResponseException
+     * @throws XMPPErrorException
+     * @throws NotConnectedException
+     * @throws InterruptedException
+     * @since 4.2.2
+     */
+    public boolean accountSupportsFeatures(Collection<? extends CharSequence> features)
+                    throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
+        EntityBareJid accountJid = connection().getUser().asEntityBareJid();
+        return supportsFeatures(accountJid, features);
+    }
+
+    /**
      * Queries the remote entity for it's features and returns true if the given feature is found.
      *
      * @param jid the JID of the remote entity
@@ -711,7 +747,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * Create a cache to hold the 25 most recently lookup services for a given feature for a period
      * of 24 hours.
      */
-    private Cache<String, List<DiscoverInfo>> services = new ExpirationCache<>(25,
+    private final Cache<String, List<DiscoverInfo>> services = new ExpirationCache<>(25,
                     24 * 60 * 60 * 1000);
 
     /**
@@ -728,7 +764,26 @@ public final class ServiceDiscoveryManager extends Manager {
      */
     public List<DiscoverInfo> findServicesDiscoverInfo(String feature, boolean stopOnFirst, boolean useCache)
                     throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
-        List<DiscoverInfo> serviceDiscoInfo = null;
+        return findServicesDiscoverInfo(feature, stopOnFirst, useCache, null);
+    }
+
+    /**
+     * Find all services under the users service that provide a given feature.
+     *
+     * @param feature the feature to search for
+     * @param stopOnFirst if true, stop searching after the first service was found
+     * @param useCache if true, query a cache first to avoid network I/O
+     * @param encounteredExceptions an optional map which will be filled with the exceptions encountered
+     * @return a possible empty list of services providing the given feature
+     * @throws NoResponseException
+     * @throws XMPPErrorException
+     * @throws NotConnectedException
+     * @throws InterruptedException
+     * @since 4.2.2
+     */
+    public List<DiscoverInfo> findServicesDiscoverInfo(String feature, boolean stopOnFirst, boolean useCache, Map<? super Jid, Exception> encounteredExceptions)
+                    throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
+        List<DiscoverInfo> serviceDiscoInfo;
         DomainBareJid serviceName = connection().getXMPPServiceDomain();
         if (useCache) {
             serviceDiscoInfo = services.lookup(feature);
@@ -742,8 +797,9 @@ public final class ServiceDiscoveryManager extends Manager {
         try {
             info = discoverInfo(serviceName);
         } catch (XMPPErrorException e) {
-            // Be extra robust here: Return the empty linked list and log this situation
-            LOGGER.log(Level.WARNING, "Could not discover information about service", e);
+            if (encounteredExceptions != null) {
+                encounteredExceptions.put(serviceName, e);
+            }
             return serviceDiscoInfo;
         }
         // Check if the server supports the feature
@@ -761,26 +817,28 @@ public final class ServiceDiscoveryManager extends Manager {
         try {
             // Get the disco items and send the disco packet to each server item
             items = discoverItems(serviceName);
-        } catch(XMPPErrorException e) {
-            LOGGER.log(Level.WARNING, "Could not discover items about service", e);
+        } catch (XMPPErrorException e) {
+            if (encounteredExceptions != null) {
+                encounteredExceptions.put(serviceName, e);
+            }
             return serviceDiscoInfo;
         }
         for (DiscoverItems.Item item : items.getItems()) {
+            Jid address = item.getEntityID();
             try {
                 // TODO is it OK here in all cases to query without the node attribute?
                 // MultipleRecipientManager queried initially also with the node attribute, but this
                 // could be simply a fault instead of intentional.
-                info = discoverInfo(item.getEntityID());
+                info = discoverInfo(address);
             }
             catch (XMPPErrorException | NoResponseException e) {
-                // Don't throw this exceptions if one of the server's items fail
-                LOGGER.log(Level.WARNING, "Exception while discovering info for feature " + feature
-                                + " of " + item.getEntityID() + " node: " + item.getNode(), e);
+                if (encounteredExceptions != null) {
+                    encounteredExceptions.put(address, e);
+                }
                 continue;
             }
             if (info.containsFeature(feature)) {
                 serviceDiscoInfo.add(info);
-                //serviceAddresses.add(item.getEntityID().asDomainBareJid());
                 if (stopOnFirst) {
                     break;
                 }

@@ -34,6 +34,7 @@ import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.XMPPError;
+
 import org.jivesoftware.smackx.bytestreams.ibb.packet.DataPacketExtension;
 import org.jivesoftware.smackx.bytestreams.socks5.packet.Bytestream;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
@@ -42,6 +43,7 @@ import org.jivesoftware.smackx.filetransfer.FileTransferException.NoStreamMethod
 import org.jivesoftware.smackx.si.packet.StreamInitiation;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -58,7 +60,7 @@ public final class FileTransferNegotiator extends Manager {
     public static final String SI_PROFILE_FILE_TRANSFER_NAMESPACE = "http://jabber.org/protocol/si/profile/file-transfer";
     private static final String[] NAMESPACE = { SI_NAMESPACE, SI_PROFILE_FILE_TRANSFER_NAMESPACE };
 
-    private static final Map<XMPPConnection, FileTransferNegotiator> INSTANCES = new WeakHashMap<XMPPConnection, FileTransferNegotiator>();
+    private static final Map<XMPPConnection, FileTransferNegotiator> INSTANCES = new WeakHashMap<>();
 
     private static final String STREAM_INIT_PREFIX = "jsi_";
 
@@ -103,7 +105,7 @@ public final class FileTransferNegotiator extends Manager {
         ServiceDiscoveryManager manager = ServiceDiscoveryManager
                 .getInstanceFor(connection);
 
-        List<String> namespaces = new ArrayList<String>();
+        List<String> namespaces = new ArrayList<>();
         namespaces.addAll(Arrays.asList(NAMESPACE));
         namespaces.add(DataPacketExtension.NAMESPACE);
         if (!IBB_ONLY) {
@@ -130,7 +132,7 @@ public final class FileTransferNegotiator extends Manager {
         ServiceDiscoveryManager manager = ServiceDiscoveryManager
                 .getInstanceFor(connection);
 
-        List<String> namespaces = new ArrayList<String>();
+        List<String> namespaces = new ArrayList<>();
         namespaces.addAll(Arrays.asList(NAMESPACE));
         namespaces.add(DataPacketExtension.NAMESPACE);
         if (!IBB_ONLY) {
@@ -151,7 +153,7 @@ public final class FileTransferNegotiator extends Manager {
      * @return Returns a collection of the supported transfer protocols.
      */
     public static Collection<String> getSupportedProtocols() {
-        List<String> protocols = new ArrayList<String>();
+        List<String> protocols = new ArrayList<>();
         protocols.add(DataPacketExtension.NAMESPACE);
         if (!IBB_ONLY) {
             protocols.add(Bytestream.NAMESPACE);
@@ -267,7 +269,7 @@ public final class FileTransferNegotiator extends Manager {
      * Send a request to another user to send them a file. The other user has
      * the option of, accepting, rejecting, or not responding to a received file
      * transfer request.
-     * <p/>
+     * <p>
      * If they accept, the stanza(/packet) will contain the other user's chosen stream
      * type to send the file across. The two choices this implementation
      * provides to the other user for file transfer are <a
@@ -275,11 +277,12 @@ public final class FileTransferNegotiator extends Manager {
      * which is the preferred method of transfer, and <a
      * href="http://www.xmpp.org/extensions/jep-0047.html">In-Band Bytestreams</a>,
      * which is the fallback mechanism.
-     * <p/>
+     * </p>
+     * <p>
      * The other user may choose to decline the file request if they do not
      * desire the file, their client does not support XEP-0096, or if there are
      * no acceptable means to transfer the file.
-     * <p/>
+     * </p>
      * Finally, if the other user does not respond this method will return null
      * after the specified timeout.
      *

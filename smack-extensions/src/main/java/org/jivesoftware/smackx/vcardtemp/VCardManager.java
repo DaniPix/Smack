@@ -28,8 +28,10 @@ import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.id.StanzaIdUtil;
+
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
+
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 
@@ -90,6 +92,8 @@ public final class VCardManager extends Manager {
      * Save this vCard for the user connected by 'connection'. XMPPConnection should be authenticated
      * and not anonymous.
      *
+     * @param vcard VCard.
+     *
      * @throws XMPPErrorException thrown if there was an issue setting the VCard in the server.
      * @throws NoResponseException if there was no response from the server.
      * @throws NotConnectedException 
@@ -108,6 +112,7 @@ public final class VCardManager extends Manager {
     /**
      * Load the VCard of the current user.
      *
+     * @return VCard.
      * @throws XMPPErrorException 
      * @throws NoResponseException 
      * @throws NotConnectedException 
@@ -120,6 +125,9 @@ public final class VCardManager extends Manager {
     /**
      * Load VCard information for a given user.
      *
+     * @param bareJid bareJid of the user.
+     *
+     * @return VCard.
      * @throws XMPPErrorException 
      * @throws NoResponseException if there was no response from the server.
      * @throws NotConnectedException 

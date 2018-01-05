@@ -20,15 +20,15 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.TimeoutException;
 
 import org.jivesoftware.smack.util.Async;
+
 import org.junit.Test;
 
 public class ResultSyncPointTest {
 
     @Test
-    public void testResultSyncPoint() throws InterruptedException, TimeoutException, Exception {
+    public void testResultSyncPoint() throws Exception {
         final String result = "Hip Hip Hurrary!!111!";
         final CyclicBarrier barrier = new CyclicBarrier(2);
         final ResultSyncPoint<String, Exception> rsp = new ResultSyncPoint<>();
@@ -44,8 +44,8 @@ public class ResultSyncPointTest {
         assertEquals(result, receivedResult);
     }
 
-    @Test(expected=TestException.class)
-    public void exceptionTestResultSyncPoint() throws InterruptedException, TimeoutException, Exception {
+    @Test(expected = TestException.class)
+    public void exceptionTestResultSyncPoint() throws Exception {
         final CyclicBarrier barrier = new CyclicBarrier(2);
         final ResultSyncPoint<String, TestException> rsp = new ResultSyncPoint<>();
         Async.go(new Async.ThrowingRunnable() {

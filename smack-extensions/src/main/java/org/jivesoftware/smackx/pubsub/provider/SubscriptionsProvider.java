@@ -21,11 +21,12 @@ import java.util.Map;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.provider.EmbeddedExtensionProvider;
+
 import org.jivesoftware.smackx.pubsub.Subscription;
 import org.jivesoftware.smackx.pubsub.SubscriptionsExtension;
 
 /**
- * Parses the <b>subscriptions</b> element out of the pubsub IQ message from 
+ * Parses the <b>subscriptions</b> element out of the PubSub IQ message from
  * the server as specified in the <a href="http://xmpp.org/extensions/xep-0060.html#schemas-pubsub">subscriptions schema</a>.
  * 
  * @author Robin Collier
@@ -36,7 +37,7 @@ public class SubscriptionsProvider extends EmbeddedExtensionProvider<Subscriptio
     @Override
     protected SubscriptionsExtension createReturnExtension(String currentElement, String currentNamespace, Map<String, String> attributeMap, List<? extends ExtensionElement> content)
     {
-        return new SubscriptionsExtension(attributeMap.get("node"), (List<Subscription>)content);
+        return new SubscriptionsExtension(attributeMap.get("node"), (List<Subscription>) content);
     }
 
 }

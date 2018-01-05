@@ -23,11 +23,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.jivesoftware.smack.AbstractConnectionListener;
 import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.ExceptionCallback;
 import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.SmackFuture;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
@@ -42,12 +42,16 @@ import org.jivesoftware.smack.filter.StanzaTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.util.ExceptionCallback;
+import org.jivesoftware.smack.util.SuccessCallback;
+
 import org.jivesoftware.smackx.carbons.packet.Carbon;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension.Direction;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension.Private;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
+
 import org.jxmpp.jid.EntityFullJid;
 
 /**
@@ -123,7 +127,7 @@ public final class CarbonManager extends Manager {
                 // also reset here.
                 enabled_state = false;
                 boolean removed = connection().removeSyncStanzaListener(carbonsListener);
-                assert(removed);
+                assert (removed);
             }
             @Override
             public void authenticated(XMPPConnection connection, boolean resumed) {
@@ -243,10 +247,9 @@ public final class CarbonManager extends Manager {
      * </p>
      * 
      * @param exceptionCallback the optional exception callback.
-     * @throws InterruptedException if the thread got interrupted while this action is performed.
      * @since 4.2
      */
-    public void enableCarbonsAsync(ExceptionCallback exceptionCallback) throws InterruptedException {
+    public void enableCarbonsAsync(ExceptionCallback<Exception> exceptionCallback) {
         sendUseCarbons(true, exceptionCallback);
     }
 
@@ -260,29 +263,24 @@ public final class CarbonManager extends Manager {
      * </p>
      * 
      * @param exceptionCallback the optional exception callback.
-     * @throws InterruptedException if the thread got interrupted while this action is performed.
      * @since 4.2
      */
-    public void disableCarbonsAsync(ExceptionCallback exceptionCallback) throws InterruptedException {
+    public void disableCarbonsAsync(ExceptionCallback<Exception> exceptionCallback) {
         sendUseCarbons(false, exceptionCallback);
     }
 
-    private void sendUseCarbons(final boolean use, ExceptionCallback exceptionCallback) throws InterruptedException {
+    private void sendUseCarbons(final boolean use, ExceptionCallback<Exception> exceptionCallback) {
         IQ setIQ = carbonsEnabledIQ(use);
 
-        try {
-            connection().sendIqWithResponseCallback(setIQ, new StanzaListener() {
-                @Override
-                public void processStanza(Stanza packet) {
-                    enabled_state = use;
-                }
-            }, exceptionCallback);
-        }
-        catch (NotConnectedException e) {
-            if (exceptionCallback != null) {
-                exceptionCallback.processException(e);
+        SmackFuture<IQ, Exception> future = connection().sendIqRequestAsync(setIQ);
+
+        future.onSuccess(new SuccessCallback<IQ>() {
+
+            @Override
+            public void onSuccess(IQ result) {
+                enabled_state = use;
             }
-        }
+        }).onError(exceptionCallback);
     }
 
     /**
@@ -334,6 +332,8 @@ public final class CarbonManager extends Manager {
 
     /**
      * Check if carbons are enabled on this connection.
+     *
+     * @return true if carbons are enabled, else false.
      */
     public boolean getCarbonsEnabled() {
         return this.enabled_state;

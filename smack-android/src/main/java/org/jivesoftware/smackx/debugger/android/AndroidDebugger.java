@@ -1,6 +1,6 @@
 /**
  *
- * Copyright © 2014 Florian Schmaus
+ * Copyright © 2014-2017 Florian Schmaus
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,10 @@
  */
 package org.jivesoftware.smackx.debugger.android;
 
-import org.jivesoftware.smack.debugger.AbstractDebugger;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.debugger.AbstractDebugger;
 
 import android.util.Log;
-
-import java.io.Reader;
-import java.io.Writer;
 
 /**
  * Very simple debugger that prints to the android log the sent and received stanzas.
@@ -37,8 +34,8 @@ import java.io.Writer;
  */
 public class AndroidDebugger extends AbstractDebugger {
 
-    public AndroidDebugger(XMPPConnection connection, Writer writer, Reader reader) {
-        super(connection, writer, reader);
+    public AndroidDebugger(XMPPConnection connection) {
+        super(connection);
     }
 
     @Override

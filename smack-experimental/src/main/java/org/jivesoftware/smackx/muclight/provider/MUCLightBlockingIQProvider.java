@@ -21,7 +21,9 @@ import java.util.HashMap;
 
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.provider.IQProvider;
+
 import org.jivesoftware.smackx.muclight.element.MUCLightBlockingIQ;
+
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -66,7 +68,7 @@ public class MUCLightBlockingIQProvider extends IQProvider<MUCLightBlockingIQ> {
         return mucLightBlockingIQ;
     }
 
-    private HashMap<Jid, Boolean> parseBlocking(XmlPullParser parser, HashMap<Jid, Boolean> map)
+    private static HashMap<Jid, Boolean> parseBlocking(XmlPullParser parser, HashMap<Jid, Boolean> map)
             throws XmppStringprepException, XmlPullParserException, IOException {
         if (map == null) {
             map = new HashMap<>();

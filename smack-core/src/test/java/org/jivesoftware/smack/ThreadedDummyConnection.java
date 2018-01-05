@@ -25,9 +25,9 @@ import java.util.logging.Logger;
 
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.packet.IQ.Type;
 
 /**
  * A threaded dummy connection.
@@ -37,8 +37,8 @@ import org.jivesoftware.smack.packet.IQ.Type;
 public class ThreadedDummyConnection extends DummyConnection {
     private static final Logger LOGGER = Logger.getLogger(ThreadedDummyConnection.class.getName());
 
-    private BlockingQueue<IQ> replyQ = new ArrayBlockingQueue<IQ>(1);
-    private BlockingQueue<Stanza> messageQ = new LinkedBlockingQueue<Stanza>(5);
+    private final BlockingQueue<IQ> replyQ = new ArrayBlockingQueue<>(1);
+    private final BlockingQueue<Stanza> messageQ = new LinkedBlockingQueue<>(5);
     private volatile boolean timeout = false;
 
     @Override
@@ -57,9 +57,10 @@ public class ThreadedDummyConnection extends DummyConnection {
                 replyQ.add(replyPacket);
             }
             replyPacket.setStanzaId(packet.getStanzaId());
-            replyPacket.setFrom(packet.getTo());
             replyPacket.setTo(packet.getFrom());
-            replyPacket.setType(Type.result);
+            if (replyPacket.getType() == null) {
+                replyPacket.setType(Type.result);
+            }
 
             new ProcessQueue(replyQ).start();
         }

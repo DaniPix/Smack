@@ -16,16 +16,18 @@
  */
 package org.jivesoftware.smackx.privacy.provider;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.util.ParserUtils;
+
 import org.jivesoftware.smackx.privacy.packet.Privacy;
 import org.jivesoftware.smackx.privacy.packet.PrivacyItem;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * The PrivacyProvider parses {@link Privacy} packets. {@link Privacy}
@@ -81,7 +83,7 @@ public class PrivacyProvider extends IQProvider<Privacy> {
     private static void parseList(XmlPullParser parser, Privacy privacy) throws XmlPullParserException, IOException, SmackException {
         boolean done = false;
         String listName = parser.getAttributeValue("", "name");
-        ArrayList<PrivacyItem> items = new ArrayList<PrivacyItem>();
+        ArrayList<PrivacyItem> items = new ArrayList<>();
         while (!done) {
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG) {
@@ -126,7 +128,7 @@ public class PrivacyProvider extends IQProvider<Privacy> {
             allow = false;
             break;
         default:
-            throw new SmackException("Unkown action value '" + actionValue + "'");
+            throw new SmackException("Unknown action value '" + actionValue + "'");
         }
 
         PrivacyItem item;

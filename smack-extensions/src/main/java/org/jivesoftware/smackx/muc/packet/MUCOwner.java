@@ -16,11 +16,11 @@
  */
 
 package org.jivesoftware.smackx.muc.packet;
-import org.jivesoftware.smack.packet.IQ;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.jivesoftware.smack.packet.IQ;
 
 /**
  * IQ stanza(/packet) that serves for granting and revoking ownership privileges, granting 
@@ -34,7 +34,7 @@ public class MUCOwner extends IQ {
     public static final String ELEMENT = QUERY_ELEMENT;
     public static final String NAMESPACE = MUCInitialPresence.NAMESPACE + "#owner";
 
-    private final List<MUCItem> items = new ArrayList<MUCItem>();
+    private final List<MUCItem> items = new ArrayList<>();
     private Destroy destroy;
 
     public MUCOwner() {
@@ -42,15 +42,15 @@ public class MUCOwner extends IQ {
     }
 
     /**
-     * Returns a List of item childs that holds information about affiliation,
+     * Returns a List of item children that holds information about affiliation,
      * jids and nicks.
      * 
-     * @return a List of item childs that holds information about affiliation,
+     * @return a List of item children that holds information about affiliation,
      *          jids and nicks.
      */
     public List<MUCItem> getItems() {
         synchronized (items) {
-            return Collections.unmodifiableList(new ArrayList<MUCItem>(items));
+            return Collections.unmodifiableList(new ArrayList<>(items));
         }
     }
 

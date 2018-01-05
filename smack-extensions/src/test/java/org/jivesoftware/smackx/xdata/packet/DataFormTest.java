@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.jivesoftware.smack.packet.Element;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.FormField.Type;
 import org.jivesoftware.smackx.xdata.provider.DataFormProvider;
@@ -30,6 +31,7 @@ import org.jivesoftware.smackx.xdatalayout.packet.DataLayout.Section;
 import org.jivesoftware.smackx.xdatalayout.packet.DataLayout.Text;
 import org.jivesoftware.smackx.xdatavalidation.packet.ValidateElement;
 import org.jivesoftware.smackx.xdatavalidation.packet.ValidateElement.RangeValidateElement;
+
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParser;
 
@@ -44,11 +46,11 @@ public class DataFormTest {
     private static final String TEST_OUTPUT_2 = "<x xmlns='jabber:x:data' type='submit'><instructions>InstructionTest1</instructions><field var='testField1'></field><page xmlns='http://jabber.org/protocol/xdata-layout' label='Label'><fieldref var='testField1'/><section label='section Label'><text>SectionText</text></section><text>PageText</text></page></x>";
     private static final String TEST_OUTPUT_3 = "<x xmlns='jabber:x:data' type='submit'><instructions>InstructionTest1</instructions><field var='testField1'><validate xmlns='http://jabber.org/protocol/xdata-validate' datatype='xs:integer'><range min='1111' max='9999'/></validate></field></x>";
 
-    DataFormProvider pr = new DataFormProvider();
+    private static final DataFormProvider pr = new DataFormProvider();
 
     @Test
     public void test() throws Exception {
-        //Build a Form
+        // Build a Form.
         DataForm df = new DataForm(DataForm.Type.submit);
         String instruction = "InstructionTest1";
         df.addInstruction(instruction);
@@ -75,7 +77,7 @@ public class DataFormTest {
 
     @Test
     public void testLayout() throws Exception {
-        //Build a Form
+        // Build a Form.
         DataForm df = new DataForm(DataForm.Type.submit);
         String instruction = "InstructionTest1";
         df.addInstruction(instruction);
@@ -117,7 +119,7 @@ public class DataFormTest {
 
     @Test
     public void testValidation() throws Exception {
-        //Build a Form
+        // Build a Form.
         DataForm df = new DataForm(DataForm.Type.submit);
         String instruction = "InstructionTest1";
         df.addInstruction(instruction);

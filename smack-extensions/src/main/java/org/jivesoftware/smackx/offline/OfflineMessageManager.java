@@ -17,9 +17,14 @@
 
 package org.jivesoftware.smackx.offline;
 
-import org.jivesoftware.smack.StanzaCollector;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.StanzaCollector;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.filter.AndFilter;
@@ -29,15 +34,13 @@ import org.jivesoftware.smack.filter.StanzaTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
+
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jivesoftware.smackx.disco.packet.DiscoverItems;
 import org.jivesoftware.smackx.offline.packet.OfflineMessageInfo;
 import org.jivesoftware.smackx.offline.packet.OfflineMessageRequest;
 import org.jivesoftware.smackx.xdata.Form;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The OfflineMessageManager helps manage offline messages even before the user has sent an
@@ -56,6 +59,8 @@ import java.util.List;
  * @author Gaston Dombiak
  */
 public class OfflineMessageManager {
+
+    private static final Logger LOGGER = Logger.getLogger(OfflineMessageManager.class.getName());
 
     private final static String namespace = "http://jabber.org/protocol/offline";
 
@@ -118,7 +123,7 @@ public class OfflineMessageManager {
      * @throws InterruptedException 
      */
     public List<OfflineMessageHeader> getHeaders() throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
-        List<OfflineMessageHeader> answer = new ArrayList<OfflineMessageHeader>();
+        List<OfflineMessageHeader> answer = new ArrayList<>();
         DiscoverItems items = ServiceDiscoveryManager.getInstanceFor(connection).discoverItems(
                 null, namespace);
         for (DiscoverItems.Item item : items.getItems()) {
@@ -143,7 +148,7 @@ public class OfflineMessageManager {
      * @throws InterruptedException 
      */
     public List<Message> getMessages(final List<String> nodes) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
-        List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<>(nodes.size());
         OfflineMessageRequest request = new OfflineMessageRequest();
         for (String node : nodes) {
             OfflineMessageRequest.Item item = new OfflineMessageRequest.Item(node);
@@ -154,7 +159,7 @@ public class OfflineMessageManager {
         StanzaFilter messageFilter = new AndFilter(PACKET_FILTER, new StanzaFilter() {
             @Override
             public boolean accept(Stanza packet) {
-                OfflineMessageInfo info = (OfflineMessageInfo) packet.getExtension("offline",
+                OfflineMessageInfo info = packet.getExtension("offline",
                         namespace);
                 return nodes.contains(info.getNode());
             }
@@ -164,12 +169,17 @@ public class OfflineMessageManager {
         try {
             connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
             // Collect the received offline messages
-            Message message = messageCollector.nextResult();
-            while (message != null && pendingNodes > 0) {
-                pendingNodes--;
-                messages.add(message);
+            Message message;
+            do {
                 message = messageCollector.nextResult();
-            }
+                if (message != null) {
+                    messages.add(message);
+                    pendingNodes--;
+                } else if (message == null && pendingNodes > 0) {
+                    LOGGER.log(Level.WARNING,
+                                    "Did not receive all expected offline messages. " + pendingNodes + " are missing.");
+                }
+            } while (message != null && pendingNodes > 0);
         }
         finally {
             // Stop queuing offline messages
@@ -198,7 +208,7 @@ public class OfflineMessageManager {
         StanzaCollector.Configuration messageCollectorConfiguration = StanzaCollector.newConfiguration().setStanzaFilter(PACKET_FILTER).setCollectorToReset(resultCollector);
         StanzaCollector messageCollector = connection.createStanzaCollector(messageCollectorConfiguration);
 
-        List<Message> messages = null;
+        List<Message> messages;
         try {
             resultCollector.nextResultOrThrow();
             // Be extra safe, cancel the message collector right here so that it does not collector

@@ -17,22 +17,24 @@
 
 package org.jivesoftware.smackx.workgroup.packet;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.provider.IQProvider;
+import org.jivesoftware.smack.util.PacketParserUtils;
+import org.jivesoftware.smack.util.ParserUtils;
+
 import org.jivesoftware.smackx.workgroup.MetaData;
 import org.jivesoftware.smackx.workgroup.agent.InvitationRequest;
 import org.jivesoftware.smackx.workgroup.agent.OfferContent;
 import org.jivesoftware.smackx.workgroup.agent.TransferRequest;
 import org.jivesoftware.smackx.workgroup.agent.UserRequest;
 import org.jivesoftware.smackx.workgroup.util.MetaDataUtils;
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.provider.IQProvider;
-import org.jivesoftware.smack.util.PacketParserUtils;
-import org.jivesoftware.smack.util.ParserUtils;
+
 import org.jxmpp.jid.Jid;
 import org.xmlpull.v1.XmlPullParser;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * An IQProvider for agent offer requests.
@@ -52,7 +54,7 @@ public class OfferRequestProvider extends IQProvider<IQ> {
         int timeout = -1;
         OfferContent content = null;
         boolean done = false;
-        Map<String, List<String>> metaData = new HashMap<String, List<String>>();
+        Map<String, List<String>> metaData = new HashMap<>();
 
         if (eventType != XmlPullParser.START_TAG) {
             // throw exception
@@ -114,12 +116,12 @@ public class OfferRequestProvider extends IQProvider<IQ> {
         public static final String ELEMENT = "offer";
         public static final String NAMESPACE = "http://jabber.org/protocol/workgroup";
 
-        private int timeout;
-        private Jid userID;
-        private Jid userJID;
-        private Map<String, List<String>> metaData;
-        private String sessionID;
-        private OfferContent content;
+        private final int timeout;
+        private final Jid userID;
+        private final Jid userJID;
+        private final Map<String, List<String>> metaData;
+        private final String sessionID;
+        private final OfferContent content;
 
         public OfferRequestPacket(Jid userJID, Jid userID, int timeout, Map<String, List<String>> metaData,
                 String sessionID, OfferContent content)

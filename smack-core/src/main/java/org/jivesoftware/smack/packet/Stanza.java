@@ -19,18 +19,19 @@ package org.jivesoftware.smack.packet;
 
 import static org.jivesoftware.smack.util.StringUtils.requireNotNullOrEmpty;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+
 import org.jivesoftware.smack.packet.id.StanzaIdUtil;
 import org.jivesoftware.smack.util.MultiMap;
 import org.jivesoftware.smack.util.PacketUtil;
 import org.jivesoftware.smack.util.XmlStringBuilder;
+
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 import org.jxmpp.util.XmppStringUtils;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Base class for XMPP Stanzas, which are called Stanza(/Packet) in older versions of Smack (i.e. &lt; 4.1).
@@ -69,7 +70,7 @@ public abstract class Stanza implements TopLevelStreamElement {
      * Such an attribute is defined for all stanza types. For IQ, see for
      * example XEP-50 3.7:
      * "The requester SHOULD provide its locale information using the "xml:lang
-     * " attribute on either the <iq/> (RECOMMENDED) or <command/> element."
+     * " attribute on either the &lt;iq/&gt; (RECOMMENDED) or &lt;command/&gt; element."
      * </p>
      */
     protected String language;
@@ -350,6 +351,7 @@ public abstract class Stanza implements TopLevelStreamElement {
      *
      * @param elementName the XML element name of the extension. (May be null)
      * @param namespace the XML element namespace of the extension.
+     * @param <PE> type of the ExtensionElement.
      * @return the extension, or <tt>null</tt> if it doesn't exist.
      */
     @SuppressWarnings("unchecked")

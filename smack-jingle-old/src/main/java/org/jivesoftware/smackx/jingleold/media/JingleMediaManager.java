@@ -17,18 +17,19 @@
 
 package org.jivesoftware.smackx.jingleold.media;
 
+import java.util.List;
+
 import org.jivesoftware.smackx.jingleold.JingleSession;
 import org.jivesoftware.smackx.jingleold.nat.JingleTransportManager;
 import org.jivesoftware.smackx.jingleold.nat.TransportCandidate;
 
-import java.util.List;
-
 /**
  * This class provides necessary Jingle Session jmf methods and behavior.
- * <p/>
+ * <p>
  * The goal of this class is to provide a flexible way to make JingleManager control jmf streaming APIs without implement them.
  * For instance you can implement a file transfer using java sockets or a VOIP Media Manager using JMF.
  * You can implement many JingleMediaManager according to you necessity.
+ * </p>
  *
  * @author Thiago Camargo
  */
@@ -37,7 +38,7 @@ public abstract class JingleMediaManager {
     public static final String MEDIA_NAME = "JingleMediaManager";
 
     // Each media manager must keep track of the transport manager that it uses.
-    private JingleTransportManager transportManager;
+    private final JingleTransportManager transportManager;
 
     public JingleMediaManager(JingleTransportManager transportManager) {
         this.transportManager = transportManager;

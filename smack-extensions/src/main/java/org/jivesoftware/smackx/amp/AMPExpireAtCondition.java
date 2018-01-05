@@ -16,14 +16,16 @@
  */
 package org.jivesoftware.smackx.amp;
 
+import java.util.Date;
+
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
-import org.jxmpp.util.XmppDateTime;
+
 import org.jivesoftware.smackx.amp.packet.AMPExtension;
 
-import java.util.Date;
+import org.jxmpp.util.XmppDateTime;
 
 
 public class AMPExpireAtCondition implements AMPExtension.Condition {
@@ -46,7 +48,7 @@ public class AMPExpireAtCondition implements AMPExtension.Condition {
     private final String value;
 
     /**
-     * Create new expire-at amp condition with value setted as XEP-0082 formatted date.
+     * Create new expire-at amp condition with value set as XEP-0082 formatted date.
      * @param utcDateTime Date instance of time
      *                    that will be used as value parameter after formatting to XEP-0082 format. Can't be null.
      */

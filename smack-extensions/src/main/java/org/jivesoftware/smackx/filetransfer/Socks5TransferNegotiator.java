@@ -22,7 +22,6 @@ import java.io.OutputStream;
 import java.io.PushbackInputStream;
 
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
@@ -32,6 +31,7 @@ import org.jivesoftware.smackx.bytestreams.socks5.Socks5BytestreamRequest;
 import org.jivesoftware.smackx.bytestreams.socks5.Socks5BytestreamSession;
 import org.jivesoftware.smackx.bytestreams.socks5.packet.Bytestream;
 import org.jivesoftware.smackx.si.packet.StreamInitiation;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -43,17 +43,15 @@ import org.jxmpp.jid.Jid;
  */
 public class Socks5TransferNegotiator extends StreamNegotiator {
 
-    private XMPPConnection connection;
-
-    private Socks5BytestreamManager manager;
+    private final Socks5BytestreamManager manager;
 
     Socks5TransferNegotiator(XMPPConnection connection) {
-        this.connection = connection;
-        this.manager = Socks5BytestreamManager.getBytestreamManager(this.connection);
+        super(connection);
+        this.manager = Socks5BytestreamManager.getBytestreamManager(connection);
     }
 
     @Override
-    public OutputStream createOutgoingStream(String streamID, Jid initiator, Jid target) throws NoResponseException, SmackException, XMPPException
+    public OutputStream createOutgoingStream(String streamID, Jid initiator, Jid target) throws SmackException, XMPPException
                     {
         try {
             return this.manager.establishSession(target, streamID).getOutputStream();
@@ -75,7 +73,7 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
          */
         this.manager.ignoreBytestreamRequestOnce(initiation.getSessionID());
 
-        Stanza streamInitiation = initiateIncomingStream(this.connection, initiation);
+        Stanza streamInitiation = initiateIncomingStream(connection(), initiation);
         return negotiateIncomingStream(streamInitiation);
     }
 

@@ -24,8 +24,7 @@ import java.util.Locale;
  * 
  * @author Robin Collier
  */
-public enum PubSubNamespace
-{
+public enum PubSubNamespace {
     BASIC(null),
     ERROR("errors"),
     EVENT("event"),
@@ -34,13 +33,11 @@ public enum PubSubNamespace
     private final String fragment;
     private final String fullNamespace;
 
-    private PubSubNamespace(String fragment)
-    {
+    PubSubNamespace(String fragment) {
         this.fragment = fragment;
         if (fragment != null) {
             fullNamespace = PubSub.NAMESPACE + '#' + fragment;
-        }
-        else {
+        } else {
             fullNamespace = PubSub.NAMESPACE;
         }
     }
@@ -61,7 +58,7 @@ public enum PubSubNamespace
 
         if (index != -1)
         {
-            String suffix = ns.substring(ns.lastIndexOf('#')+1);
+            String suffix = ns.substring(ns.lastIndexOf('#') + 1);
             return valueOf(suffix.toUpperCase(Locale.US));
         }
         else

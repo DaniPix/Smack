@@ -16,8 +16,9 @@
  */
 package org.jivesoftware.smackx.pubsub;
 
-import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.Message;
+
 import org.jivesoftware.smackx.pubsub.provider.ItemProvider;
 
 /**
@@ -33,7 +34,7 @@ import org.jivesoftware.smackx.pubsub.provider.ItemProvider;
  * to true, otherwise it will be null.</li>
  * </ul>
  * 
- * <h3>An Item created to send to a node (via {@link LeafNode#send()} or {@link LeafNode#publish()}</h3>
+ * <h3>An Item created to send to a node (via {@link LeafNode#publish()}</h3>
  * <ul>
  * <li>The id is optional, since the server will generate one if necessary, but should be used if it is 
  * meaningful in the context of the node.  This value must be unique within the node that it is sent to, since
@@ -49,7 +50,7 @@ import org.jivesoftware.smackx.pubsub.provider.ItemProvider;
  */
 public class PayloadItem<E extends ExtensionElement> extends Item
 {
-    private E payload;
+    private final E payload;
 
     /**
      * Create an <tt>Item</tt> with no id and a payload  The id will be set by the server.  

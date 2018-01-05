@@ -21,7 +21,9 @@ import java.util.List;
 
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.blocking.element.UnblockContactsIQ;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.jxmpp.jid.Jid;
@@ -29,17 +31,17 @@ import org.jxmpp.jid.impl.JidCreate;
 
 public class UnblockContactsIQTest {
 
-    String unblockContactIQExample = "<iq id='unblock1' type='set'>" + "<unblock xmlns='urn:xmpp:blocking'>"
+    private static final String unblockContactIQExample = "<iq id='unblock1' type='set'>" + "<unblock xmlns='urn:xmpp:blocking'>"
             + "<item jid='romeo@montague.net'/>" + "<item jid='pepe@montague.net'/>" + "</unblock>" + "</iq>";
 
-    String unblockContactPushIQExample = "<iq to='juliet@capulet.com/chamber' type='set' id='push3'>"
+    private static final String unblockContactPushIQExample = "<iq to='juliet@capulet.com/chamber' type='set' id='push3'>"
             + "<unblock xmlns='urn:xmpp:blocking'>" + "<item jid='romeo@montague.net'/>"
             + "<item jid='pepe@montague.net'/>" + "</unblock>" + "</iq>";
 
-    String unblockAllIQExample = "<iq id='unblock2' type='set'>" + "<unblock xmlns='urn:xmpp:blocking'/>"
+    private static final String unblockAllIQExample = "<iq id='unblock2' type='set'>" + "<unblock xmlns='urn:xmpp:blocking'/>"
             + "</iq>";
 
-    String unblockAllPushIQExample = "<iq to='juliet@capulet.com/chamber' type='set' id='push5'>"
+    private static final String unblockAllPushIQExample = "<iq to='juliet@capulet.com/chamber' type='set' id='push5'>"
             + "<unblock xmlns='urn:xmpp:blocking'/>" + "</iq>";
 
     @Test
@@ -56,7 +58,7 @@ public class UnblockContactsIQTest {
 
     @Test
     public void checkUnblockContactPushIQ() throws Exception {
-        IQ iq = (IQ) PacketParserUtils.parseStanza(unblockContactPushIQExample);
+        IQ iq = PacketParserUtils.parseStanza(unblockContactPushIQExample);
         UnblockContactsIQ unblockContactIQ = (UnblockContactsIQ) iq;
         Assert.assertEquals(JidCreate.from("romeo@montague.net"), unblockContactIQ.getJids().get(0));
         Assert.assertEquals(JidCreate.from("pepe@montague.net"), unblockContactIQ.getJids().get(1));
@@ -71,7 +73,7 @@ public class UnblockContactsIQTest {
 
     @Test
     public void checkUnblockAllPushIQ() throws Exception {
-        IQ iq = (IQ) PacketParserUtils.parseStanza(unblockAllPushIQExample);
+        IQ iq = PacketParserUtils.parseStanza(unblockAllPushIQExample);
         UnblockContactsIQ unblockAllIQ = (UnblockContactsIQ) iq;
         Assert.assertNull(unblockAllIQ.getJids());
     }

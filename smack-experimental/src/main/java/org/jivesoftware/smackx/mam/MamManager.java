@@ -37,6 +37,7 @@ import org.jivesoftware.smack.filter.IQReplyFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.util.Objects;
+
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.mam.element.MamElements;
@@ -48,6 +49,8 @@ import org.jivesoftware.smackx.mam.filter.MamResultFilter;
 import org.jivesoftware.smackx.rsm.packet.RSMSet;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
+
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.EntityFullJid;
 import org.jxmpp.jid.Jid;
@@ -101,9 +104,12 @@ public final class MamManager extends Manager {
 
     private final Jid archiveAddress;
 
+    private final ServiceDiscoveryManager serviceDiscoveryManager;
+
     private MamManager(XMPPConnection connection, Jid archiveAddress) {
         super(connection);
         this.archiveAddress = archiveAddress;
+        serviceDiscoveryManager = ServiceDiscoveryManager.getInstanceFor(connection);
     }
 
     /**
@@ -233,11 +239,11 @@ public final class MamManager extends Manager {
 
 
     /**
-     * Query an message archive like a MUC archive or a pubsub node archive, addressed by an archiveAddress, applying
+     * Query an message archive like a MUC archive or a PubSub node archive, addressed by an archiveAddress, applying
      * filters: max count, start date, end date, from/to JID and with additional fields. When archiveAddress is null the
      * default, the server will be requested.
      * 
-     * @param node The Pubsub node name, can be null
+     * @param node The PubSub node name, can be null
      * @param max
      * @param start
      * @param end
@@ -340,7 +346,7 @@ public final class MamManager extends Manager {
     /**
      * Returns a page of the archive.
      * 
-     * @param node The Pubsub node name, can be null
+     * @param node The PubSub node name, can be null
      * @param dataForm
      * @param rsmSet
      * @return the MAM query result
@@ -412,7 +418,7 @@ public final class MamManager extends Manager {
     /**
      * Obtain page before the first message saved (specific chat).
      * <p>
-     * Note that the messageUid is the XEP-0313 UID and <b>not</> the stanza ID of the message.
+     * Note that the messageUid is the XEP-0313 UID and <b>not</b> the stanza ID of the message.
      * </p>
      *
      * @param chatJid
@@ -436,7 +442,7 @@ public final class MamManager extends Manager {
     /**
      * Obtain page after the last message saved (specific chat).
      * <p>
-     * Note that the messageUid is the XEP-0313 UID and <b>not</> the stanza ID of the message.
+     * Note that the messageUid is the XEP-0313 UID and <b>not</b> the stanza ID of the message.
      * </p>
      *
      * @param chatJid
@@ -492,7 +498,7 @@ public final class MamManager extends Manager {
     /**
      * Get the form fields supported by the server.
      * 
-     * @param node The Pubsub node name, can be null
+     * @param node The PubSub node name, can be null
      * @return the list of form fields.
      * @throws NoResponseException
      * @throws XMPPErrorException
@@ -515,7 +521,7 @@ public final class MamManager extends Manager {
     private MamQueryResult queryArchive(MamQueryIQ mamQueryIq) throws NoResponseException, XMPPErrorException,
             NotConnectedException, InterruptedException, NotLoggedInException {
         final XMPPConnection connection = getAuthenticatedConnectionOrThrow();
-        MamFinIQ mamFinIQ = null;
+        MamFinIQ mamFinIQ;
 
         StanzaCollector mamFinIQCollector = connection.createStanzaCollector(new IQReplyFilter(mamQueryIq, connection));
 
@@ -585,17 +591,20 @@ public final class MamManager extends Manager {
     }
 
     /**
-     * Returns true if Message Archive Management is supported by the server.
-     * 
-     * @return true if Message Archive Management is supported by the server.
-     * @throws NotConnectedException
-     * @throws XMPPErrorException
+     * Check if MAM is supported for the XMPP connection managed by this MamManager.
+     *
+     * @return true if MAM is supported for the XMPP connection, <code>false</code>otherwhise.
+     *
      * @throws NoResponseException
+     * @throws XMPPErrorException
+     * @throws NotConnectedException
      * @throws InterruptedException
+     * @since 4.2.1
+     * @see <a href="https://xmpp.org/extensions/xep-0313.html#support">XEP-0313 § 7. Determining support</a>
      */
-    public boolean isSupportedByServer()
-            throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
-        return ServiceDiscoveryManager.getInstanceFor(connection()).serverSupportsFeature(MamElements.NAMESPACE);
+    public boolean isSupported() throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
+        BareJid myBareJid = connection().getUser().asBareJid();
+        return serviceDiscoveryManager.supportsFeature(myBareJid, MamElements.NAMESPACE);
     }
 
     private static DataForm getNewMamForm() {

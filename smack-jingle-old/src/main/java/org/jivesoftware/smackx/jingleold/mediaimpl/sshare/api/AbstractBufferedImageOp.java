@@ -60,8 +60,8 @@ public abstract class AbstractBufferedImageOp implements BufferedImageOp, Clonea
      * @param image   a BufferedImage object
      * @param x       the left edge of the pixel block
      * @param y       the right edge of the pixel block
-     * @param width   the width of the pixel arry
-     * @param height  the height of the pixel arry
+     * @param width   the width of the pixel array
+     * @param height  the height of the pixel array
      * @param pixels  the array to hold the returned pixels. May be null.
      * @return the pixels
      * @see #setRGB
@@ -69,7 +69,7 @@ public abstract class AbstractBufferedImageOp implements BufferedImageOp, Clonea
     public int[] getRGB(BufferedImage image, int x, int y, int width, int height, int[] pixels) {
         int type = image.getType();
         if (type == BufferedImage.TYPE_INT_ARGB || type == BufferedImage.TYPE_INT_RGB)
-            return (int [])image.getRaster().getDataElements(x, y, width, height, pixels);
+            return (int[]) image.getRaster().getDataElements(x, y, width, height, pixels);
         return image.getRGB(x, y, width, height, pixels, 0, width);
     }
 
@@ -79,8 +79,8 @@ public abstract class AbstractBufferedImageOp implements BufferedImageOp, Clonea
      * @param image   a BufferedImage object
      * @param x       the left edge of the pixel block
      * @param y       the right edge of the pixel block
-     * @param width   the width of the pixel arry
-     * @param height  the height of the pixel arry
+     * @param width   the width of the pixel array
+     * @param height  the height of the pixel array
      * @param pixels  the array of pixels to set
      * @see #getRGB
      */

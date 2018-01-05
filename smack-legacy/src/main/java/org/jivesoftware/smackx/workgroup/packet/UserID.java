@@ -22,6 +22,7 @@ import java.io.IOException;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smack.util.ParserUtils;
+
 import org.jxmpp.jid.Jid;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -38,7 +39,7 @@ public class UserID implements ExtensionElement {
      */
     public static final String NAMESPACE = "http://jivesoftware.com/protocol/workgroup";
 
-    private Jid userID;
+    private final Jid userID;
 
     public UserID(Jid userID) {
         this.userID = userID;

@@ -23,6 +23,7 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jivesoftware.smack.util.ParserUtils;
+
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.xmlpull.v1.XmlPullParser;
@@ -41,7 +42,7 @@ public class RosterPacketProvider extends IQProvider<RosterPacket> {
 
         outerloop: while (true) {
             int eventType = parser.next();
-            switch(eventType) {
+            switch (eventType) {
             case XmlPullParser.START_TAG:
                 String startTag = parser.getName();
                 switch (startTag) {
@@ -53,7 +54,7 @@ public class RosterPacketProvider extends IQProvider<RosterPacket> {
                 break;
             case XmlPullParser.END_TAG:
                 String endTag = parser.getName();
-                switch(endTag) {
+                switch (endTag) {
                 case IQ.QUERY_ELEMENT:
                     if (parser.getDepth() == initialDepth) {
                         break outerloop;
@@ -84,7 +85,7 @@ public class RosterPacketProvider extends IQProvider<RosterPacket> {
         boolean approved = ParserUtils.getBooleanAttribute(parser, "approved", false);
         item.setApproved(approved);
 
-        outerloop: while(true) {
+        outerloop: while (true) {
             int eventType = parser.next();
             switch (eventType) {
             case XmlPullParser.START_TAG:
@@ -106,7 +107,7 @@ public class RosterPacketProvider extends IQProvider<RosterPacket> {
             }
         }
         ParserUtils.assertAtEndTag(parser);
-        assert(item != null);
+        assert (item != null);
         return item;
     }
 }

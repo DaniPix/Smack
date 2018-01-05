@@ -16,6 +16,10 @@
  */
 package org.jivesoftware.smackx.filetransfer;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
@@ -26,13 +30,12 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.EventManger;
 import org.jivesoftware.smack.util.EventManger.Callback;
+
 import org.jivesoftware.smackx.si.packet.StreamInitiation;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
-import org.jxmpp.jid.Jid;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.jxmpp.jid.Jid;
 
 /**
  * After the file transfer negotiation process is completed according to
@@ -42,7 +45,11 @@ import java.io.OutputStream;
  *
  * @author Alexander Wenckus
  */
-public abstract class StreamNegotiator {
+public abstract class StreamNegotiator extends Manager {
+
+    protected StreamNegotiator(XMPPConnection connection) {
+        super(connection);
+    }
 
     /**
      * A event manager for stream initiation requests send to us.
@@ -130,7 +137,7 @@ public abstract class StreamNegotiator {
 
 
     abstract InputStream negotiateIncomingStream(Stanza streamInitiation) throws XMPPErrorException,
-            InterruptedException, NoResponseException, SmackException;
+            InterruptedException, SmackException;
 
     /**
      * This method handles the file stream download negotiation process. The
@@ -149,7 +156,7 @@ public abstract class StreamNegotiator {
      * @throws SmackException 
      */
     public abstract InputStream createIncomingStream(StreamInitiation initiation)
-            throws XMPPErrorException, InterruptedException, NoResponseException, SmackException;
+            throws XMPPErrorException, InterruptedException, SmackException;
 
     /**
      * This method handles the file upload stream negotiation process. The
@@ -162,14 +169,12 @@ public abstract class StreamNegotiator {
      * @param target    The fully-qualified JID of the target or receiver of the file
      *                  transfer.
      * @return The negotiated stream ready for data.
-     * @throws XMPPErrorException If an error occurs during the negotiation process an
-     *                       exception will be thrown.
      * @throws SmackException 
      * @throws XMPPException 
      * @throws InterruptedException 
      */
     public abstract OutputStream createOutgoingStream(String streamID,
-            Jid initiator, Jid target) throws XMPPErrorException, NoResponseException, SmackException, XMPPException, InterruptedException;
+            Jid initiator, Jid target) throws SmackException, XMPPException, InterruptedException;
 
     /**
      * Returns the XMPP namespace reserved for this particular type of file

@@ -39,7 +39,7 @@ public interface BytestreamSession {
      * @return the InputStream associated with this session to send data
      * @throws IOException if an error occurs while retrieving the input stream
      */
-    public InputStream getInputStream() throws IOException;
+    InputStream getInputStream() throws IOException;
 
     /**
      * Returns the OutputStream associated with this session to receive data.
@@ -47,7 +47,7 @@ public interface BytestreamSession {
      * @return the OutputStream associated with this session to receive data
      * @throws IOException if an error occurs while retrieving the output stream
      */
-    public OutputStream getOutputStream() throws IOException;
+    OutputStream getOutputStream() throws IOException;
 
     /**
      * Closes the bytestream session.
@@ -57,7 +57,7 @@ public interface BytestreamSession {
      * 
      * @throws IOException if an error occurs while closing the session
      */
-    public void close() throws IOException;
+    void close() throws IOException;
 
     /**
      * Returns the timeout for read operations of the input stream associated with this session. 0
@@ -66,19 +66,19 @@ public interface BytestreamSession {
      * @return the timeout for read operations
      * @throws IOException if there is an error in the underlying protocol
      */
-    public int getReadTimeout() throws IOException;
+    int getReadTimeout() throws IOException;
 
     /**
      * Sets the specified timeout, in milliseconds. With this option set to a non-zero timeout, a
      * read() call on the input stream associated with this session will block for only this amount
      * of time. If the timeout expires, a java.net.SocketTimeoutException is raised, though the
      * session is still valid. The option must be enabled prior to entering the blocking operation
-     * to have effect. The timeout must be > 0. A timeout of zero is interpreted as an infinite
+     * to have effect. The timeout must be &gt; 0. A timeout of zero is interpreted as an infinite
      * timeout. Default is 0.
      * 
      * @param timeout the specified timeout, in milliseconds
      * @throws IOException if there is an error in the underlying protocol
      */
-    public void setReadTimeout(int timeout) throws IOException;
+    void setReadTimeout(int timeout) throws IOException;
 
 }

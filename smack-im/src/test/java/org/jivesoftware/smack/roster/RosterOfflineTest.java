@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.jivesoftware.smack.DummyConnection;
 import org.jivesoftware.smack.SmackException;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,9 +32,9 @@ import org.junit.Test;
  */
 public class RosterOfflineTest {
 
-    DummyConnection connection;
+    private DummyConnection connection;
 
-    Roster roster;
+    private Roster roster;
 
     @Before
     public void setup() {

@@ -29,12 +29,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jivesoftware.smack.roster.packet.RosterPacket.Item;
 import org.jivesoftware.smack.roster.provider.RosterPacketProvider;
 import org.jivesoftware.smack.util.FileUtils;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smack.util.stringencoder.Base32;
+
 import org.jxmpp.jid.Jid;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -120,7 +120,7 @@ public final class DirectoryRosterStore implements RosterStore {
 
     @Override
     public List<Item> getEntries() {
-        List<Item> entries = new ArrayList<RosterPacket.Item>();
+        List<Item> entries = new ArrayList<>();
 
         for (File file : fileDir.listFiles(rosterDirFilter)) {
             Item entry = readEntry(file);

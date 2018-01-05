@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2016 Florian Schmaus
+ * Copyright 2016-2017 Florian Schmaus
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
  */
 package org.jivesoftware.smack.roster;
 
-
 import java.util.concurrent.TimeoutException;
+
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 
 import org.igniterealtime.smack.inttest.AbstractSmackLowLevelIntegrationTest;
 import org.igniterealtime.smack.inttest.SmackIntegrationTest;
 import org.igniterealtime.smack.inttest.SmackIntegrationTestEnvironment;
 import org.igniterealtime.smack.inttest.util.SimpleResultSyncPoint;
-import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jxmpp.jid.FullJid;
 
 public class LowLevelRosterIntegrationTest extends AbstractSmackLowLevelIntegrationTest {
@@ -60,7 +60,7 @@ public class LowLevelRosterIntegrationTest extends AbstractSmackLowLevelIntegrat
             }
         });
 
-        // Disconnect conTwo, this should cause an 'unavilable' presence to be send from conTwo to
+        // Disconnect conTwo, this should cause an 'unavailable' presence to be send from conTwo to
         // conOne.
         conTwo.disconnect();
 

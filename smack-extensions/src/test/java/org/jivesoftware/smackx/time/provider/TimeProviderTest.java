@@ -21,7 +21,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.time.packet.Time;
+
 import org.junit.Test;
 
 public class TimeProviderTest {
@@ -37,7 +39,7 @@ public class TimeProviderTest {
           + "<time xmlns='urn:xmpp:time'/>"
           + "</iq>";
         // @formatter:on
-        IQ iqRequest = (IQ) PacketParserUtils.parseStanza(request);
+        IQ iqRequest = PacketParserUtils.parseStanza(request);
         assertTrue(iqRequest instanceof Time);
 
         // @formatter:off
@@ -52,7 +54,7 @@ public class TimeProviderTest {
           + "</time>"
           + "</iq>";
         // @formatter:on
-        IQ iqResponse = (IQ) PacketParserUtils.parseStanza(response);
+        IQ iqResponse = PacketParserUtils.parseStanza(response);
         assertTrue(iqResponse instanceof Time);
         Time time = (Time) iqResponse;
         assertEquals("-06:00", time.getTzo());

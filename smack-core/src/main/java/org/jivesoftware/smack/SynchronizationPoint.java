@@ -22,9 +22,9 @@ import java.util.concurrent.locks.Lock;
 
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.packet.TopLevelStreamElement;
-import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.Nonza;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.packet.TopLevelStreamElement;
 
 public class SynchronizationPoint<E extends Exception> {
 
@@ -68,6 +68,7 @@ public class SynchronizationPoint<E extends Exception> {
      * @param request the plain stream element to send.
      * @throws NoResponseException if no response was received.
      * @throws NotConnectedException if the connection is not connected.
+     * @throws InterruptedException if the connection is interrupted.
      * @return <code>null</code> if synchronization point was successful, or the failure Exception.
      */
     public E sendAndWaitForResponse(TopLevelStreamElement request) throws NoResponseException,
@@ -79,7 +80,7 @@ public class SynchronizationPoint<E extends Exception> {
                 if (request instanceof Stanza) {
                     connection.sendStanza((Stanza) request);
                 }
-                else if (request instanceof Nonza){
+                else if (request instanceof Nonza) {
                     connection.sendNonza((Nonza) request);
                 } else {
                     throw new IllegalStateException("Unsupported element type");
@@ -101,6 +102,7 @@ public class SynchronizationPoint<E extends Exception> {
      * @throws E if an failure was reported.
      * @throws NoResponseException if no response was received.
      * @throws NotConnectedException if the connection is not connected.
+     * @throws InterruptedException if the connection is interrupted.
      */
     public void sendAndWaitForResponseOrThrow(Nonza request) throws E, NoResponseException,
                     NotConnectedException, InterruptedException {
@@ -120,7 +122,7 @@ public class SynchronizationPoint<E extends Exception> {
      * Check if this synchronization point is successful or wait the connections reply timeout.
      * @throws NoResponseException if there was no response marking the synchronization point as success or failed.
      * @throws E if there was a failure
-     * @throws InterruptedException 
+     * @throws InterruptedException if the connection is interrupted.
      */
     public void checkIfSuccessOrWaitOrThrow() throws NoResponseException, E, InterruptedException {
         checkIfSuccessOrWait();
@@ -220,6 +222,16 @@ public class SynchronizationPoint<E extends Exception> {
         connectionLock.lock();
         try {
             return state == State.RequestSent;
+        }
+        finally {
+            connectionLock.unlock();
+        }
+    }
+
+    public E getFailureException() {
+        connectionLock.lock();
+        try {
+            return failureException;
         }
         finally {
             connectionLock.unlock();

@@ -30,20 +30,23 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.jivesoftware.smack.util.StringUtils;
+
 import org.junit.After;
 import org.junit.Test;
 
 /**
  * Test for Socks5Proxy class.
- * 
+ *
  * @author Henning Staib
  */
 public class Socks5ProxyTest {
 
-    static final String loopbackAddress = InetAddress.getLoopbackAddress().getHostAddress();
+    private static final String loopbackAddress = InetAddress.getLoopbackAddress().getHostAddress();
 
     /**
      * The SOCKS5 proxy should be a singleton used by all XMPP connections.
@@ -72,7 +75,7 @@ public class Socks5ProxyTest {
 
     /**
      * The SOCKS5 proxy should use a free port above the one configured.
-     * 
+     *
      * @throws Exception should not happen
      */
     @Test
@@ -101,17 +104,22 @@ public class Socks5ProxyTest {
     @Test
     public void shouldPreserveAddressOrderOnInsertions() {
         Socks5Proxy proxy = Socks5Proxy.getSocks5Proxy();
-        List<String> addresses = new ArrayList<String>(proxy.getLocalAddresses());
-        addresses.add("1");
-        addresses.add("2");
-        addresses.add("3");
+
+        LinkedHashSet<String> addresses = new LinkedHashSet<>(proxy.getLocalAddresses());
+
+        for (int i = 1 ; i <= 3; i++) {
+            addresses.add(Integer.toString(i));
+        }
+
         for (String address : addresses) {
             proxy.addLocalAddress(address);
         }
 
         List<String> localAddresses = proxy.getLocalAddresses();
+
+        Iterator<String> iterator = addresses.iterator();
         for (int i = 0; i < addresses.size(); i++) {
-            assertEquals(addresses.get(i), localAddresses.get(i));
+            assertEquals(iterator.next(), localAddresses.get(i));
         }
     }
 
@@ -122,7 +130,7 @@ public class Socks5ProxyTest {
     @Test
     public void shouldPreserveAddressOrderOnReplace() {
         Socks5Proxy proxy = Socks5Proxy.getSocks5Proxy();
-        List<String> addresses = new ArrayList<String>(proxy.getLocalAddresses());
+        List<String> addresses = new ArrayList<>(proxy.getLocalAddresses());
         addresses.add("1");
         addresses.add("2");
         addresses.add("3");
@@ -148,7 +156,7 @@ public class Socks5ProxyTest {
         proxy.addLocalAddress("same");
 
         int sameCount = 0;
-        for(String localAddress : proxy.getLocalAddresses()) {
+        for (String localAddress : proxy.getLocalAddresses()) {
             if ("same".equals(localAddress)) {
                 sameCount++;
             }
@@ -159,7 +167,7 @@ public class Socks5ProxyTest {
     /**
      * If the SOCKS5 proxy accepts a connection that is not a SOCKS5 connection it should close the
      * corresponding socket.
-     * 
+     *
      * @throws Exception should not happen
      */
     @Test
@@ -190,7 +198,7 @@ public class Socks5ProxyTest {
     /**
      * The SOCKS5 proxy should reply with an error message if no supported authentication methods
      * are given in the SOCKS5 request.
-     * 
+     *
      * @throws Exception should not happen
      */
     @Test
@@ -221,7 +229,7 @@ public class Socks5ProxyTest {
     /**
      * The SOCKS5 proxy should respond with an error message if the client is not allowed to connect
      * with the proxy.
-     * 
+     *
      * @throws Exception should not happen
      */
     @Test
@@ -243,7 +251,7 @@ public class Socks5ProxyTest {
 
         // send valid SOCKS5 message
         out.write(new byte[] { (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x01,
-                        (byte) 0xAA, (byte) 0x00, (byte) 0x00 });
+                (byte) 0xAA, (byte) 0x00, (byte) 0x00 });
 
         // verify error message
         assertEquals((byte) 0x05, (byte) in.read());
@@ -263,7 +271,7 @@ public class Socks5ProxyTest {
 
     /**
      * A Client should successfully establish a connection to the SOCKS5 proxy.
-     * 
+     *
      * @throws Exception should not happen
      */
     @Test
@@ -291,7 +299,7 @@ public class Socks5ProxyTest {
 
         // send valid SOCKS5 message
         out.write(new byte[] { (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x01,
-                        (byte) 0xAA, (byte) 0x00, (byte) 0x00 });
+                (byte) 0xAA, (byte) 0x00, (byte) 0x00 });
 
         // verify response
         assertEquals((byte) 0x05, (byte) in.read());
@@ -338,7 +346,7 @@ public class Socks5ProxyTest {
         Socks5Proxy socks5Proxy = Socks5Proxy.getSocks5Proxy();
         try {
             String address = InetAddress.getLocalHost().getHostAddress();
-            List<String> addresses = new ArrayList<String>();
+            List<String> addresses = new ArrayList<>();
             addresses.add(address);
             socks5Proxy.replaceLocalAddresses(addresses);
         }

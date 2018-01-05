@@ -20,17 +20,20 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import org.igniterealtime.smack.inttest.AbstractSmackIntegrationTest;
-import org.igniterealtime.smack.inttest.SmackIntegrationTest;
-import org.igniterealtime.smack.inttest.SmackIntegrationTestEnvironment;
-import org.igniterealtime.smack.inttest.TestNotPossibleException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.SmackException.NotLoggedInException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.Message;
+
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.mam.MamManager.MamQueryResult;
+import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
+
+import org.igniterealtime.smack.inttest.AbstractSmackIntegrationTest;
+import org.igniterealtime.smack.inttest.SmackIntegrationTest;
+import org.igniterealtime.smack.inttest.SmackIntegrationTestEnvironment;
+import org.igniterealtime.smack.inttest.TestNotPossibleException;
 import org.jxmpp.jid.EntityBareJid;
 
 public class MamIntegrationTest extends AbstractSmackIntegrationTest {
@@ -43,7 +46,7 @@ public class MamIntegrationTest extends AbstractSmackIntegrationTest {
 
         mamManagerConTwo = MamManager.getInstanceFor(conTwo);
 
-        if (!mamManagerConTwo.isSupportedByServer()) {
+        if (!mamManagerConTwo.isSupported()) {
             throw new TestNotPossibleException("Message Archive Management (XEP-0313) is not supported by the server.");
         }
 
@@ -54,6 +57,9 @@ public class MamIntegrationTest extends AbstractSmackIntegrationTest {
                     NotLoggedInException {
         EntityBareJid userOne = conOne.getUser().asEntityBareJid();
         EntityBareJid userTwo = conTwo.getUser().asEntityBareJid();
+
+        // Make sure MAM is archiving messages.
+        mamManagerConTwo.updateArchivingPreferences(null, null, MamPrefsIQ.DefaultBehavior.always);
 
         Message message = new Message(userTwo);
         String messageId = message.setStanzaId();

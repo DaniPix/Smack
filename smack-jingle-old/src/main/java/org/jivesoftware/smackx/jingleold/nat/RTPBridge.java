@@ -28,14 +28,16 @@ import java.util.logging.Logger;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.StanzaCollector;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
+
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -43,9 +45,9 @@ import org.xmlpull.v1.XmlPullParserException;
  * RTPBridge IQ Stanza(/Packet) used to request and retrieve a RTPBridge Candidates that can be used for a Jingle Media Transmission between two parties that are behind NAT.
  * This Jingle Bridge has all the needed information to establish a full UDP Channel (Send and Receive) between two parties.
  * <i>This transport method should be used only if other transport methods are not allowed. Or if you want a more reliable transport.</i>
- * <p/>
+ *
  * High Level Usage Example:
- * <p/>
+ *
  * RTPBridge rtpBridge = RTPBridge.getRTPBridge(connection, sessionID);
  *
  * @author Thiago Camargo
@@ -211,7 +213,7 @@ public class RTPBridge extends IQ {
     /**
      * Get Side A receive port.
      *
-     * @return the side A receive prot
+     * @return the side A receive port
      */
     public int getPortA() {
         return portA;
@@ -518,7 +520,7 @@ public class RTPBridge extends IQ {
         // Cancel the collector.
         collector.cancel();
 
-        if(response == null) return null;
+        if (response == null) return null;
 
         if (response.getIp() == null || response.getIp().equals("")) return null;
 
@@ -529,7 +531,7 @@ public class RTPBridge extends IQ {
         catch (SocketException e) {
             LOGGER.log(Level.WARNING, "exception", e);
         }
-        while (ifaces!=null&&ifaces.hasMoreElements()) {
+        while (ifaces != null && ifaces.hasMoreElements()) {
 
             NetworkInterface iface = ifaces.nextElement();
             Enumeration<InetAddress> iaddresses = iface.getInetAddresses();

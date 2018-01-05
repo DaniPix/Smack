@@ -35,9 +35,9 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.im.InitSmackIm;
 import org.jivesoftware.smack.packet.ErrorIQ;
 import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.IQ.Type;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.XMPPError.Condition;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jivesoftware.smack.roster.packet.RosterPacket.Item;
@@ -45,6 +45,7 @@ import org.jivesoftware.smack.roster.packet.RosterPacket.ItemType;
 import org.jivesoftware.smack.test.util.TestUtils;
 import org.jivesoftware.smack.test.util.WaitForPacketListener;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -227,10 +228,10 @@ public class RosterTest extends InitSmackIm {
                         contactName,
                         item.getName());
                 assertTrue("The updated contact doesn't belong to the requested groups ("
-                        + contactGroups[0] +")!",
+                        + contactGroups[0] + ")!",
                         item.getGroupNames().contains(contactGroups[0]));
                 assertTrue("The updated contact doesn't belong to the requested groups ("
-                        + contactGroups[1] +")!",
+                        + contactGroups[1] + ")!",
                         item.getGroupNames().contains(contactGroups[1]));
                 assertSame("The provided group number doesn't match the requested!",
                         contactGroups.length,
@@ -257,10 +258,10 @@ public class RosterTest extends InitSmackIm {
                 contactName,
                 addedEntry.getName());
         assertTrue("The updated contact doesn't belong to the requested groups ("
-                + contactGroups[0] +")!",
+                + contactGroups[0] + ")!",
                 roster.getGroup(contactGroups[0]).contains(addedEntry));
         assertTrue("The updated contact doesn't belong to the requested groups ("
-                + contactGroups[1] +")!",
+                + contactGroups[1] + ")!",
                 roster.getGroup(contactGroups[1]).contains(addedEntry));
         assertSame("The updated contact should be member of two groups!",
                 contactGroups.length,
@@ -386,7 +387,7 @@ public class RosterTest extends InitSmackIm {
         connection.processStanza(packet);
 
         // Smack should reply with an error IQ
-        ErrorIQ errorIQ = (ErrorIQ) connection.getSentPacket();
+        ErrorIQ errorIQ = connection.getSentPacket();
         assertEquals(requestId, errorIQ.getStanzaId());
         assertEquals(Condition.service_unavailable, errorIQ.getError().getCondition());
 
@@ -399,7 +400,7 @@ public class RosterTest extends InitSmackIm {
      * 
      * @see <a href="http://www.igniterealtime.org/issues/browse/SMACK-294">SMACK-294</a>
      */
-    @Test(timeout=5000)
+    @Test(timeout = 5000)
     public void testAddEmptyGroupEntry() throws Throwable {
         // Constants for the new contact
         final BareJid contactJID = JidCreate.entityBareFrom("nurse@example.com");
@@ -516,9 +517,9 @@ public class RosterTest extends InitSmackIm {
      * @param roster the roster (or buddy list) which should be initialized.
      */
     public static void removeAllRosterEntries(DummyConnection connection, Roster roster) {
-        for(RosterEntry entry : roster.getEntries()) {
+        for (RosterEntry entry : roster.getEntries()) {
             // prepare the roster push packet
-            final RosterPacket rosterPush= new RosterPacket();
+            final RosterPacket rosterPush = new RosterPacket();
             rosterPush.setType(Type.set);
             rosterPush.setTo(connection.getUser());
 
@@ -536,9 +537,7 @@ public class RosterTest extends InitSmackIm {
      * Initialize the roster according to the example in
      * <a href="http://xmpp.org/rfcs/rfc3921.html#roster-login"
      *     >RFC3921: Retrieving One's Roster on Login</a>.
-     * 
-     * @param connection the dummy connection of which the provided roster belongs to.
-     * @param roster the roster (or buddy list) which should be initialized.
+     *
      * @throws SmackException 
      * @throws XmppStringprepException 
      */

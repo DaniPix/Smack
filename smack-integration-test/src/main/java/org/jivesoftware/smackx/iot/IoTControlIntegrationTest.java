@@ -21,18 +21,20 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Collection;
 import java.util.concurrent.TimeoutException;
 
-import org.igniterealtime.smack.inttest.AbstractSmackIntegrationTest;
-import org.igniterealtime.smack.inttest.SmackIntegrationTest;
-import org.igniterealtime.smack.inttest.SmackIntegrationTestEnvironment;
-import org.igniterealtime.smack.inttest.util.SimpleResultSyncPoint;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.roster.RosterIntegrationTest;
 import org.jivesoftware.smack.util.StringUtils;
+
 import org.jivesoftware.smackx.iot.control.IoTControlManager;
 import org.jivesoftware.smackx.iot.control.ThingControlRequest;
 import org.jivesoftware.smackx.iot.control.element.IoTSetResponse;
 import org.jivesoftware.smackx.iot.control.element.SetBoolData;
 import org.jivesoftware.smackx.iot.control.element.SetData;
+
+import org.igniterealtime.smack.inttest.AbstractSmackIntegrationTest;
+import org.igniterealtime.smack.inttest.SmackIntegrationTest;
+import org.igniterealtime.smack.inttest.SmackIntegrationTestEnvironment;
+import org.igniterealtime.smack.inttest.util.SimpleResultSyncPoint;
 import org.jxmpp.jid.Jid;
 
 public class IoTControlIntegrationTest extends AbstractSmackIntegrationTest {
@@ -55,7 +57,7 @@ public class IoTControlIntegrationTest extends AbstractSmackIntegrationTest {
      */
     @SmackIntegrationTest
     // @SmackSerialIntegrationTest
-    public void controlTest() throws TimeoutException, Exception {
+    public void controlTest() throws Exception {
         final String key = StringUtils.randomString(12);
         final String sn = StringUtils.randomString(12);
         final SimpleResultSyncPoint syncPoint = new SimpleResultSyncPoint();

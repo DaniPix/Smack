@@ -29,6 +29,7 @@ import java.util.TimeZone;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -40,6 +41,7 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class OccupantsInfo extends IQ {
 
+    @SuppressWarnings("SimpleDateFormatConstant")
     private static final SimpleDateFormat UTC_FORMAT = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 
     static {
@@ -56,13 +58,13 @@ public class OccupantsInfo extends IQ {
      */
     public static final String NAMESPACE = "http://jivesoftware.com/protocol/workgroup";
 
-    private String roomID;
+    private final String roomID;
     private final Set<OccupantInfo> occupants;
 
     public OccupantsInfo(String roomID) {
         super(ELEMENT_NAME, NAMESPACE);
         this.roomID = roomID;
-        this.occupants = new HashSet<OccupantInfo>();
+        this.occupants = new HashSet<>();
     }
 
     public String getRoomID() {
@@ -93,7 +95,9 @@ public class OccupantsInfo extends IQ {
                 buf.append("</name>");
                 // Add the date when the occupant joined the room
                 buf.append("<joined>");
-                buf.append(UTC_FORMAT.format(occupant.getJoined()));
+                synchronized (UTC_FORMAT) {
+                    buf.append(UTC_FORMAT.format(occupant.getJoined()));
+                }
                 buf.append("</joined>");
                 buf.append("</occupant>");
             }
@@ -103,9 +107,9 @@ public class OccupantsInfo extends IQ {
 
     public static class OccupantInfo {
 
-        private String jid;
-        private String nickname;
-        private Date joined;
+        private final String jid;
+        private final String nickname;
+        private final Date joined;
 
         public OccupantInfo(String jid, String nickname, Date joined) {
             this.jid = jid;
@@ -165,7 +169,9 @@ public class OccupantsInfo extends IQ {
                 } else if ((eventType == XmlPullParser.START_TAG) &&
                         ("joined".equals(parser.getName()))) {
                     try {
-                        joined = UTC_FORMAT.parse(parser.nextText());
+                        synchronized (UTC_FORMAT) {
+                            joined = UTC_FORMAT.parse(parser.nextText());
+                        }
                     } catch (ParseException e) {
                         throw new SmackException(e);
                     }

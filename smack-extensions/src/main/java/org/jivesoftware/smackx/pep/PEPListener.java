@@ -18,7 +18,9 @@
 package org.jivesoftware.smackx.pep;
 
 import org.jivesoftware.smack.packet.Message;
+
 import org.jivesoftware.smackx.pubsub.EventElement;
+
 import org.jxmpp.jid.EntityBareJid;
 
 
@@ -38,6 +40,6 @@ public interface PEPListener {
      * @param event the event contained in the message.
      * @param message the message stanza containing the PEP event.
      */
-    public void eventReceived(EntityBareJid from, EventElement event, Message message);
+    void eventReceived(EntityBareJid from, EventElement event, Message message);
 
 }

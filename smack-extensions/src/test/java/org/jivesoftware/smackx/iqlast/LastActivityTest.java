@@ -23,11 +23,12 @@ import org.jivesoftware.smack.DummyConnection;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.InitExtensions;
 import org.jivesoftware.smackx.iqlast.packet.LastActivity;
-import org.junit.Test;
 
 import com.jamesmurty.utils.XMLBuilder;
+import org.junit.Test;
 
 public class LastActivityTest extends InitExtensions {
 
@@ -43,7 +44,7 @@ public class LastActivityTest extends InitExtensions {
 
         DummyConnection c = new DummyConnection();
         c.connect();
-        IQ lastRequest = (IQ) PacketParserUtils.parseStanza(xml.asString());
+        IQ lastRequest = PacketParserUtils.parseStanza(xml.asString());
         assertTrue(lastRequest instanceof LastActivity);
 
         c.processStanza(lastRequest);

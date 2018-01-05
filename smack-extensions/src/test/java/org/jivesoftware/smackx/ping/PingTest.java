@@ -16,7 +16,7 @@
  */
 package org.jivesoftware.smackx.ping;
 
-import static org.jivesoftware.smack.test.util.CharsequenceEquals.equalsCharSequence;
+import static org.jivesoftware.smack.test.util.CharSequenceEquals.equalsCharSequence;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -34,9 +34,11 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.InitExtensions;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jivesoftware.smackx.ping.packet.Ping;
+
 import org.junit.Test;
 
 public class PingTest extends InitExtensions {
@@ -52,7 +54,7 @@ public class PingTest extends InitExtensions {
         con.connect();
         // Enable ping for this connection
         PingManager.getInstanceFor(con);
-        IQ pingRequest = (IQ) PacketParserUtils.parseStanza(control);
+        IQ pingRequest = PacketParserUtils.parseStanza(control);
 
         assertTrue(pingRequest instanceof Ping);
 
@@ -69,7 +71,7 @@ public class PingTest extends InitExtensions {
 
     @Test
     public void checkSendingPing() throws InterruptedException, SmackException, IOException, XMPPException {
-        DummyConnection dummyCon = getAuthentiactedDummyConnection();
+        DummyConnection dummyCon = getAuthenticatedDummyConnection();
         PingManager pinger = PingManager.getInstanceFor(dummyCon);
         try {
             pinger.ping(DUMMY_AT_EXAMPLE_ORG);
@@ -84,7 +86,7 @@ public class PingTest extends InitExtensions {
 
     @Test
     public void checkSuccessfulPing() throws Exception {
-        ThreadedDummyConnection threadedCon = getAuthentiactedDummyConnection();
+        ThreadedDummyConnection threadedCon = getAuthenticatedDummyConnection();
 
         PingManager pinger = PingManager.getInstanceFor(threadedCon);
 
@@ -121,8 +123,8 @@ public class PingTest extends InitExtensions {
      */
     @Test
     public void checkFailedPingToEntityError() throws Exception {
-        ThreadedDummyConnection threadedCon = getAuthentiactedDummyConnection();
-        //@formatter:off
+        ThreadedDummyConnection threadedCon = getAuthenticatedDummyConnection();
+        // @formatter:off
         String reply = 
                 "<iq type='error' id='qrzSp-16' to='test@myserver.com'>" +
                         "<ping xmlns='urn:xmpp:ping'/>" +
@@ -130,8 +132,8 @@ public class PingTest extends InitExtensions {
                             "<service-unavailable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>" +
                         "</error>" + 
                  "</iq>";
-        //@formatter:on
-        IQ serviceUnavailable = (IQ) PacketParserUtils.parseStanza(reply);
+        // @formatter:on
+        IQ serviceUnavailable = PacketParserUtils.parseStanza(reply);
         threadedCon.addIQReply(serviceUnavailable);
 
         PingManager pinger = PingManager.getInstanceFor(threadedCon);
@@ -143,7 +145,7 @@ public class PingTest extends InitExtensions {
 
     @Test
     public void checkPingToServerSuccess() throws Exception {
-        ThreadedDummyConnection con = getAuthentiactedDummyConnection();
+        ThreadedDummyConnection con = getAuthenticatedDummyConnection();
         PingManager pinger = PingManager.getInstanceFor(con);
 
         boolean pingSuccess = pinger.pingMyServer();
@@ -157,8 +159,8 @@ public class PingTest extends InitExtensions {
      */
     @Test
     public void checkPingToServerError() throws Exception {
-        ThreadedDummyConnection con = getAuthentiactedDummyConnection();
-        //@formatter:off
+        ThreadedDummyConnection con = getAuthenticatedDummyConnection();
+        // @formatter:off
         String reply = 
                 "<iq type='error' id='qrzSp-16' to='test@myserver.com' from='" + con.getXMPPServiceDomain() + "'>" +
                         "<ping xmlns='urn:xmpp:ping'/>" +
@@ -166,8 +168,8 @@ public class PingTest extends InitExtensions {
                             "<service-unavailable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>" +
                         "</error>" + 
                  "</iq>";
-        //@formatter:on
-        IQ serviceUnavailable = (IQ) PacketParserUtils.parseStanza(reply);
+        // @formatter:on
+        IQ serviceUnavailable = PacketParserUtils.parseStanza(reply);
         con.addIQReply(serviceUnavailable);
 
         PingManager pinger = PingManager.getInstanceFor(con);
@@ -188,18 +190,18 @@ public class PingTest extends InitExtensions {
 
     @Test
     public void checkSuccessfulDiscoRequest() throws Exception {
-        ThreadedDummyConnection con = getAuthentiactedDummyConnection();
+        ThreadedDummyConnection con = getAuthenticatedDummyConnection();
         DiscoverInfo info = new DiscoverInfo();
         info.addFeature(Ping.NAMESPACE);
 
-        //@formatter:off
+        // @formatter:off
         String reply = 
                 "<iq type='result' id='qrzSp-16' to='test@myserver.com'>" +
                         "<query xmlns='http://jabber.org/protocol/disco#info'><identity category='client' type='pc' name='Pidgin'/>" +
                             "<feature var='urn:xmpp:ping'/>" +
                         "</query></iq>";
-        //@formatter:on
-        IQ discoReply = (IQ) PacketParserUtils.parseStanza(reply);
+        // @formatter:on
+        IQ discoReply = PacketParserUtils.parseStanza(reply);
         con.addIQReply(discoReply);
 
         PingManager pinger = PingManager.getInstanceFor(con);
@@ -209,19 +211,19 @@ public class PingTest extends InitExtensions {
     }
 
     @Test
-    public void checkUnuccessfulDiscoRequest() throws Exception {
-        ThreadedDummyConnection con = getAuthentiactedDummyConnection();
+    public void checkUnsuccessfulDiscoRequest() throws Exception {
+        ThreadedDummyConnection con = getAuthenticatedDummyConnection();
         DiscoverInfo info = new DiscoverInfo();
         info.addFeature(Ping.NAMESPACE);
 
-        //@formatter:off
+        // @formatter:off
         String reply = 
                 "<iq type='result' id='qrzSp-16' to='test@myserver.com'>" +
                         "<query xmlns='http://jabber.org/protocol/disco#info'><identity category='client' type='pc' name='Pidgin'/>" +
                             "<feature var='urn:xmpp:noping'/>" +
                         "</query></iq>";
-        //@formatter:on
-        IQ discoReply = (IQ) PacketParserUtils.parseStanza(reply);
+        // @formatter:on
+        IQ discoReply = PacketParserUtils.parseStanza(reply);
         con.addIQReply(discoReply);
 
         PingManager pinger = PingManager.getInstanceFor(con);
@@ -230,7 +232,7 @@ public class PingTest extends InitExtensions {
         assertFalse(pingSupported);
     }
 
-    private static ThreadedDummyConnection getAuthentiactedDummyConnection() throws SmackException, IOException, XMPPException, InterruptedException {
+    private static ThreadedDummyConnection getAuthenticatedDummyConnection() throws SmackException, IOException, XMPPException, InterruptedException {
         ThreadedDummyConnection connection = new ThreadedDummyConnection();
         connection.connect();
         connection.login();

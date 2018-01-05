@@ -24,9 +24,11 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.SimpleIQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.xdata.Form;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
+
 import org.jxmpp.jid.DomainBareJid;
 import org.xmlpull.v1.XmlPullParser;
 
@@ -35,7 +37,7 @@ import org.xmlpull.v1.XmlPullParser;
  * has been used mainly to search for people who have registered with user directories (e.g., the "Jabber User Directory" hosted at users.jabber.org).
  * However, the jabber:iq:search protocol is not limited to user directories, and could be used to search other Jabber information repositories
  * (such as chatroom directories) or even to provide a Jabber interface to conventional search engines.
- * <p/>
+ *
  * The basic functionality is to query an information repository regarding the possible search fields, to send a search query, and to receive search results.
  *
  * @author Derek DeMoro
@@ -68,7 +70,7 @@ public class UserSearch extends SimpleIQ {
         search.setType(IQ.Type.get);
         search.setTo(searchService);
 
-        IQ response = (IQ) con.createStanzaCollectorAndSend(search).nextResultOrThrow();
+        IQ response = con.createStanzaCollectorAndSend(search).nextResultOrThrow();
         return Form.getFormFrom(response);
     }
 
@@ -90,7 +92,7 @@ public class UserSearch extends SimpleIQ {
         search.setTo(searchService);
         search.addExtension(searchForm.getDataFormToSend());
 
-        IQ response = (IQ) con.createStanzaCollectorAndSend(search).nextResultOrThrow();
+        IQ response = con.createStanzaCollectorAndSend(search).nextResultOrThrow();
         return ReportedData.getReportedDataFrom(response);
     }
 
@@ -112,7 +114,7 @@ public class UserSearch extends SimpleIQ {
         search.setType(IQ.Type.set);
         search.setTo(searchService);
 
-        SimpleUserSearch response = (SimpleUserSearch) con.createStanzaCollectorAndSend(search).nextResultOrThrow();
+        SimpleUserSearch response = con.createStanzaCollectorAndSend(search).nextResultOrThrow();
         return response.getReportedData();
     }
 
@@ -172,16 +174,16 @@ public class UserSearch extends SimpleIQ {
                 FormField field = new FormField(name);
 
                 // Handle hard coded values.
-                if(name.equals("first")){
+                if (name.equals("first")) {
                     field.setLabel("First Name");
                 }
-                else if(name.equals("last")){
+                else if (name.equals("last")) {
                     field.setLabel("Last Name");
                 }
-                else if(name.equals("email")){
+                else if (name.equals("email")) {
                     field.setLabel("Email Address");
                 }
-                else if(name.equals("nick")){
+                else if (name.equals("nick")) {
                     field.setLabel("Nickname");
                 }
 

@@ -38,12 +38,13 @@ public class HostAddress {
      * 
      * @param fqdn the optional fully qualified domain name (FQDN).
      * @param port The port to connect on.
+     * @param inetAddresses list of addresses.
      * @throws IllegalArgumentException If the port is out of valid range (0 - 65535).
      */
     public HostAddress(String fqdn, int port, List<InetAddress> inetAddresses) {
         if (port < 0 || port > 65535)
             throw new IllegalArgumentException(
-                    "Port must be a 16-bit unsiged integer (i.e. between 0-65535. Port was: " + port);
+                    "Port must be a 16-bit unsigned integer (i.e. between 0-65535. Port was: " + port);
         if (StringUtils.isNotEmpty(fqdn) && fqdn.charAt(fqdn.length() - 1) == '.') {
             this.fqdn = fqdn.substring(0, fqdn.length() - 1);
         }
@@ -75,6 +76,22 @@ public class HostAddress {
         setException(e);
     }
 
+    public String getHost() {
+        if (fqdn != null) {
+            return fqdn;
+        }
+
+        // In this case, the HostAddress(int, InetAddress) constructor must been used. We have no FQDN. And
+        // inetAddresses.size() must be exactly one.
+        assert inetAddresses.size() == 1;
+        return inetAddresses.get(0).getHostAddress();
+    }
+
+    /**
+     * Return the fully qualified domain name. This may return <code>null</code> in case there host address is only numeric, i.e. an IP address.
+     *
+     * @return the fully qualified domain name or <code>null</code>
+     */
     public String getFQDN() {
         return fqdn;
     }
@@ -89,7 +106,7 @@ public class HostAddress {
 
     public void setException(InetAddress inetAddress, Exception exception) {
         Exception old = exceptions.put(inetAddress, exception);
-        assert(old == null);
+        assert (old == null);
     }
 
     /**
@@ -109,7 +126,7 @@ public class HostAddress {
 
     @Override
     public String toString() {
-        return fqdn + ":" + port;
+        return getHost() + ":" + port;
     }
 
     @Override
@@ -123,7 +140,7 @@ public class HostAddress {
 
         final HostAddress address = (HostAddress) o;
 
-        if (!fqdn.equals(address.fqdn)) {
+        if (!getHost().equals(address.getHost())) {
             return false;
         }
         return port == address.port;
@@ -132,7 +149,7 @@ public class HostAddress {
     @Override
     public int hashCode() {
         int result = 1;
-        result = 37 * result + fqdn.hashCode();
+        result = 37 * result + getHost().hashCode();
         return result * 37 + port;
     }
 

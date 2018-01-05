@@ -17,21 +17,23 @@
 
 package org.jivesoftware.smackx.xdata.provider;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jivesoftware.smack.roster.provider.RosterPacketProvider;
+
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jivesoftware.smackx.xdatalayout.packet.DataLayout;
 import org.jivesoftware.smackx.xdatalayout.provider.DataLayoutProvider;
 import org.jivesoftware.smackx.xdatavalidation.packet.ValidateElement;
 import org.jivesoftware.smackx.xdatavalidation.provider.DataValidationProvider;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The DataFormProvider parses DataForm packets.
@@ -146,7 +148,7 @@ public class DataFormProvider extends ExtensionElementProvider<DataForm> {
 
     private static DataForm.Item parseItem(XmlPullParser parser) throws XmlPullParserException, IOException {
         final int initialDepth = parser.getDepth();
-        List<FormField> fields = new ArrayList<FormField>();
+        List<FormField> fields = new ArrayList<>();
         outerloop: while (true) {
             int eventType = parser.next();
             switch (eventType) {
@@ -170,7 +172,7 @@ public class DataFormProvider extends ExtensionElementProvider<DataForm> {
 
     private static DataForm.ReportedData parseReported(XmlPullParser parser) throws XmlPullParserException, IOException {
         final int initialDepth = parser.getDepth();
-        List<FormField> fields = new ArrayList<FormField>();
+        List<FormField> fields = new ArrayList<>();
         outerloop: while (true) {
             int eventType = parser.next();
             switch (eventType) {

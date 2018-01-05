@@ -16,18 +16,19 @@
  */
 package org.jivesoftware.smackx.jingleold.packet;
 
-import org.jivesoftware.smack.packet.ExtensionElement;
-import org.jivesoftware.smackx.jingleold.media.PayloadType;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jivesoftware.smack.packet.ExtensionElement;
+
+import org.jivesoftware.smackx.jingleold.media.PayloadType;
+
 /**
  * Jingle content description.
  *
- * @author Alvaro Saurin <alvaro.saurin@gmail.com>
+ * @author Alvaro Saurin
  */
 public abstract class JingleContentDescription implements ExtensionElement {
 
@@ -37,7 +38,7 @@ public abstract class JingleContentDescription implements ExtensionElement {
 
     // non-static
 
-    private final List<JinglePayloadType> payloads = new ArrayList<JinglePayloadType>();
+    private final List<JinglePayloadType> payloads = new ArrayList<>();
 
     /**
      * Creates a content description..
@@ -106,7 +107,7 @@ public abstract class JingleContentDescription implements ExtensionElement {
      */
     public ArrayList<JinglePayloadType> getJinglePayloadTypesList() {
         synchronized (payloads) {
-            return new ArrayList<JinglePayloadType>(payloads);
+            return new ArrayList<>(payloads);
         }
     }
 
@@ -116,14 +117,14 @@ public abstract class JingleContentDescription implements ExtensionElement {
      * @return a list of PayloadType.Audio
      */
     public ArrayList<PayloadType.Audio> getAudioPayloadTypesList() {
-        ArrayList<PayloadType.Audio> result = new ArrayList<PayloadType.Audio>();
+        ArrayList<PayloadType.Audio> result = new ArrayList<>();
         Iterator<JinglePayloadType> jinglePtsIter = getJinglePayloadTypes();
 
         while (jinglePtsIter.hasNext()) {
             JinglePayloadType jpt = jinglePtsIter.next();
             if (jpt instanceof JinglePayloadType.Audio) {
                 JinglePayloadType.Audio jpta = (JinglePayloadType.Audio) jpt;
-                result.add((PayloadType.Audio)jpta.getPayloadType());
+                result.add((PayloadType.Audio) jpta.getPayloadType());
             }
         }
 

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2015 Florian Schmaus.
+ * Copyright 2015-2017 Florian Schmaus.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.StandardExtensionElement.Builder;
+
 import org.junit.Test;
 
 public class StandardExtensionElementParserTest {
@@ -45,6 +46,9 @@ public class StandardExtensionElementParserTest {
         assertEquals("attr2-value", barNs2Element.getAttributeValue("attr2"));
 
         assertEquals("another-element-text", parsedElement.getFirstElement("another-element").getText());
+
+        String parsedElementString = parsedElement.toXML().toString();
+        assertEquals(elementString, parsedElementString);
     }
 
     @Test

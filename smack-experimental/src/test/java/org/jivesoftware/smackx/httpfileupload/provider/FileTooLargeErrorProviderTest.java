@@ -18,7 +18,9 @@ package org.jivesoftware.smackx.httpfileupload.provider;
 
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.httpfileupload.element.FileTooLargeError;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,7 +30,7 @@ public class FileTooLargeErrorProviderTest {
      * Example 7. Alternative response by the upload service if the file size was too large
      * @see <a href="http://xmpp.org/extensions/xep-0363.html#errors">XEP-0363: HTTP File Upload 5. Error conditions</a>
      */
-    String slotErrorFileToLarge
+    private static final String slotErrorFileToLarge
             = "<iq from='upload.montague.tld' "
             +       "id='step_03' "
             +       "to='romeo@montague.tld/garden' "

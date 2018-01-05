@@ -18,6 +18,7 @@ package org.jivesoftware.smackx.jingleold.listeners;
 
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPException;
+
 import org.jivesoftware.smackx.jingleold.JingleSession;
 import org.jivesoftware.smackx.jingleold.media.PayloadType;
 import org.jivesoftware.smackx.jingleold.nat.TransportCandidate;
@@ -39,7 +40,7 @@ public interface JingleSessionListener extends JingleListener {
      * @throws NotConnectedException 
      * @throws InterruptedException 
      */
-    public void sessionEstablished(PayloadType pt, TransportCandidate remoteCandidate,
+    void sessionEstablished(PayloadType pt, TransportCandidate remoteCandidate,
                                    TransportCandidate localCandidate, JingleSession jingleSession) throws NotConnectedException, InterruptedException;
 
     /**
@@ -48,7 +49,7 @@ public interface JingleSessionListener extends JingleListener {
      * @param reason        the reason (if any).
      * @param jingleSession Session that called the method
      */
-    public void sessionDeclined(String reason, JingleSession jingleSession);
+    void sessionDeclined(String reason, JingleSession jingleSession);
 
     /**
      * Notification that the session was redirected.
@@ -56,7 +57,7 @@ public interface JingleSessionListener extends JingleListener {
      * @param redirection
      * @param jingleSession session that called the method
      */
-    public void sessionRedirected(String redirection, JingleSession jingleSession);
+    void sessionRedirected(String redirection, JingleSession jingleSession);
 
     /**
      * Notification that the session was closed normally.
@@ -64,7 +65,7 @@ public interface JingleSessionListener extends JingleListener {
      * @param reason        the reason (if any).
      * @param jingleSession Session that called the method
      */
-    public void sessionClosed(String reason, JingleSession jingleSession);
+    void sessionClosed(String reason, JingleSession jingleSession);
 
     /**
      * Notification that the session was closed due to an exception.
@@ -72,7 +73,7 @@ public interface JingleSessionListener extends JingleListener {
      * @param e             the exception.
      * @param jingleSession session that called the method
      */
-    public void sessionClosedOnError(XMPPException e, JingleSession jingleSession);
+    void sessionClosedOnError(XMPPException e, JingleSession jingleSession);
 
     /**
      * Notification that the Media has arrived for this session.
@@ -80,6 +81,6 @@ public interface JingleSessionListener extends JingleListener {
      * @param jingleSession session that called the method
      * @param participant description of the participant
      */
-    public void sessionMediaReceived(JingleSession jingleSession, String participant);
+    void sessionMediaReceived(JingleSession jingleSession, String participant);
 
 }

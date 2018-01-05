@@ -17,12 +17,14 @@
 
 package org.jivesoftware.smackx.workgroup.agent;
 
-import org.jivesoftware.smackx.workgroup.packet.Transcript;
-import org.jivesoftware.smackx.workgroup.packet.Transcripts;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
+
+import org.jivesoftware.smackx.workgroup.packet.Transcript;
+import org.jivesoftware.smackx.workgroup.packet.Transcripts;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -53,7 +55,7 @@ public class TranscriptManager {
     public Transcript getTranscript(Jid workgroupJID, String sessionID) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
         Transcript request = new Transcript(sessionID);
         request.setTo(workgroupJID);
-        Transcript response = (Transcript) connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
+        Transcript response = connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
         return response;
     }
 
@@ -72,7 +74,7 @@ public class TranscriptManager {
     public Transcripts getTranscripts(Jid workgroupJID, Jid userID) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
         Transcripts request = new Transcripts(userID);
         request.setTo(workgroupJID);
-        Transcripts response = (Transcripts) connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
+        Transcripts response = connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
         return response;
     }
 }

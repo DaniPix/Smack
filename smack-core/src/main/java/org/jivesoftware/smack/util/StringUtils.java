@@ -46,19 +46,6 @@ public class StringUtils {
      *
      * @param input the input to escape.
      * @return the XML escaped variant of <code>input</code>.
-     * @deprecated use {@link #escapeForXml(CharSequence)} instead.
-     */
-    // Remove in 4.3.
-    @Deprecated
-    public static CharSequence escapeForXML(CharSequence input) {
-        return escapeForXml(input);
-    }
-
-    /**
-     * Escape <code>input</code> for XML.
-     *
-     * @param input the input to escape.
-     * @return the XML escaped variant of <code>input</code>.
      */
     public static CharSequence escapeForXml(CharSequence input) {
         return escapeForXml(input, XmlEscapeMode.safe);
@@ -121,7 +108,7 @@ public class StringUtils {
             return null;
         }
         final int len = input.length();
-        final StringBuilder out = new StringBuilder((int)(len*1.3));
+        final StringBuilder out = new StringBuilder((int) (len * 1.3));
         CharSequence toAppend;
         char ch;
         int last = 0;
@@ -153,7 +140,7 @@ public class StringUtils {
                 break;
             case forAttribute:
                 // No need to escape '>' for attributes.
-                switch(ch) {
+                switch (ch) {
                 case '<':
                     toAppend = LT_ENCODE;
                     break;
@@ -172,7 +159,7 @@ public class StringUtils {
                 break;
             case forAttributeApos:
                 // No need to escape '>' and '"' for attributes using '\'' as quote.
-                switch(ch) {
+                switch (ch) {
                 case '<':
                     toAppend = LT_ENCODE;
                     break;
@@ -188,7 +175,7 @@ public class StringUtils {
                 break;
             case forText:
                 // No need to escape '"', '\'', and '>' for text.
-                switch(ch) {
+                switch (ch) {
                 case '<':
                     toAppend = LT_ENCODE;
                     break;
@@ -257,7 +244,7 @@ public class StringUtils {
         return new String(hexChars);
     }
 
-    public static byte[] toBytes(String string) {
+    public static byte[] toUtf8Bytes(String string) {
         try {
             return string.getBytes(StringUtils.UTF8);
         }
@@ -285,7 +272,7 @@ public class StringUtils {
      * array index.
      */
     private static final char[] numbersAndLetters = ("0123456789abcdefghijklmnopqrstuvwxyz" +
-                    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ").toCharArray();
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ").toCharArray();
 
     /**
      * Returns a random String of numbers and letters (lower and upper case)
@@ -301,17 +288,7 @@ public class StringUtils {
      * @return a random String of numbers and letters of the specified length.
      */
     public static String insecureRandomString(int length) {
-        if (length < 1) {
-            return null;
-        }
-
-        final Random random = randGen.get();
-        // Create a char buffer to put random letters and numbers in.
-        char [] randBuffer = new char[length];
-        for (int i=0; i<randBuffer.length; i++) {
-            randBuffer[i] = numbersAndLetters[random.nextInt(numbersAndLetters.length)];
-        }
-        return new String(randBuffer);
+        return randomString(length, randGen.get());
     }
 
     private static final ThreadLocal<SecureRandom> SECURE_RANDOM = new ThreadLocal<SecureRandom>() {
@@ -322,12 +299,16 @@ public class StringUtils {
     };
 
     public static String randomString(final int length) {
+        return randomString(length, SECURE_RANDOM.get());
+    }
+
+    private static String randomString(final int length, Random random) {
         if (length < 1) {
             return null;
         }
 
         byte[] randomBytes = new byte[length];
-        SECURE_RANDOM.get().nextBytes(randomBytes);
+        random.nextBytes(randomBytes);
         char[] randomChars = new char[length];
         for (int i = 0; i < length; i++) {
             randomChars[i] = getPrintableChar(randomBytes[i]);
@@ -336,7 +317,7 @@ public class StringUtils {
     }
 
     private static char getPrintableChar(byte indexByte) {
-        assert(numbersAndLetters.length < Byte.MAX_VALUE * 2);
+        assert (numbersAndLetters.length < Byte.MAX_VALUE * 2);
 
         // Convert indexByte as it where an unsigned byte by promoting it to int
         // and masking it with 0xff. Yields results from 0 - 254.
@@ -450,10 +431,10 @@ public class StringUtils {
     }
 
     public static boolean nullSafeCharSequenceEquals(CharSequence csOne, CharSequence csTwo) {
-        return nullSafeCharSequenceComperator(csOne, csTwo) == 0;
+        return nullSafeCharSequenceComparator(csOne, csTwo) == 0;
     }
 
-    public static int nullSafeCharSequenceComperator(CharSequence csOne, CharSequence csTwo) {
+    public static int nullSafeCharSequenceComparator(CharSequence csOne, CharSequence csTwo) {
         if (csOne == null ^ csTwo == null) {
             return (csOne == null) ? -1 : 1;
         }

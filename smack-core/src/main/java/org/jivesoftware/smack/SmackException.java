@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.util.dns.HostAddress;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -257,7 +258,7 @@ public class SmackException extends Exception {
 
         public ConnectionException(Throwable wrappedThrowable) {
             super(wrappedThrowable);
-            failedAddresses = new ArrayList<HostAddress>(0);
+            failedAddresses = new ArrayList<>(0);
         }
 
         private ConnectionException(String message, List<HostAddress> failedAddresses) {

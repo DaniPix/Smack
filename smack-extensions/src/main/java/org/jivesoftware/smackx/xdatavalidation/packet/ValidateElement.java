@@ -16,11 +16,12 @@
  */
 package org.jivesoftware.smackx.xdatavalidation.packet;
 
-import org.jivesoftware.smack.packet.NamedElement;
 import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.NamedElement;
 import org.jivesoftware.smack.util.NumberUtil;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.util.XmlStringBuilder;
+
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jivesoftware.smackx.xdatavalidation.ValidationConsistencyException;
@@ -379,7 +380,7 @@ public abstract class ValidateElement implements ExtensionElement {
     }
 
     /**
-     * The <list-range/> element SHOULD be included only when the <field/> is of type "list-multi" and SHOULD be ignored
+     * The &gt;list-range/&lt; element SHOULD be included only when the &lt;field/&gt; is of type "list-multi" and SHOULD be ignored
      * otherwise.
      * 
      * @param formField

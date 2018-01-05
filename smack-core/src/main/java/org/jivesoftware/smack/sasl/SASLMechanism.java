@@ -16,6 +16,9 @@
  */
 package org.jivesoftware.smack.sasl;
 
+import javax.net.ssl.SSLSession;
+import javax.security.auth.callback.CallbackHandler;
+
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
@@ -25,15 +28,14 @@ import org.jivesoftware.smack.sasl.packet.SaslStreamElements.Response;
 import org.jivesoftware.smack.util.StringTransformer;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.util.stringencoder.Base64;
+
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.EntityBareJid;
-
-import javax.net.ssl.SSLSession;
-import javax.security.auth.callback.CallbackHandler;
 
 /**
  * Base class for SASL mechanisms.
  * Subclasses will likely want to implement their own versions of these methods:
+ * <ul>
  *  <li>{@link #authenticate(String, String, DomainBareJid, String, EntityBareJid, SSLSession)} -- Initiate authentication stanza using the
  *  deprecated method.</li>
  *  <li>{@link #authenticate(String, DomainBareJid, CallbackHandler, EntityBareJid, SSLSession)} -- Initiate authentication stanza
@@ -164,7 +166,7 @@ public abstract class SASLMechanism implements Comparable<SASLMechanism> {
         this.password = password;
         this.authorizationId = authzid;
         this.sslSession = sslSession;
-        assert(authorizationId == null || authzidSupported());
+        assert (authorizationId == null || authzidSupported());
         authenticateInternal();
         authenticate();
     }
@@ -194,7 +196,7 @@ public abstract class SASLMechanism implements Comparable<SASLMechanism> {
         this.serviceName = serviceName;
         this.authorizationId = authzid;
         this.sslSession = sslSession;
-        assert(authorizationId == null || authzidSupported());
+        assert (authorizationId == null || authzidSupported());
         authenticateInternal(cbh);
         authenticate();
     }
@@ -235,11 +237,10 @@ public abstract class SASLMechanism implements Comparable<SASLMechanism> {
      *
      * @param challengeString a base64 encoded string representing the challenge.
      * @param finalChallenge true if this is the last challenge send by the server within the success stanza
-     * @throws NotConnectedException
-     * @throws SmackException
-     * @throws InterruptedException 
+     * @throws SmackException exception
+     * @throws InterruptedException if the connection is interrupted
      */
-    public final void challengeReceived(String challengeString, boolean finalChallenge) throws SmackException, NotConnectedException, InterruptedException {
+    public final void challengeReceived(String challengeString, boolean finalChallenge) throws SmackException, InterruptedException {
         byte[] challenge = Base64.decode((challengeString != null && challengeString.equals("=")) ? "" : challengeString);
         byte[] response = evaluateChallenge(challenge);
         if (finalChallenge) {
@@ -259,7 +260,12 @@ public abstract class SASLMechanism implements Comparable<SASLMechanism> {
     }
 
     /**
-     * @throws SmackException
+     * Evaluate the SASL challenge.
+     *
+     * @param challenge challenge to evaluate.
+     *
+     * @return null.
+     * @throws SmackException in case of an error.
      */
     protected byte[] evaluateChallenge(byte[] challenge) throws SmackException {
         return null;
@@ -279,6 +285,11 @@ public abstract class SASLMechanism implements Comparable<SASLMechanism> {
      */
     public abstract String getName();
 
+    /**
+     * Get the priority of this SASL mechanism. Lower values mean higher priority.
+     *
+     * @return the priority of this SASL mechanism.
+     */
     public abstract int getPriority();
 
     public abstract void checkIfSuccessfulOrThrow() throws SmackException;
@@ -297,7 +308,7 @@ public abstract class SASLMechanism implements Comparable<SASLMechanism> {
     protected abstract SASLMechanism newInstance();
 
     protected static byte[] toBytes(String string) {
-        return StringUtils.toBytes(string);
+        return StringUtils.toUtf8Bytes(string);
     }
 
     /**
@@ -313,5 +324,10 @@ public abstract class SASLMechanism implements Comparable<SASLMechanism> {
             return stringTransformer.transform(string);
         }
         return string;
+    }
+
+    @Override
+    public final String toString() {
+        return "SASL Mech: " + getName() + ", Prio: " + getPriority();
     }
 }

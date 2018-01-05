@@ -17,17 +17,18 @@
 package org.jivesoftware.smackx.muclight;
 
 import org.jivesoftware.smackx.muclight.element.MUCLightDestroyIQ;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.jxmpp.jid.impl.JidCreate;
 
 public class MUCLightDestroyTest {
 
-    String stanza = "<iq to='coven@muclight.shakespeare.lit' id='destroy1' type='set'>"
+    private static final String stanza = "<iq to='coven@muclight.shakespeare.lit' id='destroy1' type='set'>"
             + "<query xmlns='urn:xmpp:muclight:0#destroy'/>" + "</iq>";
 
     @Test
-    public void checkDestroyMUCLightStanza() throws Exception{
+    public void checkDestroyMUCLightStanza() throws Exception {
         MUCLightDestroyIQ mucLightDestroyIQ = new MUCLightDestroyIQ(JidCreate.from("coven@muclight.shakespeare.lit"));
         mucLightDestroyIQ.setStanzaId("destroy1");
         Assert.assertEquals(mucLightDestroyIQ.toXML().toString(), stanza);

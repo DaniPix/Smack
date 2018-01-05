@@ -103,6 +103,7 @@ public class JMFInit extends Frame implements Runnable {
         }
     }
 
+    @SuppressWarnings("LiteralClassName")
     private void detectCaptureDevices() {
         // check if JavaSound capture is available
         message("Looking for Audio capturer");
@@ -116,7 +117,7 @@ public class JMFInit extends Frame implements Runnable {
             throw td;
         }
         catch (Throwable t) {
-            //Do nothing
+            // Do nothing.
         }
 
         Class<?> jsauto;
@@ -225,7 +226,7 @@ public class JMFInit extends Frame implements Runnable {
             }
         }
         catch (Throwable tt) {
-            //Do nothing
+            // Do nothing.
         }
     }
 
@@ -250,7 +251,7 @@ public class JMFInit extends Frame implements Runnable {
                         plType);
                 int listSize = rendList.size();
                 boolean found = false;
-                String rname = null;
+                String rname;
 
                 for (int i = 0; i < listSize; i++) {
                     rname = rendList.elementAt(i);
@@ -269,7 +270,7 @@ public class JMFInit extends Frame implements Runnable {
             }
         }
         catch (Throwable tt) {
-            //Do nothing
+            // Do nothing.
         }
     }
 

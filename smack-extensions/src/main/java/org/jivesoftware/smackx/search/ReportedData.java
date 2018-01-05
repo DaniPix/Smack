@@ -16,14 +16,15 @@
  */
 package org.jivesoftware.smackx.search;
 
-import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smackx.xdata.FormField;
-import org.jivesoftware.smackx.xdata.packet.DataForm;
-import org.jivesoftware.smackx.xdata.packet.DataForm.Item;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.jivesoftware.smack.packet.Stanza;
+
+import org.jivesoftware.smackx.xdata.FormField;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
+import org.jivesoftware.smackx.xdata.packet.DataForm.Item;
 
 /**
  * Represents a set of data results returned as part of a search. The report is structured 
@@ -33,8 +34,8 @@ import java.util.List;
  */
 public class ReportedData {
 
-    private List<Column> columns = new ArrayList<Column>();
-    private List<Row> rows = new ArrayList<Row>();
+    private final List<Column> columns = new ArrayList<>();
+    private final List<Row> rows = new ArrayList<>();
     private String title = "";
 
     /**
@@ -42,6 +43,7 @@ public class ReportedData {
      * extension that matches the elementName and namespace "x","jabber:x:data".
      * 
      * @param packet the stanza(/packet) used for reporting data.
+     * @return ReportedData from the packet if present, otherwise null.
      */
     public static ReportedData getReportedDataFrom(Stanza packet) {
         // Check if the packet includes the DataForm extension
@@ -69,13 +71,11 @@ public class ReportedData {
 
         // Add the rows to the report based on the form's items
         for (Item item : dataForm.getItems()) {
-            List<Field> fieldList = new ArrayList<Field>(columns.size());
+            List<Field> fieldList = new ArrayList<>(columns.size());
             for (FormField field : item.getFields()) {
                 // The field is created with all the values of the data form's field
-                List<String> values = new ArrayList<String>();
-                for (String value : field.getValues()) {
-                    values.add(value);
-                }
+                List<String> values = new ArrayList<>();
+                values.addAll(field.getValues());
                 fieldList.add(new Field(field.getVariable(), values));
             }
             rows.add(new Row(fieldList));
@@ -86,7 +86,7 @@ public class ReportedData {
     }
 
 
-    public ReportedData(){
+    public ReportedData() {
         // Allow for model creation of ReportedData.
     }
 
@@ -94,7 +94,7 @@ public class ReportedData {
      * Adds a new <code>Row</code>.
      * @param row the new row to add.
      */
-    public void addRow(Row row){
+    public void addRow(Row row) {
         rows.add(row);
     }
 
@@ -102,7 +102,7 @@ public class ReportedData {
      * Adds a new <code>Column</code>.
      * @param column the column to add.
      */
-    public void addColumn(Column column){
+    public void addColumn(Column column) {
         columns.add(column);
     }
 
@@ -113,7 +113,7 @@ public class ReportedData {
      * @return a List of the rows returned from a search.
      */
     public List<Row> getRows() {
-        return Collections.unmodifiableList(new ArrayList<Row>(rows));
+        return Collections.unmodifiableList(new ArrayList<>(rows));
     }
 
     /**
@@ -122,7 +122,7 @@ public class ReportedData {
      * @return a List of the columns returned from a search.
      */
     public List<Column> getColumns() {
-        return Collections.unmodifiableList(new ArrayList<Column>(columns));
+        return Collections.unmodifiableList(new ArrayList<>(columns));
     }
 
 
@@ -193,7 +193,7 @@ public class ReportedData {
     }
 
     public static class Row {
-        private List<Field> fields = new ArrayList<Field>();
+        private List<Field> fields = new ArrayList<>();
 
         public Row(List<Field> fields) {
             this.fields = fields;
@@ -206,7 +206,7 @@ public class ReportedData {
          * @return the values of the field whose variable matches the requested variable.
          */
         public List<String> getValues(String variable) {
-            for(Field field : getFields()) {
+            for (Field field : getFields()) {
                 if (variable.equalsIgnoreCase(field.getVariable())) {
                     return field.getValues();
                 }
@@ -220,13 +220,13 @@ public class ReportedData {
          * @return the fields that define the data that goes with the item.
          */
         private List<Field> getFields() {
-            return Collections.unmodifiableList(new ArrayList<Field>(fields));
+            return Collections.unmodifiableList(new ArrayList<>(fields));
         }
     }
 
     public static class Field {
-        private String variable;
-        private List<String> values;
+        private final String variable;
+        private final List<String> values;
 
         public Field(String variable, List<String> values) {
             this.variable = variable;

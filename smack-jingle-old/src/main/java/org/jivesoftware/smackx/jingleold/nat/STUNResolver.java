@@ -28,14 +28,15 @@ import java.util.logging.Logger;
 
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPException;
+
 import org.jivesoftware.smackx.jingleold.JingleSession;
-import org.xmlpull.v1.XmlPullParserFactory;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 
 import de.javawi.jstun.test.BindingLifetimeTest;
 import de.javawi.jstun.test.DiscoveryInfo;
 import de.javawi.jstun.test.DiscoveryTest;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  * Transport resolver using the JSTUN library, to discover public IP and use it as a candidate.
@@ -135,7 +136,7 @@ public class STUNResolver extends TransportResolver {
      * @return A list of loaded servers
      */
     public ArrayList<STUNService> loadSTUNServers(java.io.InputStream stunConfigStream) {
-        ArrayList<STUNService> serversList = new ArrayList<STUNService>();
+        ArrayList<STUNService> serversList = new ArrayList<>();
         String serverName;
         int serverPort;
 
@@ -198,7 +199,7 @@ public class STUNResolver extends TransportResolver {
     /**
      * Load a list of services: STUN servers and ports. Some public STUN servers
      * are:
-     * <p/>
+     *
      * <pre>
      *               iphone-stun.freenet.de:3478
      *               larry.gloo.net:3478
@@ -211,13 +212,13 @@ public class STUNResolver extends TransportResolver {
      *               stun.voxgratia.org (no DNS SRV record)
      *               stun.noc.ams-ix.net
      * </pre>
-     * <p/>
+     *
      * This list should be contained in a file in the "META-INF" directory
      *
      * @return a list of services
      */
     public ArrayList<STUNService> loadSTUNServers() {
-        ArrayList<STUNService> serversList = new ArrayList<STUNService>();
+        ArrayList<STUNService> serversList = new ArrayList<>();
 
         // Load the STUN configuration
         try {
@@ -233,7 +234,7 @@ public class STUNResolver extends TransportResolver {
 
                 while (stunConfigEnum.hasMoreElements() && serversList.isEmpty()) {
                     URL url = stunConfigEnum.nextElement();
-                    java.io.InputStream stunConfigStream = null;
+                    java.io.InputStream stunConfigStream;
 
                     stunConfigStream = url.openStream();
                     serversList.addAll(loadSTUNServers(stunConfigStream));
@@ -294,7 +295,7 @@ public class STUNResolver extends TransportResolver {
     @Override
     public void initialize() throws XMPPException {
         LOGGER.fine("Initialized");
-        if (!isResolving()&&!isResolved()) {
+        if (!isResolving() && !isResolved()) {
             // Get the best STUN server available
             if (currentServer.isNull()) {
                 loadSTUNServers();
@@ -493,7 +494,7 @@ public class STUNResolver extends TransportResolver {
 
         /**
          * Check a binding with the STUN currentServer.
-         * <p/>
+         *
          * Note: this function blocks for some time, waiting for a response.
          *
          * @return true if the currentServer is usable.

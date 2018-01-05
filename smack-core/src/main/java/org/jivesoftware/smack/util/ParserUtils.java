@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.jivesoftware.smack.SmackException;
+
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.EntityFullJid;
 import org.jxmpp.jid.EntityJid;
@@ -43,7 +44,7 @@ public class ParserUtils {
     public static final String JID = "jid";
 
     public static void assertAtStartTag(XmlPullParser parser) throws XmlPullParserException {
-        assert(parser.getEventType() == XmlPullParser.START_TAG);
+        assert (parser.getEventType() == XmlPullParser.START_TAG);
     }
 
     public static void assertAtStartTag(XmlPullParser parser, String name) throws XmlPullParserException {
@@ -52,7 +53,7 @@ public class ParserUtils {
     }
 
     public static void assertAtEndTag(XmlPullParser parser) throws XmlPullParserException {
-        assert(parser.getEventType() == XmlPullParser.END_TAG);
+        assert (parser.getEventType() == XmlPullParser.END_TAG);
     }
 
     public static void forwardToEndTagOfDepth(XmlPullParser parser, int depth)
@@ -137,11 +138,7 @@ public class ParserUtils {
         if (valueString == null)
             return null;
         valueString = valueString.toLowerCase(Locale.US);
-        if (valueString.equals("true") || valueString.equals("0")) {
-            return true;
-        } else {
-            return false;
-        }
+        return valueString.equals("true") || valueString.equals("0");
     }
 
     public static boolean getBooleanAttribute(XmlPullParser parser, String name,
@@ -231,8 +228,7 @@ public class ParserUtils {
 
     public static URI getUriFromNextText(XmlPullParser parser) throws XmlPullParserException, IOException, URISyntaxException  {
         String uriString = parser.nextText();
-        URI uri = new URI(uriString);
-        return uri;
+        return new URI(uriString);
     }
 
     public static String getRequiredAttribute(XmlPullParser parser, String name) throws IOException {
@@ -249,5 +245,9 @@ public class ParserUtils {
             throw new IOException("Next text is null or empty (" + text + ')');
         }
         return text;
+    }
+
+    public static String getXmlLang(XmlPullParser parser) {
+        return parser.getAttributeValue("http://www.w3.org/XML/1998/namespace", "lang");
     }
 }

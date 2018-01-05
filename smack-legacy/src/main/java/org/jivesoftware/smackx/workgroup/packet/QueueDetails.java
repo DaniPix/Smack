@@ -17,13 +17,6 @@
 
 package org.jivesoftware.smackx.workgroup.packet;
 
-import org.jivesoftware.smackx.workgroup.QueueUser;
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.packet.ExtensionElement;
-import org.jivesoftware.smack.provider.ExtensionElementProvider;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,6 +25,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.provider.ExtensionElementProvider;
+
+import org.jivesoftware.smackx.workgroup.QueueUser;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * Queue details stanza(/packet) extension, which contains details about the users
@@ -52,7 +54,7 @@ public final class QueueDetails implements ExtensionElement {
 
     private static final String DATE_FORMAT = "yyyyMMdd'T'HH:mm:ss";
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
     /**
      * The list of users in the queue.
      */
@@ -107,7 +109,7 @@ public final class QueueDetails implements ExtensionElement {
         buf.append('<').append(ELEMENT_NAME).append(" xmlns=\"").append(NAMESPACE).append("\">");
 
         synchronized (users) {
-            for (Iterator<QueueUser> i=users.iterator(); i.hasNext(); ) {
+            for (Iterator<QueueUser> i = users.iterator(); i.hasNext(); ) {
                 QueueUser user = i.next();
                 int position = user.getQueuePosition();
                 int timeRemaining = user.getEstimatedRemainingTime();
@@ -155,7 +157,7 @@ public final class QueueDetails implements ExtensionElement {
             {
                 eventType = parser.next();
                 while ((eventType == XmlPullParser.START_TAG) && "user".equals(parser.getName())) {
-                    String uid = null;
+                    String uid;
                     int position = -1;
                     int time = -1;
                     Date joinTime = null;
@@ -183,7 +185,7 @@ public final class QueueDetails implements ExtensionElement {
                                 throw new SmackException(e);
                             }
                         }
-                        else if(parser.getName().equals("waitTime")) {
+                        else if (parser.getName().equals("waitTime")) {
                             Date wait;
                             try {
                                 wait = dateFormat.parse(parser.nextText());

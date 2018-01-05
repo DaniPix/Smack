@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -40,9 +41,9 @@ public class WorkgroupInformation implements ExtensionElement {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/workgroup";
 
-    private String workgroupJID;
+    private final String workgroupJID;
 
-    public WorkgroupInformation(String workgroupJID){
+    public WorkgroupInformation(String workgroupJID) {
         this.workgroupJID = workgroupJID;
     }
 

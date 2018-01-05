@@ -17,6 +17,7 @@
 package org.jivesoftware.smackx.httpfileupload.element;
 
 import org.jivesoftware.smackx.httpfileupload.HttpFileUploadManager;
+
 import org.jxmpp.jid.DomainBareJid;
 
 public class SlotRequest_V0_2 extends SlotRequest {
@@ -38,5 +39,14 @@ public class SlotRequest_V0_2 extends SlotRequest {
      */
     public SlotRequest_V0_2(DomainBareJid uploadServiceAddress, String filename, long size, String contentType) {
         super(uploadServiceAddress, filename, size, contentType, NAMESPACE);
+    }
+
+    @Override
+    protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder xml) {
+        xml.rightAngleBracket();
+        xml.element("filename", filename);
+        xml.element("size", String.valueOf(size));
+        xml.optElement("content-type", contentType);
+        return xml;
     }
 }

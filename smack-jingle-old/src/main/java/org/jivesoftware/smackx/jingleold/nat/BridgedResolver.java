@@ -16,13 +16,6 @@
  */
 package org.jivesoftware.smackx.jingleold.nat;
 
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.XMPPException.XMPPErrorException;
-import org.jivesoftware.smackx.jingleold.JingleSession;
-
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -32,10 +25,18 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.XMPPException.XMPPErrorException;
+
+import org.jivesoftware.smackx.jingleold.JingleSession;
+
 /**
  * Bridged Resolver use a RTPBridge Service to add a relayed candidate.
  * A very reliable solution for NAT Traversal.
- * <p/>
+ *
  * The resolver verify is the XMPP Server that the client is connected offer this service.
  * If the server supports, a candidate is requested from the service.
  * The resolver adds this candidate
@@ -43,11 +44,11 @@ import java.util.logging.Logger;
 public class BridgedResolver extends TransportResolver {
     private static final Logger LOGGER = Logger.getLogger(BridgedResolver.class.getName());
 
-    XMPPConnection connection;
+    private final XMPPConnection connection;
 
-    Random random = new Random();
+    private final Random random = new Random();
 
-    long sid;
+    private long sid;
 
     /**
      * Constructor.
@@ -58,10 +59,10 @@ public class BridgedResolver extends TransportResolver {
         this.connection = connection;
     }
 
-    /**
+    /**1
      * Resolve Bridged Candidate.
-     * <p/>
-     * The BridgedResolver takes the IP addresse and ports of a jmf proxy service.
+     *
+     * The BridgedResolver takes the IP address and ports of a jmf proxy service.
      * @throws NotConnectedException 
      * @throws InterruptedException 
      */

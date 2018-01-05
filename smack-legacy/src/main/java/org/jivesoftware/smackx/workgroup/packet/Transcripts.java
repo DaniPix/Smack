@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.jivesoftware.smack.packet.IQ;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -36,13 +37,14 @@ import org.jxmpp.jid.Jid;
  */
 public class Transcripts extends IQ {
 
+    @SuppressWarnings("SimpleDateFormatConstant")
     private static final SimpleDateFormat UTC_FORMAT = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
     static {
         UTC_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0"));
     }
 
-    private Jid userID;
-    private List<Transcripts.TranscriptSummary> summaries;
+    private final Jid userID;
+    private final List<Transcripts.TranscriptSummary> summaries;
 
 
     /**
@@ -70,7 +72,7 @@ public class Transcripts extends IQ {
     /**
      * Returns the id of the user that was involved in the conversations. The userID could be a
      * real JID if the connected user was not anonymous. Otherwise, the userID will be a String
-     * that was provided by the anonymous user as a way to idenitify the user across many user
+     * that was provided by the anonymous user as a way to identify the user across many user
      * sessions.
      *
      * @return the id of the user that was involved in the conversations.
@@ -110,10 +112,10 @@ public class Transcripts extends IQ {
      * sessionID to get the full conversation transcript.
      */
     public static class TranscriptSummary {
-        private String sessionID;
-        private Date joinTime;
-        private Date leftTime;
-        private List<AgentDetail> agentDetails;
+        private final String sessionID;
+        private final Date joinTime;
+        private final Date leftTime;
+        private final List<AgentDetail> agentDetails;
 
         public TranscriptSummary(String sessionID, Date joinTime, Date leftTime, List<AgentDetail> agentDetails) {
             this.sessionID = sessionID;
@@ -169,10 +171,18 @@ public class Transcripts extends IQ {
                     .append("\">");
 
             if (joinTime != null) {
-                buf.append("<joinTime>").append(UTC_FORMAT.format(joinTime)).append("</joinTime>");
+                buf.append("<joinTime>");
+                synchronized (UTC_FORMAT) {
+                    buf.append(UTC_FORMAT.format(joinTime));
+                }
+                buf.append("</joinTime>");
             }
             if (leftTime != null) {
-                buf.append("<leftTime>").append(UTC_FORMAT.format(leftTime)).append("</leftTime>");
+                buf.append("<leftTime>");
+                synchronized (UTC_FORMAT) {
+                    buf.append(UTC_FORMAT.format(leftTime));
+                }
+                buf.append("</leftTime>");
             }
             buf.append("<agents>");
             for (AgentDetail agentDetail : agentDetails) {
@@ -188,9 +198,9 @@ public class Transcripts extends IQ {
      * An AgentDetail contains information of an Agent that was involved in a conversation. 
      */
     public static class AgentDetail {
-        private String agentJID;
-        private Date joinTime;
-        private Date leftTime;
+        private final String agentJID;
+        private final Date joinTime;
+        private final Date leftTime;
 
         public AgentDetail(String agentJID, Date joinTime, Date leftTime) {
             this.agentJID = agentJID;
@@ -234,10 +244,18 @@ public class Transcripts extends IQ {
                 buf.append("<agentJID>").append(agentJID).append("</agentJID>");
             }
             if (joinTime != null) {
-                buf.append("<joinTime>").append(UTC_FORMAT.format(joinTime)).append("</joinTime>");
+                buf.append("<joinTime>");
+                synchronized (UTC_FORMAT) {
+                    buf.append(UTC_FORMAT.format(joinTime));
+                }
+                buf.append("</joinTime>");
             }
             if (leftTime != null) {
-                buf.append("<leftTime>").append(UTC_FORMAT.format(leftTime)).append("</leftTime>");
+                buf.append("<leftTime>");
+                synchronized (UTC_FORMAT) {
+                    buf.append(UTC_FORMAT.format(leftTime));
+                }
+                buf.append("</leftTime>");
             }
             buf.append("</agent>");
 

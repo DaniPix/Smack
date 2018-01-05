@@ -24,10 +24,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 import org.jivesoftware.smack.util.StringUtils;
+
 import org.jivesoftware.smackx.InitExtensions;
-import org.junit.Test;
 
 import com.jamesmurty.utils.XMLBuilder;
+import org.junit.Test;
 
 /**
  * Test for the DataPacketExtension class.
@@ -80,7 +81,7 @@ public class DataPacketExtensionTest extends InitExtensions {
         assertNull(data.getDecodedData());
     }
 
-    private static Properties outputProperties = new Properties();
+    private static final Properties outputProperties = new Properties();
     {
         outputProperties.put(javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION, "yes");
     }

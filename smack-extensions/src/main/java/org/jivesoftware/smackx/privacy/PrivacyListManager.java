@@ -24,12 +24,12 @@ import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.jivesoftware.smack.AbstractConnectionListener;
-import org.jivesoftware.smack.SmackException.NoResponseException;
-import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.Manager;
+import org.jivesoftware.smack.SmackException.NoResponseException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.StanzaListener;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.filter.AndFilter;
@@ -42,6 +42,7 @@ import org.jivesoftware.smack.iqrequest.IQRequestHandler.Mode;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
+
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.privacy.filter.SetActiveListFilter;
 import org.jivesoftware.smackx.privacy.filter.SetDefaultListFilter;
@@ -71,9 +72,9 @@ public final class PrivacyListManager extends Manager {
     private static final StanzaFilter PRIVACY_RESULT = new AndFilter(IQTypeFilter.RESULT, PRIVACY_FILTER);
 
     // Keep the list of instances of this class.
-    private static final Map<XMPPConnection, PrivacyListManager> INSTANCES = new WeakHashMap<XMPPConnection, PrivacyListManager>();
+    private static final Map<XMPPConnection, PrivacyListManager> INSTANCES = new WeakHashMap<>();
 
-    private final Set<PrivacyListListener> listeners = new CopyOnWriteArraySet<PrivacyListListener>();
+    private final Set<PrivacyListListener> listeners = new CopyOnWriteArraySet<>();
 
     static {
         // Create a new PrivacyListManager on every established connection.
@@ -575,7 +576,7 @@ public final class PrivacyListManager extends Manager {
      * @throws NotConnectedException 
      * @throws InterruptedException 
      */
-    public boolean isSupported() throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException{
+    public boolean isSupported() throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
         return ServiceDiscoveryManager.getInstanceFor(connection()).serverSupportsFeature(NAMESPACE);
     }
 }

@@ -41,33 +41,37 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
+import org.jivesoftware.smack.SmackConfiguration.UnknownIqRequestReplyMode;
 import org.jivesoftware.smack.SmackException.AlreadyConnectedException;
 import org.jivesoftware.smack.SmackException.AlreadyLoggedInException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.SmackException.NotLoggedInException;
 import org.jivesoftware.smack.SmackException.ResourceBindingNotOfferedException;
 import org.jivesoftware.smack.SmackException.SecurityRequiredByClientException;
 import org.jivesoftware.smack.SmackException.SecurityRequiredException;
+import org.jivesoftware.smack.SmackFuture.InternalSmackFuture;
 import org.jivesoftware.smack.XMPPException.StreamErrorException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.compress.packet.Compress;
 import org.jivesoftware.smack.compression.XMPPInputOutputStream;
 import org.jivesoftware.smack.debugger.SmackDebugger;
+import org.jivesoftware.smack.debugger.SmackDebuggerFactory;
 import org.jivesoftware.smack.filter.IQReplyFilter;
 import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.filter.StanzaIdFilter;
 import org.jivesoftware.smack.iqrequest.IQRequestHandler;
 import org.jivesoftware.smack.packet.Bind;
 import org.jivesoftware.smack.packet.ErrorIQ;
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Mechanisms;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.Nonza;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Session;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.StartTls;
-import org.jivesoftware.smack.packet.Nonza;
 import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.parsing.ParsingExceptionCallback;
@@ -82,6 +86,7 @@ import org.jivesoftware.smack.util.ParserUtils;
 import org.jivesoftware.smack.util.SmackExecutorThreadFactory;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.util.dns.HostAddress;
+
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.EntityFullJid;
 import org.jxmpp.jid.Jid;
@@ -108,7 +113,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
      * and reconnection events.
      */
     protected final Set<ConnectionListener> connectionListeners =
-            new CopyOnWriteArraySet<ConnectionListener>();
+            new CopyOnWriteArraySet<>();
 
     /**
      * A collection of StanzaCollectors which collects packets for a specified filter
@@ -137,7 +142,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
      * List of PacketListeners that will be notified when a new stanza(/packet) was sent.
      */
     private final Map<StanzaListener, ListenerWrapper> sendListeners =
-            new HashMap<StanzaListener, ListenerWrapper>();
+            new HashMap<>();
 
     /**
      * List of PacketListeners that will be notified when a new stanza(/packet) is about to be
@@ -145,11 +150,11 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
      * actually sent to the server.
      */
     private final Map<StanzaListener, InterceptorWrapper> interceptors =
-            new HashMap<StanzaListener, InterceptorWrapper>();
+            new HashMap<>();
 
     protected final Lock connectionLock = new ReentrantLock();
 
-    protected final Map<String, ExtensionElement> streamFeatures = new HashMap<String, ExtensionElement>();
+    protected final Map<String, ExtensionElement> streamFeatures = new HashMap<>();
 
     /**
      * The full JID of the authenticated user, as returned by the resource binding response of the server.
@@ -176,7 +181,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
     /**
      * The SmackDebugger allows to log and debug XML traffic.
      */
-    protected SmackDebugger debugger = null;
+    protected final SmackDebugger debugger;
 
     /**
      * The Reader which is used for the debugger.
@@ -251,7 +256,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
     private final ExecutorService cachedExecutorService = Executors.newCachedThreadPool(
                     // @formatter:off
                     // CHECKSTYLE:OFF
-                    new SmackExecutorThreadFactory(    // threadFactory
+                    new SmackExecutorThreadFactory(
                                     this,
                                     "Cached Executor"
                                     )
@@ -299,6 +304,12 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
     protected AbstractXMPPConnection(ConnectionConfiguration configuration) {
         saslAuthentication = new SASLAuthentication(this, configuration);
         config = configuration;
+        SmackDebuggerFactory debuggerFactory = configuration.getDebuggerFactory();
+        if (debuggerFactory != null) {
+            debugger = debuggerFactory.create(this);
+        } else {
+            debugger = null;
+        }
         // Notify listeners that a new connection has been established
         for (ConnectionCreationListener listener : XMPPConnectionRegistry.getConnectionCreationListeners()) {
             listener.connectionCreated(this);
@@ -312,12 +323,6 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
      */
     public ConnectionConfiguration getConfiguration() {
         return config;
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public DomainBareJid getServiceName() {
-        return getXMPPServiceDomain();
     }
 
     @Override
@@ -528,7 +533,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
 
 
         if (!hasFeature(Bind.ELEMENT, Bind.NAMESPACE)) {
-            // Server never offered resource binding, which is REQURIED in XMPP client and
+            // Server never offered resource binding, which is REQUIRED in XMPP client and
             // server implementations as per RFC6120 7.2
             throw new ResourceBindingNotOfferedException();
         }
@@ -566,7 +571,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
         // name we are now logged-in as.
         // If DEBUG was set to true AFTER the connection was created the debugger
         // will be null
-        if (config.isDebuggerEnabled() && debugger != null) {
+        if (debugger != null) {
             debugger.userHasLogged(user);
         }
         callConnectionAuthenticatedListener(resumed);
@@ -587,7 +592,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
 
     /**
      * Get the name of the SASL mechanism that was used to authenticate this connection. This returns the name of
-     * mechanism which was used the last time this conneciton was authenticated, and will return <code>null</code> if
+     * mechanism which was used the last time this connection was authenticated, and will return <code>null</code> if
      * this connection was not authenticated before.
      * 
      * @return the name of the used SASL mechanism.
@@ -616,7 +621,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
             hostAddresses.add(hostAddress);
         }
         else if (config.host != null) {
-            hostAddresses = new ArrayList<HostAddress>(1);
+            hostAddresses = new ArrayList<>(1);
             HostAddress hostAddress = DNSUtil.getDNSResolver().lookupHostAddress(config.host, config.port, failedAddresses, config.getDnssecMode());
             if (hostAddress != null) {
                 hostAddresses.add(hostAddress);
@@ -626,7 +631,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
             hostAddresses = DNSUtil.resolveXMPPServiceDomain(config.getXMPPServiceDomain().toString(), failedAddresses, config.getDnssecMode());
         }
         // Either the populated host addresses are not empty *or* there must be at least one failed address.
-        assert(!hostAddresses.isEmpty() || !failedAddresses.isEmpty());
+        assert (!hostAddresses.isEmpty() || !failedAddresses.isEmpty());
         return failedAddresses;
     }
 
@@ -656,16 +661,10 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
         }
     }
 
-    @Deprecated
-    @Override
-    public void sendPacket(Stanza packet) throws NotConnectedException, InterruptedException {
-        sendStanza(packet);
-    }
-
     @Override
     public void sendStanza(Stanza stanza) throws NotConnectedException, InterruptedException {
         Objects.requireNonNull(stanza, "Stanza must not be null");
-        assert(stanza instanceof Message || stanza instanceof Presence || stanza instanceof IQ);
+        assert (stanza instanceof Message || stanza instanceof Presence || stanza instanceof IQ);
 
         throwNotConnectedExceptionIfAppropriate();
         switch (fromMode) {
@@ -795,18 +794,6 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
     }
 
     @Override
-    @Deprecated
-    public void addPacketListener(StanzaListener packetListener, StanzaFilter packetFilter) {
-        addAsyncStanzaListener(packetListener, packetFilter);
-    }
-
-    @Override
-    @Deprecated
-    public boolean removePacketListener(StanzaListener packetListener) {
-        return removeAsyncStanzaListener(packetListener);
-    }
-
-    @Override
     public void addSyncStanzaListener(StanzaListener packetListener, StanzaFilter packetFilter) {
         if (packetListener == null) {
             throw new NullPointerException("Packet listener is null.");
@@ -870,7 +857,12 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
      */
     @SuppressWarnings("javadoc")
     protected void firePacketSendingListeners(final Stanza packet) {
-        final List<StanzaListener> listenersToNotify = new LinkedList<StanzaListener>();
+        final SmackDebugger debugger = this.debugger;
+        if (debugger != null) {
+            debugger.onOutgoingStreamElement(packet);
+        }
+
+        final List<StanzaListener> listenersToNotify = new LinkedList<>();
         synchronized (sendListeners) {
             for (ListenerWrapper listenerWrapper : sendListeners.values()) {
                 if (listenerWrapper.filterMatches(packet)) {
@@ -894,7 +886,8 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
                         continue;
                     }
                 }
-            }});
+            }
+        });
     }
 
     @Override
@@ -925,7 +918,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
      * @param packet the stanza(/packet) that is going to be sent to the server
      */
     private void firePacketInterceptors(Stanza packet) {
-        List<StanzaListener> interceptorsToInvoke = new LinkedList<StanzaListener>();
+        List<StanzaListener> interceptorsToInvoke = new LinkedList<>();
         synchronized (interceptors) {
             for (InterceptorWrapper interceptorWrapper : interceptors.values()) {
                 if (interceptorWrapper.filterMatches(packet)) {
@@ -954,31 +947,11 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
             throw new NullPointerException("Reader or writer isn't initialized.");
         }
         // If debugging is enabled, we open a window and write out all network traffic.
-        if (config.isDebuggerEnabled()) {
-            if (debugger == null) {
-                debugger = SmackConfiguration.createDebugger(this, writer, reader);
-            }
-
-            if (debugger == null) {
-                LOGGER.severe("Debugging enabled but could not find debugger class");
-            } else {
-                // Obtain new reader and writer from the existing debugger
-                reader = debugger.newConnectionReader(reader);
-                writer = debugger.newConnectionWriter(writer);
-            }
+        if (debugger != null) {
+            // Obtain new reader and writer from the existing debugger
+            reader = debugger.newConnectionReader(reader);
+            writer = debugger.newConnectionWriter(writer);
         }
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public long getPacketReplyTimeout() {
-        return getReplyTimeout();
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void setPacketReplyTimeout(long timeout) {
-        setReplyTimeout(timeout);
     }
 
     @Override
@@ -991,30 +964,15 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
         replyTimeout = timeout;
     }
 
-    private static boolean replyToUnknownIqDefault = true;
+    private SmackConfiguration.UnknownIqRequestReplyMode unknownIqRequestReplyMode = SmackConfiguration.getUnknownIqRequestReplyMode();
 
     /**
-     * Set the default value used to determine if new connection will reply to unknown IQ requests. The pre-configured
-     * default is 'true'.
+     * Set how Smack behaves when an unknown IQ request has been received.
      *
-     * @param replyToUnkownIqDefault
-     * @see #setReplyToUnknownIq(boolean)
+     * @param unknownIqRequestReplyMode reply mode.
      */
-    public static void setReplyToUnknownIqDefault(boolean replyToUnkownIqDefault) {
-        AbstractXMPPConnection.replyToUnknownIqDefault = replyToUnkownIqDefault;
-    }
-
-    private boolean replyToUnkownIq = replyToUnknownIqDefault;
-
-    /**
-     * Set if Smack will automatically send
-     * {@link org.jivesoftware.smack.packet.XMPPError.Condition#feature_not_implemented} when a request IQ without a
-     * registered {@link IQRequestHandler} is received.
-     *
-     * @param replyToUnknownIq
-     */
-    public void setReplyToUnknownIq(boolean replyToUnknownIq) {
-        this.replyToUnkownIq = replyToUnknownIq;
+    public void setUnknownIqRequestReplyMode(UnknownIqRequestReplyMode unknownIqRequestReplyMode) {
+        this.unknownIqRequestReplyMode = Objects.requireNonNull(unknownIqRequestReplyMode, "Mode must not be null");
     }
 
     protected void parseAndProcessStanza(XmlPullParser parser) throws Exception {
@@ -1048,7 +1006,13 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
      * @throws InterruptedException
      */
     protected void processStanza(final Stanza stanza) throws InterruptedException {
-        assert(stanza != null);
+        assert (stanza != null);
+
+        final SmackDebugger debugger = this.debugger;
+        if (debugger != null) {
+            debugger.onIncomingStreamElement(stanza);
+        }
+
         lastStanzaReceived = System.currentTimeMillis();
         // Deliver the incoming packet to listeners.
         executorService.executeBlocking(new Runnable() {
@@ -1068,12 +1032,10 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
     protected void invokeStanzaCollectorsAndNotifyRecvListeners(final Stanza packet) {
         if (packet instanceof IQ) {
             final IQ iq = (IQ) packet;
-            final IQ.Type type = iq.getType();
-            switch (type) {
-            case set:
-            case get:
+            if (iq.isRequestIQ()) {
                 final String key = XmppStringUtils.generateKey(iq.getChildElementName(), iq.getChildElementNamespace());
-                IQRequestHandler iqRequestHandler = null;
+                IQRequestHandler iqRequestHandler;
+                final IQ.Type type = iq.getType();
                 switch (type) {
                 case set:
                     synchronized (setIqRequestHandler) {
@@ -1089,13 +1051,24 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
                     throw new IllegalStateException("Should only encounter IQ type 'get' or 'set'");
                 }
                 if (iqRequestHandler == null) {
-                    if (!replyToUnkownIq) {
+                    XMPPError.Condition replyCondition;
+                    switch (unknownIqRequestReplyMode) {
+                    case doNotReply:
                         return;
+                    case replyFeatureNotImplemented:
+                        replyCondition = XMPPError.Condition.feature_not_implemented;
+                        break;
+                    case replyServiceUnavailable:
+                        replyCondition = XMPPError.Condition.service_unavailable;
+                        break;
+                    default:
+                        throw new AssertionError();
                     }
+
                     // If the IQ stanza is of type "get" or "set" with no registered IQ request handler, then answer an
                     // IQ of type 'error' with condition 'service-unavailable'.
                     ErrorIQ errorIQ = IQ.createErrorResponse(iq, XMPPError.getBuilder((
-                                    XMPPError.Condition.service_unavailable)));
+                                    replyCondition)));
                     try {
                         sendStanza(errorIQ);
                     }
@@ -1133,21 +1106,18 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
                             }
                         }
                     });
-                    // The following returns makes it impossible for packet listeners and collectors to
-                    // filter for IQ request stanzas, i.e. IQs of type 'set' or 'get'. This is the
-                    // desired behavior.
-                    return;
                 }
-                break;
-            default:
-                break;
+                // The following returns makes it impossible for packet listeners and collectors to
+                // filter for IQ request stanzas, i.e. IQs of type 'set' or 'get'. This is the
+                // desired behavior.
+                return;
             }
         }
 
         // First handle the async recv listeners. Note that this code is very similar to what follows a few lines below,
         // the only difference is that asyncRecvListeners is used here and that the packet listeners are started in
         // their own thread.
-        final Collection<StanzaListener> listenersToNotify = new LinkedList<StanzaListener>();
+        final Collection<StanzaListener> listenersToNotify = new LinkedList<>();
         synchronized (asyncRecvListeners) {
             for (ListenerWrapper listenerWrapper : asyncRecvListeners.values()) {
                 if (listenerWrapper.filterMatches(packet)) {
@@ -1170,7 +1140,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
         }
 
         // Loop through all collectors and notify the appropriate ones.
-        for (StanzaCollector collector: collectors) {
+        for (StanzaCollector collector : collectors) {
             collector.processStanza(packet);
         }
 
@@ -1192,7 +1162,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
                 for (StanzaListener listener : listenersToNotify) {
                     try {
                         listener.processStanza(packet);
-                    } catch(NotConnectedException e) {
+                    } catch (NotConnectedException e) {
                         LOGGER.log(Level.WARNING, "Got not connected exception, aborting", e);
                         break;
                     } catch (Exception e) {
@@ -1276,6 +1246,8 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
     /**
      * Sends a notification indicating that the connection was reconnected successfully.
      */
+    // TODO: Remove in Smack 4.3
+    @Deprecated
     protected void notifyReconnection() {
         // Notify connection listeners of the reconnection.
         for (ConnectionListener listener : connectionListeners) {
@@ -1375,7 +1347,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
             removeCallbacksService.shutdownNow();
             singleThreadedExecutorService.shutdownNow();
         } catch (Throwable t) {
-            LOGGER.log(Level.WARNING, "finalize() threw trhowable", t);
+            LOGGER.log(Level.WARNING, "finalize() threw throwable", t);
         }
         finally {
             super.finalize();
@@ -1467,12 +1439,14 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
         streamFeatures.put(key, feature);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void sendStanzaWithResponseCallback(Stanza stanza, StanzaFilter replyFilter,
                     StanzaListener callback) throws NotConnectedException, InterruptedException {
         sendStanzaWithResponseCallback(stanza, replyFilter, callback, null);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void sendStanzaWithResponseCallback(Stanza stanza, StanzaFilter replyFilter,
                     StanzaListener callback, ExceptionCallback exceptionCallback)
@@ -1481,6 +1455,88 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
                         getReplyTimeout());
     }
 
+    @Override
+    public SmackFuture<IQ, Exception> sendIqRequestAsync(IQ request) {
+        return sendIqRequestAsync(request, getReplyTimeout());
+    }
+
+    @Override
+    public SmackFuture<IQ, Exception> sendIqRequestAsync(IQ request, long timeout) {
+        StanzaFilter replyFilter = new IQReplyFilter(request, this);
+        return sendAsync(request, replyFilter, timeout);
+    }
+
+    @Override
+    public <S extends Stanza> SmackFuture<S, Exception> sendAsync(S stanza, final StanzaFilter replyFilter) {
+        return sendAsync(stanza, replyFilter, getReplyTimeout());
+    }
+
+    @SuppressWarnings("FutureReturnValueIgnored")
+    @Override
+    public <S extends Stanza> SmackFuture<S, Exception> sendAsync(S stanza, final StanzaFilter replyFilter, long timeout) {
+        Objects.requireNonNull(stanza, "stanza must not be null");
+        // While Smack allows to add PacketListeners with a PacketFilter value of 'null', we
+        // disallow it here in the async API as it makes no sense
+        Objects.requireNonNull(replyFilter, "replyFilter must not be null");
+
+        final InternalSmackFuture<S, Exception> future = new InternalSmackFuture<>();
+
+        final StanzaListener stanzaListener = new StanzaListener() {
+            @Override
+            public void processStanza(Stanza stanza) throws NotConnectedException, InterruptedException {
+                boolean removed = removeAsyncStanzaListener(this);
+                if (!removed) {
+                    // We lost a race against the "no response" handling runnable. Avoid calling the callback, as the
+                    // exception callback will be invoked (if any).
+                    return;
+                }
+                try {
+                    XMPPErrorException.ifHasErrorThenThrow(stanza);
+                    @SuppressWarnings("unchecked")
+                    S s = (S) stanza;
+                    future.setResult(s);
+                }
+                catch (XMPPErrorException exception) {
+                    future.setException(exception);
+                }
+            }
+        };
+        removeCallbacksService.schedule(new Runnable() {
+            @Override
+            public void run() {
+                boolean removed = removeAsyncStanzaListener(stanzaListener);
+                if (!removed) {
+                    // We lost a race against the stanza listener, he already removed itself because he received a
+                    // reply. There is nothing more to do here.
+                    return;
+                }
+
+                // If the packetListener got removed, then it was never run and
+                // we never received a response, inform the exception callback
+                Exception exception;
+                if (!isConnected()) {
+                    // If the connection is no longer connected, throw a not connected exception.
+                    exception = new NotConnectedException(AbstractXMPPConnection.this, replyFilter);
+                }
+                else {
+                    exception = NoResponseException.newWith(AbstractXMPPConnection.this, replyFilter);
+                }
+                future.setException(exception);
+            }
+        }, timeout, TimeUnit.MILLISECONDS);
+
+        addAsyncStanzaListener(stanzaListener, replyFilter);
+        try {
+            sendStanza(stanza);
+        }
+        catch (NotConnectedException | InterruptedException exception) {
+            future.setException(exception);
+        }
+
+        return future;
+    }
+
+    @SuppressWarnings({ "FutureReturnValueIgnored", "deprecation" })
     @Override
     public void sendStanzaWithResponseCallback(Stanza stanza, final StanzaFilter replyFilter,
                     final StanzaListener callback, final ExceptionCallback exceptionCallback,
@@ -1493,7 +1549,7 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
 
         final StanzaListener packetListener = new StanzaListener() {
             @Override
-            public void processStanza(Stanza packet) throws NotConnectedException, InterruptedException {
+            public void processStanza(Stanza packet) throws NotConnectedException, InterruptedException, NotLoggedInException {
                 boolean removed = removeAsyncStanzaListener(this);
                 if (!removed) {
                     // We lost a race against the "no response" handling runnable. Avoid calling the callback, as the
@@ -1533,18 +1589,21 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
         sendStanza(stanza);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void sendIqWithResponseCallback(IQ iqRequest, StanzaListener callback)
                     throws NotConnectedException, InterruptedException {
         sendIqWithResponseCallback(iqRequest, callback, null);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void sendIqWithResponseCallback(IQ iqRequest, StanzaListener callback,
                     ExceptionCallback exceptionCallback) throws NotConnectedException, InterruptedException {
         sendIqWithResponseCallback(iqRequest, callback, exceptionCallback, getReplyTimeout());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void sendIqWithResponseCallback(IQ iqRequest, final StanzaListener callback,
                     final ExceptionCallback exceptionCallback, long timeout)
@@ -1553,11 +1612,12 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
         sendStanzaWithResponseCallback(iqRequest, replyFilter, callback, exceptionCallback, timeout);
     }
 
+    @SuppressWarnings("FutureReturnValueIgnored")
     @Override
     public void addOneTimeSyncCallback(final StanzaListener callback, final StanzaFilter packetFilter) {
         final StanzaListener packetListener = new StanzaListener() {
             @Override
-            public void processStanza(Stanza packet) throws NotConnectedException, InterruptedException {
+            public void processStanza(Stanza packet) throws NotConnectedException, InterruptedException, NotLoggedInException {
                 try {
                     callback.processStanza(packet);
                 } finally {

@@ -21,7 +21,7 @@ import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.parts.Resourcepart;
 
 /**
- * Respresents a Conference Room bookmarked on the server using XEP-0048 Bookmark Storage XEP.
+ * Represents a Conference Room bookmarked on the server using XEP-0048 Bookmark Storage XEP.
  *
  * @author Derek DeMoro
  */
@@ -115,10 +115,10 @@ public class BookmarkedConference implements SharedBookmark {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == null || !(obj instanceof BookmarkedConference)) {
+        if (obj == null || !(obj instanceof BookmarkedConference)) {
             return false;
         }
-        BookmarkedConference conference = (BookmarkedConference)obj;
+        BookmarkedConference conference = (BookmarkedConference) obj;
         return conference.getJid().equals(jid);
     }
 

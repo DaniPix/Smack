@@ -22,9 +22,9 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.jivesoftware.smack.MessageListener;
-import org.jivesoftware.smack.StanzaCollector;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.StanzaCollector;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
@@ -36,6 +36,7 @@ import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
+
 import org.jivesoftware.smackx.muclight.element.MUCLightAffiliationsIQ;
 import org.jivesoftware.smackx.muclight.element.MUCLightChangeAffiliationsIQ;
 import org.jivesoftware.smackx.muclight.element.MUCLightConfigurationIQ;
@@ -46,6 +47,7 @@ import org.jivesoftware.smackx.muclight.element.MUCLightGetConfigsIQ;
 import org.jivesoftware.smackx.muclight.element.MUCLightGetInfoIQ;
 import org.jivesoftware.smackx.muclight.element.MUCLightInfoIQ;
 import org.jivesoftware.smackx.muclight.element.MUCLightSetConfigsIQ;
+
 import org.jxmpp.jid.EntityJid;
 import org.jxmpp.jid.Jid;
 
@@ -80,7 +82,7 @@ public class MultiUserChatLight {
      * Same as {@link #fromRoomFilter} together with
      * {@link MessageTypeFilter#GROUPCHAT}.
      */
-    private final StanzaFilter fromRoomGroupchatFilter;
+    private final StanzaFilter fromRoomGroupChatFilter;
 
     private final StanzaListener messageListener;
 
@@ -91,7 +93,7 @@ public class MultiUserChatLight {
         this.room = room;
 
         fromRoomFilter = FromMatchesFilter.create(room);
-        fromRoomGroupchatFilter = new AndFilter(fromRoomFilter, MessageTypeFilter.GROUPCHAT);
+        fromRoomGroupChatFilter = new AndFilter(fromRoomFilter, MessageTypeFilter.GROUPCHAT);
 
         messageListener = new StanzaListener() {
             @Override
@@ -103,7 +105,7 @@ public class MultiUserChatLight {
             }
         };
 
-        connection.addSyncStanzaListener(messageListener, fromRoomGroupchatFilter);
+        connection.addSyncStanzaListener(messageListener, fromRoomGroupChatFilter);
     }
 
     /**
@@ -144,6 +146,7 @@ public class MultiUserChatLight {
      *            for the newly created chat.
      * @return new Chat for sending private messages to a given room occupant.
      */
+    @SuppressWarnings("deprecation")
     @Deprecated
     // Do not re-use Chat API, which was designed for XMPP-IM 1:1 chats and not MUClight private chats.
     public org.jivesoftware.smack.chat.Chat createPrivateChat(EntityJid occupant, ChatMessageListener listener) {
@@ -263,7 +266,7 @@ public class MultiUserChatLight {
             throws Exception {
         MUCLightCreateIQ createMUCLightIQ = new MUCLightCreateIQ(room, roomName, occupants);
 
-        messageCollector = connection.createStanzaCollector(fromRoomGroupchatFilter);
+        messageCollector = connection.createStanzaCollector(fromRoomGroupChatFilter);
 
         try {
             connection.createStanzaCollectorAndSend(createMUCLightIQ).nextResultOrThrow();

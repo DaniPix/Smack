@@ -26,8 +26,10 @@ import java.util.logging.Logger;
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smack.util.stringencoder.Base64;
+
 import org.jivesoftware.smackx.jiveproperties.JivePropertiesManager;
 import org.jivesoftware.smackx.jiveproperties.packet.JivePropertiesExtension;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -53,7 +55,7 @@ public class JivePropertiesExtensionProvider extends ExtensionElementProvider<Ji
     public JivePropertiesExtension parse(XmlPullParser parser,
                     int initialDepth) throws XmlPullParserException,
                     IOException {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         while (true) {
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG && parser.getName().equals("property")) {

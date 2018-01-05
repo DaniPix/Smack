@@ -24,6 +24,7 @@ import java.util.List;
 import org.jivesoftware.smack.packet.NamedElement;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.util.XmlStringBuilder;
+
 import org.jivesoftware.smackx.xdatavalidation.packet.ValidateElement;
 
 /**
@@ -140,8 +141,8 @@ public class FormField implements NamedElement {
     private boolean required = false;
     private String label;
     private Type type;
-    private final List<Option> options = new ArrayList<Option>();
-    private final List<String> values = new ArrayList<String>();
+    private final List<Option> options = new ArrayList<>();
+    private final List<String> values = new ArrayList<>();
     private ValidateElement validateElement;
 
     /**
@@ -195,7 +196,7 @@ public class FormField implements NamedElement {
      */
     public List<Option> getOptions() {
         synchronized (options) {
-            return Collections.unmodifiableList(new ArrayList<Option>(options));
+            return Collections.unmodifiableList(new ArrayList<>(options));
         }
     }
 
@@ -227,7 +228,7 @@ public class FormField implements NamedElement {
      */
     public List<String> getValues() {
         synchronized (values) {
-            return Collections.unmodifiableList(new ArrayList<String>(values));
+            return Collections.unmodifiableList(new ArrayList<>(values));
         }
     }
 
@@ -343,7 +344,7 @@ public class FormField implements NamedElement {
      */
     protected void resetValues() {
         synchronized (values) {
-            values.removeAll(new ArrayList<String>(values));
+            values.removeAll(new ArrayList<>(values));
         }
     }
 

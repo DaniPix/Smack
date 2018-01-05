@@ -16,16 +16,16 @@
  */
 package org.jivesoftware.smackx.workgroup.user;
 
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.jivesoftware.smack.StanzaCollector;
-import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.StanzaCollector;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
@@ -33,11 +33,12 @@ import org.jivesoftware.smack.filter.AndFilter;
 import org.jivesoftware.smack.filter.FromMatchesFilter;
 import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.filter.StanzaTypeFilter;
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
+
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
@@ -58,15 +59,16 @@ import org.jivesoftware.smackx.workgroup.settings.WorkgroupProperties;
 import org.jivesoftware.smackx.xdata.Form;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
-import org.jxmpp.jid.EntityJid;
+
 import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.EntityJid;
 import org.jxmpp.jid.Jid;
 
 /**
  * Provides workgroup services for users. Users can join the workgroup queue, depart the
  * queue, find status information about their placement in the queue, and register to
  * be notified when they are routed to an agent.<p>
- * <p/>
+ *
  * This class only provides a users perspective into a workgroup and is not intended
  * for use by agents.
  *
@@ -75,11 +77,11 @@ import org.jxmpp.jid.Jid;
  */
 public class Workgroup {
 
-    private Jid workgroupJID;
-    private XMPPConnection connection;
+    private final Jid workgroupJID;
+    private final XMPPConnection connection;
     private boolean inQueue;
-    private CopyOnWriteArraySet<WorkgroupInvitationListener> invitationListeners;
-    private CopyOnWriteArraySet<QueueListener> queueListeners;
+    private final CopyOnWriteArraySet<WorkgroupInvitationListener> invitationListeners;
+    private final CopyOnWriteArraySet<QueueListener> queueListeners;
 
     private int queuePosition = -1;
     private int queueRemainingTime = -1;
@@ -192,7 +194,7 @@ public class Workgroup {
         StanzaCollector collector = connection.createStanzaCollectorAndSend(new AndFilter(fromFilter,
                 typeFilter), directedPresence);
 
-        Presence response = (Presence)collector.nextResultOrThrow();
+        Presence response = collector.nextResultOrThrow();
         return Presence.Type.available == response.getType();
     }
 
@@ -218,7 +220,7 @@ public class Workgroup {
      * returned.
      *
      * @return the estimated time remaining (in seconds) that the user has to
-     *         wait inthe workgroupu queue, or -1 if time information isn't available
+     *         wait in the workgroup queue, or -1 if time information isn't available
      *         or if the user isn't int the queue.
      */
     public int getQueueRemainingTime() {
@@ -230,20 +232,20 @@ public class Workgroup {
      * the queue, queue status events will be sent to indicate the user's position and
      * estimated time left in the queue. Once joining the queue, there are three ways
      * the user can leave the queue: <ul>
-     * <p/>
+     *
      * <li>The user is routed to an agent, which triggers a GroupChat invitation.
      * <li>The user asks to leave the queue by calling the {@link #departQueue} method.
      * <li>A server error occurs, or an administrator explicitly removes the user
      * from the queue.
      * </ul>
-     * <p/>
+     *
      * A user cannot request to join the queue again if already in the queue. Therefore,
      * this method will throw an IllegalStateException if the user is already in the queue.<p>
-     * <p/>
+     *
      * Some servers may be configured to require certain meta-data in order to
      * join the queue. In that case, the {@link #joinQueue(Form)} method should be
      * used instead of this method so that meta-data may be passed in.<p>
-     * <p/>
+     *
      * The server tracks the conversations that a user has with agents over time. By
      * default, that tracking is done using the user's JID. However, this is not always
      * possible. For example, when the user is logged in anonymously using a web client.
@@ -254,8 +256,8 @@ public class Workgroup {
      * server will ignore a manually specified userID if the user's connection to the server
      * is not anonymous.
      *
-     * @throws XMPPException if an error occured joining the queue. An error may indicate
-     *                       that a connection failure occured or that the server explicitly rejected the
+     * @throws XMPPException if an error occurred joining the queue. An error may indicate
+     *                       that a connection failure occurred or that the server explicitly rejected the
      *                       request to join the queue.
      * @throws SmackException 
      * @throws InterruptedException 
@@ -269,19 +271,19 @@ public class Workgroup {
      * the queue, queue status events will be sent to indicate the user's position and
      * estimated time left in the queue. Once joining the queue, there are three ways
      * the user can leave the queue: <ul>
-     * <p/>
+     *
      * <li>The user is routed to an agent, which triggers a GroupChat invitation.
      * <li>The user asks to leave the queue by calling the {@link #departQueue} method.
      * <li>A server error occurs, or an administrator explicitly removes the user
      * from the queue.
      * </ul>
-     * <p/>
+     *
      * A user cannot request to join the queue again if already in the queue. Therefore,
      * this method will throw an IllegalStateException if the user is already in the queue.<p>
-     * <p/>
+     *
      * Some servers may be configured to require certain meta-data in order to
      * join the queue.<p>
-     * <p/>
+     *
      * The server tracks the conversations that a user has with agents over time. By
      * default, that tracking is done using the user's JID. However, this is not always
      * possible. For example, when the user is logged in anonymously using a web client.
@@ -293,8 +295,8 @@ public class Workgroup {
      * is not anonymous.
      *
      * @param answerForm the completed form the send for the join request.
-     * @throws XMPPException if an error occured joining the queue. An error may indicate
-     *                       that a connection failure occured or that the server explicitly rejected the
+     * @throws XMPPException if an error occurred joining the queue. An error may indicate
+     *                       that a connection failure occurred or that the server explicitly rejected the
      *                       request to join the queue.
      * @throws SmackException 
      * @throws InterruptedException 
@@ -308,19 +310,19 @@ public class Workgroup {
      * the queue, queue status events will be sent to indicate the user's position and
      * estimated time left in the queue. Once joining the queue, there are three ways
      * the user can leave the queue: <ul>
-     * <p/>
+     *
      * <li>The user is routed to an agent, which triggers a GroupChat invitation.
      * <li>The user asks to leave the queue by calling the {@link #departQueue} method.
      * <li>A server error occurs, or an administrator explicitly removes the user
      * from the queue.
      * </ul>
-     * <p/>
+     *
      * A user cannot request to join the queue again if already in the queue. Therefore,
      * this method will throw an IllegalStateException if the user is already in the queue.<p>
-     * <p/>
+     *
      * Some servers may be configured to require certain meta-data in order to
      * join the queue.<p>
-     * <p/>
+     *
      * The server tracks the conversations that a user has with agents over time. By
      * default, that tracking is done using the user's JID. However, this is not always
      * possible. For example, when the user is logged in anonymously using a web client.
@@ -329,11 +331,11 @@ public class Workgroup {
      * be used instead of the user's JID to track conversations. The server will ignore a
      * manually specified userID if the user's connection to the server is not anonymous.
      *
-     * @param answerForm the completed form associated with the join reqest.
+     * @param answerForm the completed form associated with the join request.
      * @param userID     String that represents the ID of the user when using anonymous sessions
      *                   or <tt>null</tt> if a userID should not be used.
-     * @throws XMPPErrorException if an error occured joining the queue. An error may indicate
-     *                       that a connection failure occured or that the server explicitly rejected the
+     * @throws XMPPErrorException if an error occurred joining the queue. An error may indicate
+     *                       that a connection failure occurred or that the server explicitly rejected the
      *                       request to join the queue.
      * @throws NoResponseException 
      * @throws NotConnectedException 
@@ -357,19 +359,19 @@ public class Workgroup {
      * the queue, queue status events will be sent to indicate the user's position and
      * estimated time left in the queue. Once joining the queue, there are three ways
      * the user can leave the queue: <ul>
-     * <p/>
+     *
      * <li>The user is routed to an agent, which triggers a GroupChat invitation.
      * <li>The user asks to leave the queue by calling the {@link #departQueue} method.
      * <li>A server error occurs, or an administrator explicitly removes the user
      * from the queue.
      * </ul>
-     * <p/>
+     *
      * A user cannot request to join the queue again if already in the queue. Therefore,
      * this method will throw an IllegalStateException if the user is already in the queue.<p>
-     * <p/>
+     *
      * Some servers may be configured to require certain meta-data in order to
      * join the queue.<p>
-     * <p/>
+     *
      * The server tracks the conversations that a user has with agents over time. By
      * default, that tracking is done using the user's JID. However, this is not always
      * possible. For example, when the user is logged in anonymously using a web client.
@@ -381,8 +383,8 @@ public class Workgroup {
      * @param metadata metadata to create a dataform from.
      * @param userID   String that represents the ID of the user when using anonymous sessions
      *                 or <tt>null</tt> if a userID should not be used.
-     * @throws XMPPException if an error occured joining the queue. An error may indicate
-     *                       that a connection failure occured or that the server explicitly rejected the
+     * @throws XMPPException if an error occurred joining the queue. An error may indicate
+     *                       that a connection failure occurred or that the server explicitly rejected the
      *                       request to join the queue.
      * @throws SmackException 
      * @throws InterruptedException 
@@ -411,12 +413,12 @@ public class Workgroup {
     /**
      * Departs the workgroup queue. If the user is not currently in the queue, this
      * method will do nothing.<p>
-     * <p/>
+     *
      * Normally, the user would not manually leave the queue. However, they may wish to
      * under certain circumstances -- for example, if they no longer wish to be routed
      * to an agent because they've been waiting too long.
      *
-     * @throws XMPPErrorException if an error occured trying to send the depart queue
+     * @throws XMPPErrorException if an error occurred trying to send the depart queue
      *                       request to the server.
      * @throws NoResponseException 
      * @throws NotConnectedException 
@@ -482,7 +484,7 @@ public class Workgroup {
     }
 
     private void fireQueueJoinedEvent() {
-        for (QueueListener listener : queueListeners){
+        for (QueueListener listener : queueListeners) {
             // CHECKSTYLE:OFF
     	    listener.joinedQueue();
             // CHECKSTYLE:ON
@@ -511,7 +513,7 @@ public class Workgroup {
 
     private void handlePacket(Stanza packet) {
         if (packet instanceof Message) {
-            Message msg = (Message)packet;
+            Message msg = (Message) packet;
             // Check to see if the user left the queue.
             ExtensionElement pe = msg.getExtension("depart-queue", "http://jabber.org/protocol/workgroup");
             ExtensionElement queueStatus = msg.getExtension("queue-status", "http://jabber.org/protocol/workgroup");
@@ -520,7 +522,7 @@ public class Workgroup {
                 fireQueueDepartedEvent();
             }
             else if (queueStatus != null) {
-                QueueUpdate queueUpdate = (QueueUpdate)queueStatus;
+                QueueUpdate queueUpdate = (QueueUpdate) queueStatus;
                 if (queueUpdate.getPosition() != -1) {
                     fireQueuePositionEvent(queueUpdate.getPosition());
                 }
@@ -531,7 +533,7 @@ public class Workgroup {
 
             else {
                 // Check if a room invitation was sent and if the sender is the workgroup
-                MUCUser mucUser = (MUCUser)msg.getExtension("x", "http://jabber.org/protocol/muc#user");
+                MUCUser mucUser = msg.getExtension("x", "http://jabber.org/protocol/muc#user");
                 MUCUser.Invite invite = mucUser != null ? mucUser.getInvite() : null;
                 if (invite != null && workgroupJID.equals(invite.getFrom())) {
                     String sessionID = null;
@@ -540,13 +542,13 @@ public class Workgroup {
                     pe = msg.getExtension(SessionID.ELEMENT_NAME,
                             SessionID.NAMESPACE);
                     if (pe != null) {
-                        sessionID = ((SessionID)pe).getSessionID();
+                        sessionID = ((SessionID) pe).getSessionID();
                     }
 
                     pe = msg.getExtension(MetaData.ELEMENT_NAME,
                             MetaData.NAMESPACE);
                     if (pe != null) {
-                        metaData = ((MetaData)pe).getMetaData();
+                        metaData = ((MetaData) pe).getMetaData();
                     }
 
                     WorkgroupInvitation inv = new WorkgroupInvitation(connection.getUser(), msg.getFrom(),
@@ -564,8 +566,8 @@ public class Workgroup {
      */
     private class JoinQueuePacket extends IQ {
 
-        private Jid userID;
-        private DataForm form;
+        private final Jid userID;
+        private final DataForm form;
 
         public JoinQueuePacket(Jid workgroup, Form answerForm, Jid userID) {
             super("join-queue", "http://jabber.org/protocol/workgroup");
@@ -654,7 +656,7 @@ public class Workgroup {
         request.setType(IQ.Type.get);
         request.setTo(workgroupJID);
 
-        ChatSettings response = (ChatSettings) connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
+        ChatSettings response = connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
 
         return response;
     }
@@ -694,9 +696,7 @@ public class Workgroup {
         request.setType(IQ.Type.get);
         request.setTo(workgroupJID);
 
-        OfflineSettings response = (OfflineSettings) connection.createStanzaCollectorAndSend(
-                        request).nextResultOrThrow();
-        return response;
+        return connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
     }
 
     /**
@@ -713,8 +713,7 @@ public class Workgroup {
         request.setType(IQ.Type.get);
         request.setTo(workgroupJID);
 
-        SoundSettings response = (SoundSettings) connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
-        return response;
+        return connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
     }
 
     /**
@@ -731,9 +730,7 @@ public class Workgroup {
         request.setType(IQ.Type.get);
         request.setTo(workgroupJID);
 
-        WorkgroupProperties response = (WorkgroupProperties) connection.createStanzaCollectorAndSend(
-                        request).nextResultOrThrow();
-        return response;
+        return connection.createStanzaCollectorAndSend(request).nextResultOrThrow();
     }
 
     /**
@@ -752,9 +749,8 @@ public class Workgroup {
         request.setType(IQ.Type.get);
         request.setTo(workgroupJID);
 
-        WorkgroupProperties response = (WorkgroupProperties) connection.createStanzaCollectorAndSend(
+        return connection.createStanzaCollectorAndSend(
                         request).nextResultOrThrow();
-        return response;
     }
 
 
@@ -774,7 +770,7 @@ public class Workgroup {
         workgroupForm.setType(IQ.Type.get);
         workgroupForm.setTo(workgroupJID);
 
-        WorkgroupForm response = (WorkgroupForm) connection.createStanzaCollectorAndSend(
+        WorkgroupForm response = connection.createStanzaCollectorAndSend(
                         workgroupForm).nextResultOrThrow();
         return Form.getFormFrom(response);
     }

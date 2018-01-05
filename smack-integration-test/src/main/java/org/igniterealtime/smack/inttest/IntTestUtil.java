@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2015-2016 Florian Schmaus
+ * Copyright 2015-2017 Florian Schmaus
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,17 +23,19 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.igniterealtime.smack.inttest.Configuration.AccountRegistration;
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.util.StringUtils;
+
 import org.jivesoftware.smackx.admin.ServiceAdministrationManager;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+
+import org.igniterealtime.smack.inttest.Configuration.AccountRegistration;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
@@ -72,7 +74,7 @@ public class IntTestUtil {
 
         ServiceAdministrationManager adminManager = ServiceAdministrationManager.getInstanceFor(connection);
 
-        EntityBareJid userJid = JidCreate.entityBareFrom(Localpart.from(username), connection.getServiceName());
+        EntityBareJid userJid = JidCreate.entityBareFrom(Localpart.from(username), connection.getXMPPServiceDomain());
         adminManager.addUser(userJid, password);
 
         connection.disconnect();
@@ -180,6 +182,7 @@ public class IntTestUtil {
             ServiceAdministrationManager adminManager = ServiceAdministrationManager.getInstanceFor(connection);
             try {
                 adminManager.deleteUser(accountToDelete);
+                break;
             }
             catch (NoResponseException | XMPPErrorException | NotConnectedException | InterruptedException e) {
                 LOGGER.log(Level.WARNING, "Exception deleting account for " + connection, e);

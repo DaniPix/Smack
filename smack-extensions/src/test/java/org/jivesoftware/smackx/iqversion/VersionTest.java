@@ -16,7 +16,7 @@
  */
 package org.jivesoftware.smackx.iqversion;
 
-import static org.jivesoftware.smack.test.util.CharsequenceEquals.equalsCharSequence;
+import static org.jivesoftware.smack.test.util.CharSequenceEquals.equalsCharSequence;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -25,8 +25,10 @@ import org.jivesoftware.smack.DummyConnection;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.InitExtensions;
 import org.jivesoftware.smackx.iqversion.packet.Version;
+
 import org.junit.Test;
 
 public class VersionTest extends InitExtensions {
@@ -43,7 +45,7 @@ public class VersionTest extends InitExtensions {
         // Enable version replys for this connection
         VersionManager.setAutoAppendSmackVersion(false);
         VersionManager.getInstanceFor(con).setVersion("Test", "0.23", "DummyOS");
-        IQ versionRequest = (IQ) PacketParserUtils.parseStanza(control);
+        IQ versionRequest = PacketParserUtils.parseStanza(control);
 
         assertTrue(versionRequest instanceof Version);
 
@@ -53,8 +55,8 @@ public class VersionTest extends InitExtensions {
         assertTrue(replyPacket instanceof Version);
 
         Version reply = (Version) replyPacket;
-        //getFrom check is pending for SMACK-547
-        //assertEquals("juliet@capulet.lit/balcony", reply.getFrom());
+        // getFrom check is pending for SMACK-547
+        // assertEquals("juliet@capulet.lit/balcony", reply.getFrom());
         assertThat("capulet.lit", equalsCharSequence(reply.getTo()));
         assertEquals("s2c1", reply.getStanzaId());
         assertEquals(IQ.Type.result, reply.getType());

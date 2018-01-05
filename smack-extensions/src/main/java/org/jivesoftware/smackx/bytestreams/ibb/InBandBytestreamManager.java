@@ -17,15 +17,16 @@
 package org.jivesoftware.smackx.bytestreams.ibb;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jivesoftware.smack.AbstractConnectionClosedListener;
 import org.jivesoftware.smack.ConnectionCreationListener;
+import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
@@ -35,10 +36,12 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.XMPPError;
+
 import org.jivesoftware.smackx.bytestreams.BytestreamListener;
 import org.jivesoftware.smackx.bytestreams.BytestreamManager;
 import org.jivesoftware.smackx.bytestreams.ibb.packet.Open;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -79,7 +82,7 @@ import org.jxmpp.jid.Jid;
  * 
  * @author Henning Staib
  */
-public final class InBandBytestreamManager implements BytestreamManager {
+public final class InBandBytestreamManager extends Manager implements BytestreamManager {
 
     /**
      * Stanzas that can be used to encapsulate In-Band Bytestream data packets.
@@ -117,8 +120,7 @@ public final class InBandBytestreamManager implements BytestreamManager {
                     }
 
                     @Override
-                    public void reconnectionSuccessful() {
-                        // re-create the manager for this connection
+                    public void connected(XMPPConnection connection) {
                         InBandBytestreamManager.getByteStreamManager(connection);
                     }
 
@@ -140,10 +142,7 @@ public final class InBandBytestreamManager implements BytestreamManager {
     private final static Random randomGenerator = new Random();
 
     /* stores one InBandBytestreamManager for each XMPP connection */
-    private final static Map<XMPPConnection, InBandBytestreamManager> managers = new HashMap<XMPPConnection, InBandBytestreamManager>();
-
-    /* XMPP connection */
-    private final XMPPConnection connection;
+    private final static Map<XMPPConnection, InBandBytestreamManager> managers = new WeakHashMap<>();
 
     /*
      * assigns a user to a listener that is informed if an In-Band Bytestream request for this user
@@ -182,7 +181,7 @@ public final class InBandBytestreamManager implements BytestreamManager {
      * list containing session IDs of In-Band Bytestream open packets that should be ignored by the
      * InitiationListener
      */
-    private List<String> ignoredBytestreamRequests = Collections.synchronizedList(new LinkedList<String>());
+    private final List<String> ignoredBytestreamRequests = Collections.synchronizedList(new LinkedList<String>());
 
     /**
      * Returns the InBandBytestreamManager to handle In-Band Bytestreams for a given
@@ -208,7 +207,7 @@ public final class InBandBytestreamManager implements BytestreamManager {
      * @param connection the XMPP connection
      */
     private InBandBytestreamManager(XMPPConnection connection) {
-        this.connection = connection;
+        super(connection);
 
         // register bytestream open packet listener
         this.initiationListener = new InitiationListener(this);
@@ -282,9 +281,7 @@ public final class InBandBytestreamManager implements BytestreamManager {
      * @param initiatorJID the JID of the user the listener should be removed
      */
     @Override
-    // TODO: Change argument to Jid in Smack 4.3.
-    @SuppressWarnings("CollectionIncompatibleType")
-    public void removeIncomingBytestreamListener(String initiatorJID) {
+    public void removeIncomingBytestreamListener(Jid initiatorJID) {
         this.userListeners.remove(initiatorJID);
     }
 
@@ -434,11 +431,13 @@ public final class InBandBytestreamManager implements BytestreamManager {
         Open byteStreamRequest = new Open(sessionID, this.defaultBlockSize, this.stanza);
         byteStreamRequest.setTo(targetJID);
 
+        final XMPPConnection connection = connection();
+
         // sending packet will throw exception on timeout or error reply
         connection.createStanzaCollectorAndSend(byteStreamRequest).nextResultOrThrow();
 
         InBandBytestreamSession inBandBytestreamSession = new InBandBytestreamSession(
-                        this.connection, byteStreamRequest, targetJID);
+                        connection, byteStreamRequest, targetJID);
         this.sessions.put(sessionID, inBandBytestreamSession);
 
         return inBandBytestreamSession;
@@ -454,7 +453,7 @@ public final class InBandBytestreamManager implements BytestreamManager {
      */
     protected void replyRejectPacket(IQ request) throws NotConnectedException, InterruptedException {
         IQ error = IQ.createErrorResponse(request, XMPPError.Condition.not_acceptable);
-        this.connection.sendStanza(error);
+        connection().sendStanza(error);
     }
 
     /**
@@ -467,7 +466,7 @@ public final class InBandBytestreamManager implements BytestreamManager {
      */
     protected void replyResourceConstraintPacket(IQ request) throws NotConnectedException, InterruptedException {
         IQ error = IQ.createErrorResponse(request, XMPPError.Condition.resource_constraint);
-        this.connection.sendStanza(error);
+        connection().sendStanza(error);
     }
 
     /**
@@ -480,7 +479,7 @@ public final class InBandBytestreamManager implements BytestreamManager {
      */
     protected void replyItemNotFoundPacket(IQ request) throws NotConnectedException, InterruptedException {
         IQ error = IQ.createErrorResponse(request, XMPPError.Condition.item_not_found);
-        this.connection.sendStanza(error);
+        connection().sendStanza(error);
     }
 
     /**
@@ -501,7 +500,7 @@ public final class InBandBytestreamManager implements BytestreamManager {
      * @return the XMPP connection
      */
     protected XMPPConnection getConnection() {
-        return this.connection;
+        return connection();
     }
 
     /**
@@ -548,6 +547,7 @@ public final class InBandBytestreamManager implements BytestreamManager {
      * internal status, which includes removing this instance from the managers map.
      */
     private void disableService() {
+        final XMPPConnection connection = connection();
 
         // remove manager from static managers map
         managers.remove(connection);

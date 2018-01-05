@@ -28,6 +28,7 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
+
 import org.jivesoftware.smackx.jingleold.ContentNegotiator;
 import org.jivesoftware.smackx.jingleold.JingleActionEnum;
 import org.jivesoftware.smackx.jingleold.JingleException;
@@ -44,12 +45,11 @@ import org.jivesoftware.smackx.jingleold.packet.JingleTransport.JingleTransportC
 
 /**
  * Transport negotiator.
- * <p/>
- * <p/>
+ *
  * This class is responsible for managing the transport negotiation process,
  * handling all the stanza(/packet) interchange and the stage control.
  *
- * @author Alvaro Saurin <alvaro.saurin@gmail.com>
+ * @author Alvaro Saurin
  */
 public abstract class TransportNegotiator extends JingleNegotiator {
 
@@ -59,23 +59,23 @@ public abstract class TransportNegotiator extends JingleNegotiator {
     // transport (in milliseconds)
     public final static int CANDIDATES_ACCEPT_PERIOD = 4000;
 
-    // The session this nenotiator belongs to
-    //private final JingleSession session;
+    // The session this negotiator belongs to
+    // private final JingleSession session;
 
     // The transport manager
     private final TransportResolver resolver;
 
     // Transport candidates we have offered
-    private final List<TransportCandidate> offeredCandidates = new ArrayList<TransportCandidate>();
+    private final List<TransportCandidate> offeredCandidates = new ArrayList<>();
 
     // List of remote transport candidates
-    private final List<TransportCandidate> remoteCandidates = new ArrayList<TransportCandidate>();
+    private final List<TransportCandidate> remoteCandidates = new ArrayList<>();
 
     // Valid remote candidates
-    private final List<TransportCandidate> validRemoteCandidates = new ArrayList<TransportCandidate>();
+    private final List<TransportCandidate> validRemoteCandidates = new ArrayList<>();
 
     // Accepted Remote Candidates
-    private final List<TransportCandidate> acceptedRemoteCandidates = new ArrayList<TransportCandidate>();
+    private final List<TransportCandidate> acceptedRemoteCandidates = new ArrayList<>();
 
     // The best local candidate we have offered (and accepted by the other part)
     private TransportCandidate acceptedLocalCandidate;
@@ -86,7 +86,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
     // Listener for the resolver
     private TransportResolverListener.Resolver resolverListener;
 
-    private ContentNegotiator parentNegotiator;
+    private final ContentNegotiator parentNegotiator;
 
     /**
     * Default constructor.
@@ -136,7 +136,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
      */
     private void setAcceptedLocalCandidate(TransportCandidate bestLocalCandidate) {
         for (int i = 0; i < resolver.getCandidateCount(); i++) {
-            //TODO FIX The EQUAL Sentence
+            // TODO FIX The EQUAL Sentence
             if (resolver.getCandidate(i).getIp().equals(bestLocalCandidate.getIp())
                     && resolver.getCandidate(i).getPort() == bestLocalCandidate.getPort()) {
                 acceptedLocalCandidate = resolver.getCandidate(i);
@@ -144,7 +144,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
             }
         }
         LOGGER.fine("BEST: ip=" + bestLocalCandidate.getIp() + " port=" + bestLocalCandidate.getPort() + " has not been offered.");
-        //throw new XMPPException("Local transport candidate has not be offered.");
+        // throw new XMPPException("Local transport candidate has not be offered.");
     }
 
     /**
@@ -315,7 +315,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
                         // Once we are in pending state, look for any valid remote
                         // candidate, and send an "accept" if we have one...
                         TransportCandidate bestRemote = getBestRemoteCandidate();
-                        //State state = getState();
+                        // State state = getState();
 
                         if ((bestRemote != null)
                                 && ((getNegotiatorState() == JingleNegotiatorState.PENDING))) {
@@ -358,7 +358,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
                             if (candidate instanceof ICECandidate) {
                                 ICECandidate iceCandidate = (ICECandidate) candidate;
                                 if (iceCandidate.getType().equals(Type.relay)) {
-                                    //TODO Check if the relay is reacheable
+                                    // TODO Check if the relay is reachable.
                                     addValidRemoteCandidate(iceCandidate);
                                     foundRemoteRelay = true;
                                 }
@@ -408,7 +408,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
                         }
 
                         bestRemote = getBestRemoteCandidate();
-                        //State state = getState();
+                        // State state = getState();
                         if ((bestRemote != null)
                                 && ((getNegotiatorState() == JingleNegotiatorState.PENDING))) {
                             if (!acceptedRemoteCandidates.contains(bestRemote)) {
@@ -472,7 +472,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
      */
     final ArrayList<TransportCandidate> getValidRemoteCandidatesList() {
         synchronized (validRemoteCandidates) {
-            return new ArrayList<TransportCandidate>(validRemoteCandidates);
+            return new ArrayList<>(validRemoteCandidates);
         }
     }
 
@@ -508,7 +508,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
      * @param jin The input jingle packet
      */
     private List<TransportCandidate> obtainCandidatesList(Jingle jingle) {
-        List<TransportCandidate> result = new ArrayList<TransportCandidate>();
+        List<TransportCandidate> result = new ArrayList<>();
 
         if (jingle != null) {
             // Get the list of candidates from the packet
@@ -597,7 +597,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
 
     /**
      * Dispatch an incoming packet. The method is responsible for recognizing
-     * the stanza(/packet) type and, depending on the current state, deliverying the
+     * the stanza(/packet) type and, depending on the current state, delivering the
      * stanza(/packet) to the right event handler and wait for a response.
      *
      * @param iq the stanza(/packet) received
@@ -608,7 +608,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
      */
     @Override
     public final List<IQ> dispatchIncomingPacket(IQ iq, String id) throws XMPPException, SmackException, InterruptedException {
-        List<IQ> responses = new ArrayList<IQ>();
+        List<IQ> responses = new ArrayList<>();
         IQ response = null;
 
         if (iq != null) {
@@ -689,7 +689,6 @@ public abstract class TransportNegotiator extends JingleNegotiator {
 
     /**
      *  @param jingle
-     *  @param jingleTransport
      *  @return the iq
      * @throws SmackException 
      * @throws InterruptedException 
@@ -698,12 +697,12 @@ public abstract class TransportNegotiator extends JingleNegotiator {
         IQ response = null;
 
         // Parse the Jingle and get any proposed transport candidates
-        //addRemoteCandidates(obtainCandidatesList(jin));
+        // addRemoteCandidates(obtainCandidatesList(jin));
 
         // Start offering candidates
         sendTransportCandidatesOffer();
 
-        // All these candidates will be checked asyncronously. Wait for some
+        // All these candidates will be checked asynchronously. Wait for some
         // time and check if we have a valid candidate to use...
         delayedCheckBestCandidate(session, jingle);
 
@@ -715,19 +714,18 @@ public abstract class TransportNegotiator extends JingleNegotiator {
 
     /**
      *  @param jingle
-     *  @param jingleTransport
      *  @return the iq
      */
     private IQ receiveTransportInfoAction(Jingle jingle) {
         IQ response = null;
 
         // Parse the Jingle and get any proposed transport candidates
-        //addRemoteCandidates(obtainCandidatesList(jin));
+        // addRemoteCandidates(obtainCandidatesList(jin));
 
         //        // Start offering candidates
         //        sendTransportCandidatesOffer();
         //
-        //        // All these candidates will be checked asyncronously. Wait for some
+        //        // All these candidates will be checked asynchronously. Wait for some
         //        // time and check if we have a valid candidate to use...
         //        delayedCheckBestCandidate(session, jingle);
         //
@@ -749,7 +747,6 @@ public abstract class TransportNegotiator extends JingleNegotiator {
     /**
      * One of our transport candidates has been accepted.
      *
-     * @param jin The input packet
      * @return a Jingle packet
      * @throws XMPPException an exception
      * @see org.jivesoftware.smackx.jingleold.JingleNegotiator.State#eventAccept(org.jivesoftware.smackx.jingleold.packet.Jingle)
@@ -762,7 +759,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
         if (!accepted.isEmpty()) {
 
             for (TransportCandidate cand : accepted) {
-                LOGGER.fine("Remote acccepted candidate addr: " + cand.getIp());
+                LOGGER.fine("Remote accepted candidate addr: " + cand.getIp());
             }
 
             TransportCandidate cand = accepted.get(0);
@@ -770,7 +767,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
 
             if (isEstablished()) {
                 LOGGER.fine(cand.getIp() + " is set active");
-                //setNegotiatorState(JingleNegotiatorState.SUCCEEDED);
+                // setNegotiatorState(JingleNegotiatorState.SUCCEEDED);
             }
         }
         return response;
@@ -783,10 +780,10 @@ public abstract class TransportNegotiator extends JingleNegotiator {
     private static IQ receiveSessionAcceptAction(Jingle jingle) {
         IQ response = null;
 
-        LOGGER.fine("Transport stabilished");
-        //triggerTransportEstablished(getAcceptedLocalCandidate(), getBestRemoteCandidate());
+        LOGGER.fine("Transport established");
+        // triggerTransportEstablished(getAcceptedLocalCandidate(), getBestRemoteCandidate());
 
-        //setNegotiatorState(JingleNegotiatorState.SUCCEEDED);
+        // setNegotiatorState(JingleNegotiatorState.SUCCEEDED);
 
         return response;
     }
@@ -831,7 +828,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
     /**
      * Raw-UDP transport negotiator.
      *
-     * @author Alvaro Saurin <alvaro.saurin@gmail.com>
+     * @author Alvaro Saurin
      */
     public static final class RawUdp extends TransportNegotiator {
 
@@ -886,7 +883,7 @@ public abstract class TransportNegotiator extends JingleNegotiator {
     /**
      * Ice transport negotiator.
      *
-     * @author Alvaro Saurin <alvaro.saurin@gmail.com>
+     * @author Alvaro Saurin
      */
     public static final class Ice extends TransportNegotiator {
 

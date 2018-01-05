@@ -19,7 +19,9 @@ package org.jivesoftware.smackx.disco.provider;
 
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.util.PacketParserUtils;
+
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
+
 import org.xmlpull.v1.XmlPullParser;
 
 /**
@@ -34,7 +36,7 @@ public class DiscoverInfoProvider extends IQProvider<DiscoverInfo> {
                     throws Exception {
         DiscoverInfo discoverInfo = new DiscoverInfo();
         boolean done = false;
-        DiscoverInfo.Identity identity = null;
+        DiscoverInfo.Identity identity;
         String category = "";
         String identityName = "";
         String type = "";
@@ -74,7 +76,7 @@ public class DiscoverInfoProvider extends IQProvider<DiscoverInfo> {
                 if (parser.getName().equals("feature")) {
                     // Create a new feature and add it to the discovered info.
                     boolean notADuplicateFeature = discoverInfo.addFeature(variable);
-                    assert(notADuplicateFeature);
+                    assert (notADuplicateFeature);
                 }
                 if (parser.getName().equals("query")) {
                     done = true;

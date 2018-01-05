@@ -49,10 +49,11 @@ import org.jivesoftware.smack.provider.ProviderManager;
 /**
  * The EnhancedDebuggerWindow is the main debug window that will show all the EnhancedDebuggers.
  * For each connection to debug there will be an EnhancedDebugger that will be shown in the
- * EnhancedDebuggerWindow.<p>
- * <p/>
+ * EnhancedDebuggerWindow.
+ * <p>
  * This class also provides information about Smack like for example the Smack version and the
  * installed providers.
+ * </p>
  *
  * @author Gaston Dombiak
  */
@@ -114,7 +115,7 @@ public final class EnhancedDebuggerWindow {
      *
      * @return the unique EnhancedDebuggerWindow instance
      */
-    public static EnhancedDebuggerWindow getInstance() {
+    public synchronized static EnhancedDebuggerWindow getInstance() {
         if (instance == null) {
             instance = new EnhancedDebuggerWindow();
         }
@@ -240,7 +241,7 @@ public final class EnhancedDebuggerWindow {
         JPanel iqProvidersPanel = new JPanel();
         iqProvidersPanel.setLayout(new GridLayout(1, 1));
         iqProvidersPanel.setBorder(BorderFactory.createTitledBorder("Installed IQ Providers"));
-        Vector<String> providers = new Vector<String>();
+        Vector<String> providers = new Vector<>();
         for (Object provider : ProviderManager.getIQProviders()) {
             if (provider.getClass() == Class.class) {
                 providers.add(((Class<?>) provider).getName());
@@ -259,7 +260,7 @@ public final class EnhancedDebuggerWindow {
         JPanel extensionProvidersPanel = new JPanel();
         extensionProvidersPanel.setLayout(new GridLayout(1, 1));
         extensionProvidersPanel.setBorder(BorderFactory.createTitledBorder("Installed Extension Providers"));
-        providers = new Vector<String>();
+        providers = new Vector<>();
         for (Object provider : ProviderManager.getExtensionProviders()) {
             if (provider.getClass() == Class.class) {
                 providers.add(((Class<?>) provider).getName());
@@ -305,7 +306,7 @@ public final class EnhancedDebuggerWindow {
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ArrayList<EnhancedDebugger> debuggersToRemove = new ArrayList<EnhancedDebugger>();
+                ArrayList<EnhancedDebugger> debuggersToRemove = new ArrayList<>();
                 // Remove all the debuggers of which their connections are no longer valid
                 for (int index = 0; index < tabbedPane.getComponentCount() - 1; index++) {
                     EnhancedDebugger debugger = debuggers.get(index);
@@ -345,7 +346,7 @@ public final class EnhancedDebuggerWindow {
      *
      * @param evt the event that indicates that the root window is closing
      */
-    public void rootWindowClosing(WindowEvent evt) {
+    private synchronized void rootWindowClosing(WindowEvent evt) {
         // Notify to all the debuggers to stop debugging
         for (EnhancedDebugger debugger : debuggers) {
             debugger.cancel();
@@ -354,6 +355,8 @@ public final class EnhancedDebuggerWindow {
         debuggers.clear();
         // Release the default instance
         instance = null;
+        frame = null;
+        notifyAll();
     }
 
     /**
@@ -392,5 +395,15 @@ public final class EnhancedDebuggerWindow {
 
     public boolean isVisible() {
         return frame != null && frame.isVisible();
+    }
+
+    public synchronized void waitUntilClosed() throws InterruptedException {
+        if (frame == null) {
+            return;
+        }
+
+        while (frame != null) {
+            wait();
+        }
     }
 }

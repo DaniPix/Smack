@@ -18,7 +18,7 @@
 package org.jivesoftware.smackx.bookmarks;
 
 /**
- * Respresents one instance of a URL defined using XEP-0048 Bookmark Storage XEP.
+ * Represents one instance of a URL defined using XEP-0048 Bookmark Storage XEP.
  *
  * @author Derek DeMoro
  */
@@ -41,9 +41,9 @@ public class BookmarkedURL implements SharedBookmark {
 
     /**
      * Returns the name representing the URL (eg. Jive Software). This can be used in as a label, or
-     * identifer in applications.
+     * identifier in applications.
      *
-     * @return the name reprenting the URL.
+     * @return the name representing the URL.
      */
     public String getName() {
         return name;
@@ -86,10 +86,10 @@ public class BookmarkedURL implements SharedBookmark {
 
     @Override
     public boolean equals(Object obj) {
-        if(!(obj instanceof BookmarkedURL)) {
+        if (!(obj instanceof BookmarkedURL)) {
             return false;
         }
-        BookmarkedURL url = (BookmarkedURL)obj;
+        BookmarkedURL url = (BookmarkedURL) obj;
         return url.getURL().equalsIgnoreCase(URL);
     }
 

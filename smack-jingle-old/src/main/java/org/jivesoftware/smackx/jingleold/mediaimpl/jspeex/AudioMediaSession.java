@@ -29,20 +29,20 @@ import javax.media.format.UnsupportedFormatException;
 import javax.media.rtp.rtcp.SenderReport;
 import javax.media.rtp.rtcp.SourceDescription;
 
-import mil.jfcom.cie.media.session.MediaSession;
-import mil.jfcom.cie.media.session.MediaSessionListener;
-import mil.jfcom.cie.media.session.StreamPlayer;
-import mil.jfcom.cie.media.srtp.packetizer.SpeexFormat;
-
 import org.jivesoftware.smackx.jingleold.JingleSession;
 import org.jivesoftware.smackx.jingleold.media.JingleMediaSession;
 import org.jivesoftware.smackx.jingleold.media.PayloadType;
 import org.jivesoftware.smackx.jingleold.nat.TransportCandidate;
 
+import mil.jfcom.cie.media.session.MediaSession;
+import mil.jfcom.cie.media.session.MediaSessionListener;
+import mil.jfcom.cie.media.session.StreamPlayer;
+import mil.jfcom.cie.media.srtp.packetizer.SpeexFormat;
+
 /**
  * This Class implements a complete JingleMediaSession.
- * It sould be used to transmit and receive audio captured from the Mic.
- * This Class should be automaticly controlled by JingleSession.
+ * It should be used to transmit and receive audio captured from the Mic.
+ * This Class should be automatically controlled by JingleSession.
  * But you could also use in any VOIP application.
  * For better NAT Traversal support this implementation don't support only receive or only transmit.
  * To receive you MUST transmit. So the only implemented and functionally methods are startTransmit() and stopTransmit()
@@ -79,18 +79,18 @@ public class AudioMediaSession extends JingleMediaSession implements MediaSessio
         /**
          * The master key. Hardcoded for now.
          */
-        byte[] masterKey = new byte[]{(byte) 0xE1, (byte) 0xF9, 0x7A, 0x0D, 0x3E, 0x01, (byte) 0x8B, (byte) 0xE0, (byte) 0xD6, 0x4F, (byte) 0xA3, 0x2C, 0x06, (byte) 0xDE, 0x41, 0x39};
+        byte[] masterKey = new byte[] {(byte) 0xE1, (byte) 0xF9, 0x7A, 0x0D, 0x3E, 0x01, (byte) 0x8B, (byte) 0xE0, (byte) 0xD6, 0x4F, (byte) 0xA3, 0x2C, 0x06, (byte) 0xDE, 0x41, 0x39};
 
         /**
          * The master salt. Hardcoded for now.
          */
-        byte[] masterSalt = new byte[]{0x0E, (byte) 0xC6, 0x75, (byte) 0xAD, 0x49, (byte) 0x8A, (byte) 0xFE, (byte) 0xEB, (byte) 0xB6, (byte) 0x96, 0x0B, 0x3A, (byte) 0xAB, (byte) 0xE6};
+        byte[] masterSalt = new byte[] {0x0E, (byte) 0xC6, 0x75, (byte) 0xAD, 0x49, (byte) 0x8A, (byte) 0xFE, (byte) 0xEB, (byte) 0xB6, (byte) 0x96, 0x0B, 0x3A, (byte) 0xAB, (byte) 0xE6};
 
         DatagramSocket[] localPorts = MediaSession.getLocalPorts(InetAddress.getByName(localhost), localPort);
         MediaSession session = MediaSession.createInstance(remoteHost, remotePort, localPorts, quality, secure, masterKey, masterSalt);
         session.setListener(eventHandler);
 
-        session.setSourceDescription(new SourceDescription[]{new SourceDescription(SourceDescription.SOURCE_DESC_NAME, "Superman", 1, false), new SourceDescription(SourceDescription.SOURCE_DESC_EMAIL, "cdcie.tester@je.jfcom.mil", 1, false), new SourceDescription(SourceDescription.SOURCE_DESC_LOC, InetAddress.getByName(localhost) + " Port " + session.getLocalDataPort(), 1, false), new SourceDescription(SourceDescription.SOURCE_DESC_TOOL, "JFCOM CDCIE Audio Chat", 1, false)});
+        session.setSourceDescription(new SourceDescription[] {new SourceDescription(SourceDescription.SOURCE_DESC_NAME, "Superman", 1, false), new SourceDescription(SourceDescription.SOURCE_DESC_EMAIL, "cdcie.tester@je.jfcom.mil", 1, false), new SourceDescription(SourceDescription.SOURCE_DESC_LOC, InetAddress.getByName(localhost) + " Port " + session.getLocalDataPort(), 1, false), new SourceDescription(SourceDescription.SOURCE_DESC_TOOL, "JFCOM CDCIE Audio Chat", 1, false)});
         return session;
     }
 
@@ -155,9 +155,19 @@ public class AudioMediaSession extends JingleMediaSession implements MediaSessio
 
     /**
      * Starts transmission and for NAT Traversal reasons start receiving also.
+     *
+     * @deprecated use {@link #startTransmit()} instead.
+     */
+    @Deprecated
+    public void startTrasmit() {
+        startTransmit();
+    }
+
+    /**
+     * Starts transmission and for NAT Traversal reasons start receiving also.
      */
     @Override
-    public void startTrasmit() {
+    public void startTransmit() {
         try {
             LOGGER.fine("start");
             mediaSession.start(true);
@@ -169,13 +179,25 @@ public class AudioMediaSession extends JingleMediaSession implements MediaSessio
     }
 
     /**
-     * Set transmit activity. If the active is true, the instance should trasmit.
+     * Set transmit activity. If the active is true, the instance should transmit.
+     * If it is set to false, the instance should pause transmit.
+     *
+     * @param active active state
+     * @deprecated use {@link #setTransmit(boolean)} instead.
+     */
+    @Deprecated
+    public void setTrasmit(boolean active) {
+        setTransmit(active);
+    }
+
+    /**
+     * Set transmit activity. If the active is true, the instance should transmit.
      * If it is set to false, the instance should pause transmit.
      *
      * @param active active state
      */
     @Override
-    public void setTrasmit(boolean active) {
+    public void setTransmit(boolean active) {
         // Do nothing
     }
 
@@ -189,9 +211,19 @@ public class AudioMediaSession extends JingleMediaSession implements MediaSessio
 
     /**
      * Stops transmission and for NAT Traversal reasons stop receiving also.
+     *
+     * @deprecated use {@link #stopTransmit()} instead.
+     */
+    @Deprecated
+    public void stopTrasmit() {
+        stopTransmit();
+    }
+
+    /**
+     * Stops transmission and for NAT Traversal reasons stop receiving also.
      */
     @Override
-    public void stopTrasmit() {
+    public void stopTransmit() {
         if (mediaSession != null)
             mediaSession.close();
     }

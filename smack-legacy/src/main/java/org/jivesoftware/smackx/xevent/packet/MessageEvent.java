@@ -17,10 +17,10 @@
 
 package org.jivesoftware.smackx.xevent.packet;
 
-import org.jivesoftware.smack.packet.ExtensionElement;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jivesoftware.smack.packet.ExtensionElement;
 
 /**
  * Represents message events relating to the delivery, display, composition and cancellation of 
@@ -170,7 +170,7 @@ public class MessageEvent implements ExtensionElement {
      * @return a List of all the types of events of the MessageEvent.
      */
     public List<String> getEventTypes() {
-        ArrayList<String> allEvents = new ArrayList<String>();
+        ArrayList<String> allEvents = new ArrayList<>();
         if (isDelivered()) {
             allEvents.add(MessageEvent.DELIVERED);
         }
