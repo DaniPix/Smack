@@ -6,6 +6,28 @@ Smack
 About
 -----
 
+This fork add support for `<rebind xmlns="p1:push"/>` handling.
+
+This functionality can be enabled by calling `enablePush()` method on `XMPPTCPConnection` instance:
+
+```
+XMPPTCPConnectionConfiguration.Builder config = XMPPTCPConnectionConfiguration.builder();
+config.setUsernameAndPassword("user", "pass");
+config.setXmppDomain("xmpp.server.com");
+
+XMPPTCPConnection connection = new XMPPTCPConnection(config.build());
+
+connection.connect();
+connection.enablePush(new Push(60, 3));
+connection.login();
+
+```
+
+Original readme content:
+
+About
+-----
+
 [Smack] is an open source, highly modular, easy to use, XMPP client library written in Java for Java SE compatible JVMs and Android.
 
 A pure Java library, it can be embedded into your applications to create anything from a full XMPP instant messaging client to simple XMPP integrations such as sending notification messages and presence-enabling devices.
