@@ -55,7 +55,7 @@ public class Rebind {
             xml.rightAngleBracket();
             xml.element("jid",jid);
             xml.element("sid",sid);
-            xml.closeEmptyElement();
+            xml.closeElement(ELEMENT);
             return xml;
         }
 

@@ -245,6 +245,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
      * Support for Ejabberd BE 'rebind' mechanism
      */
     private String rebindStreamId = null;
+    private String rebindJid = null;
     private boolean useRebind = useRebindDefault;
     protected boolean pushEnabled;
     protected int keepAliveTime;
@@ -410,6 +411,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
             streamId = rebindStreamId;
         } else {
             rebindStreamId = streamId;
+            rebindJid = user.toString();
         }
         super.afterSuccessfulLogin(resumed);
     }
@@ -419,10 +421,8 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                     SmackException, IOException, InterruptedException {
         ebeRebindAvailable = hasFeature(Rebind.RebindFeature.ELEMENT, Rebind.NAMESPACE);
         if (isEBERebindPossible()) {
-            StringBuffer jid = new StringBuffer();
-            jid.append(username).append('@').append(getXMPPServiceDomain()).append(resource);
             try {
-                ebeReboundSyncPoint.sendAndWaitForResponse(new Rebind.RebindSession(jid.toString(),
+                ebeReboundSyncPoint.sendAndWaitForResponse(new Rebind.RebindSession(rebindJid,
                         rebindStreamId));
                 if (ebeReboundSyncPoint.wasSuccessful()) {
                     LOGGER.fine("EBE rebind success");
@@ -1256,6 +1256,10 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                             } else {
                                 LOGGER.warning("SM Ack Request received while SM is not enabled");
                             }
+                            break;
+                        case "rebind":
+                            ParseRebind.success(parser);
+                            ebeReboundSyncPoint.reportSuccess();
                             break;
                          default:
                              LOGGER.warning("Unknown top level stream element: " + name);
