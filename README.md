@@ -18,8 +18,8 @@ config.setXmppDomain("xmpp.server.com");
 XMPPTCPConnection connection = new XMPPTCPConnection(config.build());
 
 connection.connect();
-connection.enablePush(new Push(60, 3));
 connection.login();
+connection.enablePush(new Push(60, 3));
 
 ```
 
